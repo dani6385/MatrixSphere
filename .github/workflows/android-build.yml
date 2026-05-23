@@ -29,9 +29,9 @@ jobs:
           mkdir -p dist
           echo '<html><head><meta http-equiv="refresh" content="0;url=https://matrixsphere-shop.web.app"></head><body>Redirecting to shop...</body></html>' > dist/index.html
 
+      # Di sini perubahannya: Kita hapus 'npx cap add android' karena foldernya sudah ada di GitHub Anda
       - name: Initialize Capacitor Android Platform
         run: |
-          npx cap add android
           npx cap sync android
 
       - name: Setup Java JDK 17
