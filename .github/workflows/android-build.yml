@@ -29,8 +29,10 @@ jobs:
           mkdir -p dist
           echo '<html><head><meta http-equiv="refresh" content="0;url=https://matrixsphere-shop.web.app"></head><body>Redirecting to shop...</body></html>' > dist/index.html
 
+      # STRATEGI PAMUNGKAS: Hapus paksa folder android di cloud jika ada, lalu generate ulang dari nol secara bersih!
       - name: Initialize Capacitor Android Platform
         run: |
+          rm -rf android
           npx cap add android
           npx cap sync android
 
@@ -43,6 +45,7 @@ jobs:
       - name: Build Debug Android APK
         run: |
           cd android
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload Finished APK Artifact
