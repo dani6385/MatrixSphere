@@ -6,7 +6,20 @@
 
 <body>
     <h1>MatrixSpehere Shop</h1>
-    
+    <script src="https://unpkg.com/@capacitor/core@latest/dist/capacitor.js"></script>
+    <script>
+        // Menggunakan Capacitor via script injection atau bundler frontend Anda
+        // Kode ini aman berjalan di HP pembeli karena tidak dieksekusi di server Node.js
+        document.addEventListener('ionBackButton', (ev) => {
+            ev.detail.register(10, () => {
+                if (window.location.pathname === '/' || window.location.pathname === '/login') {
+                    navigator['app'].exitApp();
+                } else {
+                    window.history.back();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
