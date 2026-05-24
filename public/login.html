@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gudang Produk - MatrixSphere</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="auth-page-body">
+    <div class="background-image"></div>
+    <div class="auth-wrapper bg-slate-900 text-white font-sans">
+        <header class="main-header">
+            <div class="nav-container">
+                <div class="flex-items-center">
+                    <a href="login.html" class="nav-logo">
+                        <img src="img/logo.png" alt="Logo">
+                    </a>
+                    <span class="brand-text">MatrixSphere</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="container auth-main">
+            <div class="glass-box pd-20 auth-card-container">
+                <div class="login-card">
+                    <div class="brand-header">
+                        <h1>MATRIX SPHERE</h1>
+                        <p>Sistem Akses Jaringan Terintegrasi</p>
+                </div>
+                    <div class="login-options">
+                        <button type="button" class="btn btn-voucher" onclick="showInput('voucher')">Voucher</button>
+                        <button type="button" class="btn btn-member" onclick="showInput('member')">Member</button>
+                        <input type="file" id="qris-camera-input" accept="image/*" capture="environment"
+                            style="display: none;" onchange="handleQuickScan(event)">
+
+                        <button type="button" class="btn btn-scan"
+                            onclick="document.getElementById('qris-camera-input').click()">
+                            SCAN QRIS
+                        </button>
+                        <button type="button" class="btn btn-pay" onclick="handleQRIS('pay')">Bayar QRIS</button>
+                    </div>
+                    <form name="login" action="$(link-login-only)" method="post" onsubmit="return doLogin()">
+                        <input type="hidden" name="dst" value="$(link-orig)" />
+                        <input type="hidden" name="popup" value="true" />
+                        <input type="hidden" id="chap-id" value="$(chap-id)">
+                        <input type="hidden" id="chap-challenge" value="$(chap-challenge)">
+                        <div id="input-area" class="input-area">
+                            $(if error)
+                            <div class="bg-danger pd-5 mr-b-10 radius-3 text-center error-text-sm">
+                                $(error)
+                            </div>
+                            $(endif)
+                            <p class="auth-instruction">Silakan pilih metode login di atas.</p>
+                        </div>
+                    </form>
+                    <div class="hidden">
+                        <a id="trial-link"
+                            href="$(link-login-only)?dst=$(link-orig-esc)&amp;username=T-$(mac-esc)">Trial</a>
+                    </div>
+
+                    <div class="footer-text">
+                        &copy; 2024 MatrixSphere Network.
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script type="text/javascript" src="js/md5.js"></script>
+        <script type="text/javascript" src="js/script.js"></script>
+        
+    </div>
+</body>
+
+</html>
