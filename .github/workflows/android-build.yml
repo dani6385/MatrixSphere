@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+# ⬇️ TAMBAHAN WAJIB: MEMBERI IZIN ACTIONS UNTUK DEPLOY KE GITHUB PAGES ⬇️
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,33 +28,31 @@ jobs:
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/android
 
-      # --- LANGKAH 1: AMANKAN ASSET UNTUK APK ---
-      # Kita buat folder dist dan langsung salin folder public proyek Anda ke sana tanpa if/else
+      # --- DUNIA 1: AMANKAN ASSET UNTUK APK ANDROID ---
       - name: Build Web Project for Capacitor
         run: |
           mkdir -p dist
           cp -r public/* dist/
 
-      # --- LANGKAH 2: BUAT FOLDER REDIRECT GITHUB PAGES ---
-      # Membuat file index.html pengalihan menggunakan javascript murni yang aman
+      # --- DUNIA 2: BUAT HALAMAN RE-DIRECT UNTUK GITHUB PAGES ---
       - name: Create Web Redirect Directory
         run: |
           mkdir -p web-redirect
           echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MatrixSphere - Redirecting</title></head><body><p style="text-align:center;margin-top:50px;font-family:sans-serif;">Menghubungkan ke MatrixSphere Shop...</p><script>window.location.href="https://matrixsphere-shop.web.app/" + window.location.search;</script></body></html>' > web-redirect/index.html
 
-      # Kirim halaman pengalihan ke GitHub Pages
+      # Kirim halaman pengalihan ke GitHub Pages secara aman
       - name: Deploy Redirect to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./web-redirect
 
-      # --- LANGKAH 3: KOMPILASI ANDROID DARI NOL ---
+      # --- PROSES GENERATE & KOMPILASI APK ---
       - name: Initialize Capacitor Android Platform
         run: |
           rm -rf android
           npx cap add android
-          npx cap sync android
+          npx cap sync android [cite: 5]
 
       - name: Setup Java JDK 21
         uses: actions/setup-java@v4
@@ -60,9 +62,9 @@ jobs:
 
       - name: Build Debug Android APK
         run: |
-          cd android
+          cd android [cite: 6]
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug [cite: 6]
 
       - name: Upload Finished APK Artifact
         uses: actions/upload-artifact@v4
