@@ -3,3 +3,5 @@ dist/
 .idx/
 .envandroid/
 node_modules/
+android/
+node_modules/

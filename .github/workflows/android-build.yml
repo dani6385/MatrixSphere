@@ -43,14 +43,14 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./web-redirect
 
-      # PENANGANAN LOGIKA OTOMATIS: Memeriksa folder android sebelum sync agar tidak memicu error merah
+      # PENGONDISIAN: Membuat platform dari nol jika bersih, atau singkronisasi jika sudah siap
       - name: Initialize Capacitor Android Platform
         run: |
           if [ ! -d "android" ]; then
-            echo "Folder Android tidak ditemukan. Membuat platform baru..."
+            echo "Membangun platform Android baru di server cloud..."
             npx cap add android
           else
-            echo "Folder Android ditemukan. Memperbarui platform..."
+            echo "Sinkronisasi komponen Android..."
             npx cap sync android
           fi
 
