@@ -6,71 +6,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gudang Produk - MatrixSphere</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <!-- Pustaka untuk memproses QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
 
 <body class="auth-page-body">
-    <div class="background-image"></div>
-    <div class="auth-wrapper bg-slate-900 text-white font-sans">
+    <div class="auth-wrapper">
         <header class="main-header">
             <div class="nav-container">
-                <div class="flex-items-center">
-                    <a href="login.html" class="nav-logo">
-                        <img src="img/logo.png" alt="Logo">
-                    </a>
+                <a href="#" class="nav-logo">
+                    <img src="img/logo.png" alt="Logo">
                     <span class="brand-text">MatrixSphere</span>
-                </div>
+                </a>
             </div>
         </header>
 
         <main class="container auth-main">
-            <div class="glass-box pd-20 auth-card-container">
-                <div class="login-card">
-                    <div class="brand-header">
-                        <h1>MATRIX SPHERE</h1>
-                        <p>Sistem Akses Jaringan Terintegrasi</p>
+            <div class="login-card-wrapper">
+                <div class="central-logo">
+                    <img src="img/logo.png" alt="Central Logo">
                 </div>
-                    <div class="login-options">
-                        <button type="button" class="btn btn-voucher" onclick="showInput('voucher')">Voucher</button>
-                        <button type="button" class="btn btn-member" onclick="showInput('member')">Member</button>
-                        <input type="file" id="qris-camera-input" accept="image/*" capture="environment"
-                            style="display: none;" onchange="handleQuickScan(event)">
 
-                        <button type="button" class="btn btn-scan"
-                            onclick="document.getElementById('qris-camera-input').click()">
-                            SCAN QRIS
-                        </button>
-                        <button type="button" class="btn btn-pay" onclick="handleQRIS('pay')">Bayar QRIS</button>
-                    </div>
-                    <form name="login" action="$(link-login-only)" method="post" onsubmit="return doLogin()">
-                        <input type="hidden" name="dst" value="$(link-orig)" />
-                        <input type="hidden" name="popup" value="true" />
-                        <input type="hidden" id="chap-id" value="$(chap-id)">
-                        <input type="hidden" id="chap-challenge" value="$(chap-challenge)">
-                        <div id="input-area" class="input-area">
-                            
-                            <div class="bg-danger pd-5 mr-b-10 radius-3 text-center error-text-sm">
-                            
-                            </div>
-                            
-                            <p class="auth-instruction">Silakan pilih metode login di atas.</p>
-                        </div>
-                    </form>
-                    <div class="hidden">
-                        <a id="trial-link"
-                            href="$(link-login-only)?dst=$(link-orig-esc)&amp;username=T-$(mac-esc)">Trial</a>
-                    </div>
+                <div class="title-section">
+                    <h1>CONNECTIVITY</h1>
+                    <p>SISTEM AKSES JARINGAN TERINTEGRASI</p>
+                </div>
 
-                    <div class="footer-text">
-                        &copy; 2024 MatrixSphere Network.
+                <div class="login-options">
+                    <button type="button" class="option-btn active" onclick="showInput('voucher')">
+                        <i class="fas fa-ticket-alt"></i> VOUCHER
+                    </button>
+                    <button type="button" class="option-btn" onclick="showInput('member')">
+                        <i class="fas fa-user"></i> MEMBER
+                    </button>
+                    <button type="button" class="option-btn" onclick="showInput('scan')">
+                        <i class="fas fa-qrcode"></i> SCAN QRIS
+                    </button>
+                    <button type="button" class="option-btn" onclick="showInput('pay')">
+                        <i class="fas fa-credit-card"></i> BAYAR QRIS
+                    </button>
+                </div>
+
+                <div class="trial-option">
+                    <button type="button" class="trial-btn" onclick="showInput('trial')">
+                        <i class="fas fa-bolt"></i> COBA GRATIS (TRIAL)
+                    </button>
+                </div>
+                
+                <form name="login" action="$(link-login-only)" method="post" onsubmit="return doLogin()" class="login-form">
+                    <input type="hidden" name="dst" value="$(link-orig)" />
+                    <input type="hidden" name="popup" value="true" />
+                    <input type="hidden" id="chap-id" name="chapId" value="$(chap-id)">
+                    <input type="hidden" id="chap-challenge" name="chapChallenge" value="$(chap-challenge)">
+                    
+                    <div id="input-area">
+                        <!-- Konten dinamis akan dimuat di sini oleh JavaScript -->
                     </div>
+                </form>
+
+                <div class="footer-text">
+                    &copy; 2024 MatrixSphere Network.
                 </div>
             </div>
         </main>
-        <script type="text/javascript" src="js/md5.js"></script>
-        <script type="text/javascript" src="js/script.js"></script>
-        
     </div>
+
+    <script type="text/javascript" src="js/md5.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
 </body>
 
 </html>
