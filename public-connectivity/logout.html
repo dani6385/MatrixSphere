@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MatrixSphere - Logout Berhasil</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="auth-page-body">
+    <header class="main-header">
+        <nav class="navbar">
+            <div class="nav-left-group">
+                <a href="login.html" class="nav-logo">
+                    <img src="img/logo.png" alt="Logo" class="logo-img">
+                    MATRIXSPHERE
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container auth-main">
+        <div class="glass-box pd-20 auth-card-container">
+            <div class="login-card">
+                <div class="brand-header">
+                    <div style="font-size: 50px; margin-bottom: 10px;">👋</div>
+                    <h1>LOGOUT BERHASIL</h1>
+                    <p>Terima kasih telah menggunakan layanan MatrixSphere.</p>
+                </div>
+
+                <div class="card-body text-center">
+                    <div class="bg-light pd-10 radius-5 mr-b-20" style="color: var(--text-main);">
+                        <p style="font-size: 14px; margin: 0;">Sesi untuk user <strong>$(username)</strong> telah berakhir.</p>
+                    </div>
+
+                    <p class="auth-instruction">Anda telah aman terputus dari jaringan. Sampai jumpa lagi!</p>
+
+                    <div class="mr-t-20">
+                        <a href="$(link-login)" class="btn bg-primary pd-12 radius-5 text-white btn-start-browsing">
+                            MASUK KEMBALI
+                            <script type="text/javascript">
+                                // Fallback jika variabel Mikrotik tidak terbaca di editor
+                                var link = "$(link-login)";
+                                if (link.indexOf('$') !== -1) {
+                                    document.currentScript.parentElement.setAttribute('href', 'login.html');
+                                }
+                            </script>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-text mr-t-20">
+                    <p>© 2025 MatrixSphere Network Solutions.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

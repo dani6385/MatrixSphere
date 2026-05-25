@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keranjang Belanja | MatrixSphere</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/ui-light.css">
+    <link rel="stylesheet" href="css/header.css">
+    <script type="module" src="js/navbar-loader.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Mencegah konflik flex-center dari style.css agar halaman tidak rata kanan/tengah */
+        body { display: block !important; }
+        /* Memaksa kontainer utama rata kiri dengan batas lebar yang nyaman dipandang */
+        .index-content { margin-left: 0 !important; margin-right: auto !important; padding-left: 20px; padding-right: 20px; max-width: 1000px; }
+        #navbar-container { position: relative; z-index: 1000; width: 100%; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white font-sans">
+    <div id="navbar-container"></div>
+
+    <main class="index-content container">
+            <h1 class="text-3xl font-extrabold mb-8 text-sky-400 text-left">Keranjang Belanja</h1>
+            
+            <div id="cartContent">
+                <!-- Konten Produk Akan Dimuat di Sini -->
+                <div class="text-center py-20 opacity-50">Memuat detail pesanan...</div>
+            </div>
+
+            <div id="cartSummary" class="mt-10 glass p-8 rounded-3xl hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-slate-400">Total Pembayaran</span>
+                    <span id="totalPrice" class="text-3xl font-bold text-emerald-400">Rp 0</span>
+                </div>
+                <button id="btnCheckout" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-green-600/20 uppercase tracking-widest">
+                    Checkout via WhatsApp
+                </button>
+            </div>
+    </main>
+
+    <script type="module">
+        // 1. Gunakan instance auth & app dari loader agar sinkron (Menghindari bentrokan)
+        import { auth, app } from './js/navbar-loader.js';
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Hapus kode inisialisasi Firebase ganda yang ada di sini sebelumnya
+        const db = getDatabase(app);
+
+        const params = new URLSearchParams(window.location.search);
+        const prodId = params.get('id');
+        
+        const cartContent = document.getElementById('cartContent');
+        const cartSummary = document.getElementById('cartSummary');
+        const totalPriceEl = document.getElementById('totalPrice');
+        const btnCheckout = document.getElementById('btnCheckout');
+
+        window.updateCartBadge = () => {
+            const cartCountEl = document.getElementById('cart-count');
+            if (!cartCountEl) return;
+            const currentCart = JSON.parse(localStorage.getItem('grup_keranjang')) || [];
+            const totalItems = currentCart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            cartCountEl.innerText = totalItems;
+            cartCountEl.style.display = totalItems > 0 ? 'flex' : 'none';
+        };
+
+        let keranjang = JSON.parse(localStorage.getItem('grup_keranjang')) || [];
+
+        // FUNGSI RENDER DATA BELANJAAN TERBARU
+        function bacaIsiKeranjang() {
+            const container = document.getElementById('cartContent');
+            if (!container) return;
+
+            // Sinkronisasi Kunci Database (grup_keranjang)
+            const dataRaw = localStorage.getItem('grup_keranjang');
+            keranjang = JSON.parse(dataRaw) || [];
+
+            // Bersihkan kontainer sebelum render (Menghapus teks loading)
+            container.innerHTML = "";
+
+            if (keranjang.length === 0) {
+                container.innerHTML = `
+                    <div class="glass p-10 rounded-3xl text-center">
+                        <p class="text-slate-400 mb-5">Keranjang Anda kosong.</p>
+                        <a href="index.html" class="text-sky-400 font-bold hover:underline">Kembali Belanja</a>
+                    </div>`;
+                cartSummary.classList.add('hidden');
+                return;
+            }
+
+            cartSummary.classList.remove('hidden');
+            let grandTotal = 0;
+
+            const itemsHtml = keranjang.map((item, index) => {
+                const originalImg = item.img || "img/logo.png";
+                const urlGambarAman = originalImg.startsWith('http') 
+                    ? `https://images.weserv.nl/?url=${originalImg.replace(/^https?:\/\//, '')}` 
+                    : originalImg;
+                
+                const itemTotal = item.harga * item.quantity;
+                grandTotal += itemTotal;
+
+                return `
+                <tr class="border-b border-gray-700/50 hover:bg-white/5 transition-colors">
+                    <td class="py-3 px-4 align-middle">
+                        <img src="${urlGambarAman}" class="w-12 h-12 object-cover rounded-lg border border-white/10 shadow-sm">
+                    </td>
+                    <td class="py-3 px-4 align-middle">
+                        <div class="text-sm font-bold text-white truncate max-w-[150px] md:max-w-xs">${item.nama}</div>
+                    </td>
+                    <td class="py-3 px-4 align-middle">
+                        <div class="text-sky-400 font-mono text-sm">Rp ${Number(item.harga).toLocaleString('id-ID')}</div>
+                    </td>
+                    <td class="py-3 px-4 align-middle">
+                        <div class="flex items-center bg-white/5 rounded-xl p-1 border border-white/10 w-fit">
+                            <button onclick="updateQty(${index}, -1)" class="w-7 h-7 flex items-center justify-center hover:bg-white/10 rounded-lg transition text-xs">-</button>
+                            <span class="w-8 text-center font-bold text-sm">${item.quantity}</span>
+                            <button onclick="updateQty(${index}, 1)" class="w-7 h-7 flex items-center justify-center hover:bg-white/10 rounded-lg transition text-xs">+</button>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 align-middle text-right">
+                        <button onclick="removeItem(${index})" class="text-red-400 hover:text-red-300 transition-colors text-xs font-bold uppercase tracking-tighter">Hapus</button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="glass overflow-x-auto rounded-3xl border border-white/10 shadow-2xl">
+                    <table class="w-full text-left border-collapse min-w-[500px]">
+                        <thead>
+                            <tr class="text-slate-400 text-[10px] uppercase tracking-widest border-b border-white/10">
+                                <th class="py-4 px-4 font-bold">Gambar</th>
+                                <th class="py-4 px-4 font-bold">Nama Produk</th>
+                                <th class="py-4 px-4 font-bold">Harga</th>
+                                <th class="py-4 px-4 font-bold">Jumlah</th>
+                                <th class="py-4 px-4 font-bold text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsHtml}
+                        </tbody>
+                    </table>
+                </div>`;
+
+            totalPriceEl.innerText = `Rp ${grandTotal.toLocaleString('id-ID')}`;
+            updateCartBadge();
+        }
+
+        window.updateQty = (index, delta) => {
+            keranjang[index].quantity += delta;
+            if (keranjang[index].quantity < 1) keranjang[index].quantity = 1;
+            localStorage.setItem('grup_keranjang', JSON.stringify(keranjang));
+            bacaIsiKeranjang();
+            updateCartBadge();
+        };
+
+        window.removeItem = (index) => {
+            keranjang.splice(index, 1);
+            localStorage.setItem('grup_keranjang', JSON.stringify(keranjang));
+            bacaIsiKeranjang();
+            updateCartBadge();
+        };
+
+        btnCheckout.onclick = () => {
+            if (keranjang.length === 0) return;
+            window.location.href = 'checkout.html?id=cart';
+        };
+
+        window.onload = bacaIsiKeranjang;
+    </script>
+</body>
+</html>

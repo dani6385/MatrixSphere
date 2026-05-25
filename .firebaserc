@@ -1,0 +1,19 @@
+{
+  "projects": {},
+  "targets": {
+    "matrixsphere-shop": {
+      "hosting": {
+        "induk": [
+          "matrixsphere"
+        ],
+        "shop": [
+          "matrixsphere-shop"
+        ],
+        "connectivity": [
+          "connectivity-matrixsphere"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

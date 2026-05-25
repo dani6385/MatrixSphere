@@ -1,0 +1,46 @@
+/* RESET & DASAR */
+input {
+  vertical-align: middle;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+.plch-center::-webkit-input-placeholder { text-align: center; }
+.plch-center:-moz-placeholder { text-align: center; }
+
+button {
+  text-decoration: none;
+  display: inline-block;
+  border: none;
+  background-color: transparent;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* GRID SYSTEM */
+.container { width: 100%; }
+.row::after { content: ""; clear: both; display: table; }
+[class*="col-"] { float: left; padding: 5px; }
+
+.col-1 {width: 8.33%;} .col-4 {width: 33.33%;} .col-6 {width: 50%;} .col-12 {width: 100%;}
+
+/* CARD & BOX */
+.card {
+  margin: 5px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.card-body { padding: 15px; }
+
+/* UTILITY */
+.text-center { text-align: center; }
+.bg-primary { background-color: #20a8d8; color: #fff; }
+.bg-success { background-color: #4dbd74; color: #fff; }
+.bg-danger { background-color: #f86c6b; color: #fff; }
+
+/* MEDIA QUERY */
+@media screen and (max-width: 800px) {
+  [class*="col-"] { width: 100%; }
+  body { padding: 0; }
+}
