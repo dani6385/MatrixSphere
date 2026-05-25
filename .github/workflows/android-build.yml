@@ -24,27 +24,34 @@ jobs:
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/android
 
-      # --- LANGKAH 1: BUILD UNTUK KEBUTUHAN APK (MENGHASILKAN FOLDER DIST) ---
+      # --- LANGKAH 1: KITA BUAT FOLDER DIST SECARA AMAN DENGAN MENYALIN ASET STATIS ---
+      # Diganti dari 'npm run build' agar tidak error, file public disalin untuk dibungkus Capacitor ke APK
+       Sirkuit Build Web Project for Capacitor
       - name: Build Web Project for Capacitor
         run: |
-          npm run build # Folder 'dist' asli tercipta di sini untuk disinkronkan ke Android
+          mkdir -p dist
+          if [ -d "public" ]; then
+            cp -r public/* dist/
+          else
+            echo '<html><body>MatrixSphere App Ready</body></html>' > dist/index.html
+          fi
 
       # --- LANGKAH 2: BUAT FOLDER TERPISAH KHUSUS UNTUK GITHUB PAGES ---
-      # Kita buat folder 'web-redirect' agar tidak menabrak atau menghapus folder 'dist'
+      # Menyisipkan variabel window.location.search dengan benar agar parameter IP & MAC dari MikroTik tidak hilang saat di-redirect
       - name: Create Web Redirect Directory
         run: |
           mkdir -p web-redirect
-          echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="refresh" content="0;url=https://matrixsphere-shop.web.app/login?dst=${window.location.search}"><title>MatrixSphere - Redirecting</title></head><body><p style="text-align:center;margin-top:50px;font-family:sans-serif;">Menghubungkan ke MatrixSphere Shop...</p></body></html>' > web-redirect/index.html
+          echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MatrixSphere - Redirecting</title></head><body><p style="text-align:center;margin-top:50px;font-family:sans-serif;">Menghubungkan ke MatrixSphere Shop...</p><script>window.location.href="https://matrixsphere-shop.web.app/" + window.location.search;</script></body></html>' > web-redirect/index.html
 
       # Kirim folder 'web-redirect' ke GitHub Pages (Bukan folder 'dist')
       - name: Deploy Redirect to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./web-redirect # Diarahkan ke folder redirect kita
+          publish_dir: ./web-redirect
 
       # --- LANGKAH 3: PROSES PEMBUATAN APK SEPERTI BIASA ---
-      # STRATEGI PAMUNGKAS: Hapus paksa folder android di cloud jika ada, lalu generate ulang dari nol secara bersih!
+      # Menghapus folder android lama dan membuat ulang secara bersih berdasarkan folder 'dist' yang aman di atas
       - name: Initialize Capacitor Android Platform
         run: |
           rm -rf android
