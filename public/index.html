@@ -19,6 +19,28 @@
                 }
             });
         });
+        window.onload = function () {
+            // 1. Ambil data parameter dari URL yang dikirim oleh MikroTik
+            const urlParams = new URLSearchParams(window.location.search);
+            const mac = urlParams.get('mac') || '';
+            const ip = urlParams.get('ip') || '';
+            const dst = urlParams.get('dst') || '';
+
+            // 2. Format URL Deep Link unik aplikasi Anda
+            // Mengirim parameter agar aplikasi tahu siapa perangkat yang sedang meminta akses
+            const appDeepLink = `matrixsphere://login?mac=${mac}&ip=${ip}&dst=${encodeURIComponent(dst)}`;
+            const playStoreUrl = "https://play.google.com/store/apps/details?id=com.matrixsphere.shop";
+
+            // 3. Eksekusi pengalihan otomatis ke aplikasi
+            window.location.href = appDeepDeepLink;
+
+            // Fallback: Jika dalam 2.5 detik aplikasi tidak merespon/belum terinstal, arahkan ke Play Store
+            setTimeout(function () {
+                if (!document.webkitHidden && !document.hidden) {
+                    window.location.href = playStoreUrl;
+                }
+            }, 2500);
+        };
     </script>
 </body>
 

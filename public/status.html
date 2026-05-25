@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" content="600">
+    <title>MatrixSphere - Status Koneksi</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="auth-page-body">
+    <main class="container auth-main">
+        <div class="status-container">
+            <img src="img/logo.png" alt="Logo" class="status-logo">
+            <h2 class="status-title">MatrixSphere</h2>
+            <p class="status-subtitle">Terhubung ke Jaringan Utama</p>
+
+            <table class="info-table">
+                <tr>
+                    <td class="info-label">User</td>
+                    <td class="info-value">$(username)</td>
+                </tr>
+                <tr>
+                    <td class="info-label">IP Address</td>
+                    <td class="info-value">$(ip)</td>
+                </tr>
+                <tr>
+                    <td class="info-label">Uptime</td>
+                    <td class="info-value">$(uptime)</td>
+                </tr>
+                $(if session-time-left)
+                <tr>
+                    <td class="info-label">Sisa Waktu</td>
+                    <td class="info-value">$(session-time-left)</td>
+                </tr>
+                $(endif)
+            </table>
+
+            <form action="$(link-logout)" name="logout">
+                <button type="submit" class="btn-logout-link">
+                    Keluar / Logout
+                </button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
