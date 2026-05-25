@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MatrixSphere Network | Future Ecosystem</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;700&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
 
     <div class="bg-glow"></div>
@@ -20,12 +24,13 @@
         </header>
 
         <main class="grid-ecosystem">
-            
+
             <a href="https://connectivity-matrixsphere.web.app" class="card-link">
                 <div class="card btn-connectivity">
                     <div class="card-icon">⚡</div>
                     <h3>Connectivity Sphere</h3>
-                    <p>Hubungkan perangkat Anda ke jaringan internet super cepat dan masuk ke portal hotspot premium.</p>
+                    <p>Hubungkan perangkat Anda ke jaringan internet super cepat dan masuk ke portal hotspot premium.
+                    </p>
                     <span class="action-text">Masuk Jaringan &rarr;</span>
                 </div>
             </a>
@@ -40,7 +45,29 @@
             </a>
 
         </main>
+        <form name="login" action="http://10.5.5.1/login" method="post">
 
+            <input type="hidden" name="dst" value="https://matrixsphere.web.app" />
+            <input type="hidden" name="popup" value="true" />
+
+            <div class="input-group">
+                <label for="username">Kode Voucher / Username</label>
+                <input id="username" name="username" type="text" placeholder="Masukkan kode di sini..." required>
+            </div>
+
+            <input name="password" type="hidden" id="password" value="" />
+
+            <button type="submit" class="btn-connect">CONNECT TO NETWORK</button>
+        </form>
+
+        <script>
+            // Trik otomatis: Jika sistem voucher Anda hanya mengisi 1 kolom, 
+            // samakan nilai password dengan username sebelum dikirim ke MikroTik
+            document.querySelector('form').addEventListener('submit', function () {
+                var user = document.getElementById('username').value;
+                document.getElementById('password').value = user;
+            });
+        </script>
         <footer>
             <p>&copy; 2026 MatrixSphere Network. All Rights Reserved.</p>
             <div class="status-indicator">
@@ -50,4 +77,5 @@
     </div>
 
 </body>
+
 </html>
