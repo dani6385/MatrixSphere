@@ -2,8 +2,9 @@
   "appId": "com.matrixsphere.shop",
   "appName": "MatrixSphere Shop",
   "webDir": "dist",
-  "server": {
-    "url": "https://matrixsphere-shop.web.app",
-    "cleartext": true
+  "plugins": {
+    "App": {
+      "appLaunchUrl": "matrixsphere://login"
+    }
   }
 }
