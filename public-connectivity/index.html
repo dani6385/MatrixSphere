@@ -1,76 +1,119 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gudang Produk - MatrixSphere</title>
-    <link rel="icon" type="image/png" href="img/favicon.png">
+    <title>MatrixSphere - Connectivity</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+<body>
 
-<body class="auth-page-body">
-    <div class="background-image"></div>
-    <div class="auth-wrapper bg-slate-900 text-white font-sans">
-        <header class="main-header">
-            <div class="nav-container">
-                <div class="flex-items-center">
-                    <a href="login.html" class="nav-logo">
-                        <img src="img/logo.png" alt="Logo">
-                    </a>
-                    <span class="brand-text">MatrixSphere</span>
-                </div>
-            </div>
-        </header>
+<div class="auth-card">
+    <img src="img/logo.png" class="logo-sphere" alt="MatrixSphere Logo">
+    <h1 class="brand-title">CONNECTIVITY</h1>
+    <p style="font-size: 10px; color: #64748b;">SISTEM AKSES JARINGAN TERINTEGRASI</p>
 
-        <main class="container auth-main">
-            <div class="glass-box pd-20 auth-card-container">
-                <div class="login-card">
-                    <div class="brand-header">
-                        <h1>MATRIX SPHERE</h1>
-                        <p>Sistem Akses Jaringan Terintegrasi</p>
-                </div>
-                    <div class="login-options">
-                        <button type="button" class="btn btn-voucher" onclick="showInput('voucher')">Voucher</button>
-                        <button type="button" class="btn btn-member" onclick="showInput('member')">Member</button>
-                        <input type="file" id="qris-camera-input" accept="image/*" capture="environment"
-                            style="display: none;" onchange="handleQuickScan(event)">
-
-                        <button type="button" class="btn btn-scan"
-                            onclick="document.getElementById('qris-camera-input').click()">
-                            SCAN QRIS
-                        </button>
-                        <button type="button" class="btn btn-pay" onclick="handleQRIS('pay')">Bayar QRIS</button>
-                    </div>
-                    <form name="login" action="$(link-login-only)" method="post" onsubmit="return doLogin()">
-                        <input type="hidden" name="dst" value="$(link-orig)" />
-                        <input type="hidden" name="popup" value="true" />
-                        <input type="hidden" id="chap-id" value="$(chap-id)">
-                        <input type="hidden" id="chap-challenge" value="$(chap-challenge)">
-                        <div id="input-area" class="input-area">
-                            $(if error)
-                            <div class="bg-danger pd-5 mr-b-10 radius-3 text-center error-text-sm">
-                                $(error)
-                            </div>
-                            $(endif)
-                            <p class="auth-instruction">Silakan pilih metode login di atas.</p>
-                        </div>
-                    </form>
-                    <div class="hidden">
-                        <a id="trial-link"
-                            href="$(link-login-only)?dst=$(link-orig-esc)&amp;username=T-$(mac-esc)">Trial</a>
-                    </div>
-
-                    <div class="footer-text">
-                        &copy; 2024 MatrixSphere Network.
-                    </div>
-                </div>
-            </div>
-        </main>
-        <script type="text/javascript" src="js/md5.js"></script>
-        <script type="text/javascript" src="js/script.js"></script>
-        
+    <div class="grid-options">
+        <button class="btn-tab active" onclick="switchTab('voucher', this)">Voucher</button>
+        <button class="btn-tab" onclick="switchTab('member', this)">Member</button>
+        <button class="btn-tab" onclick="openQR()">Scan QRIS</button>
+        <button class="btn-tab">Bayar QRIS</button>
     </div>
-</body>
 
+    <button class="btn-trial" onclick="switchTab('trial', this)">⚡ COBA GRATIS (TRIAL)</button>
+
+    <form name="login" action="#" method="post">
+        <div id="voucher-form" class="input-group active">
+            <p style="color: #64748b; font-size: 12px;">MASUKKAN KODE VOUCHER</p>
+            <input type="text" name="username" placeholder="KODE . . .">
+            <button class="btn-login">LOGIN SEKARANG &rarr;</button>
+        </div>
+
+        <div id="member-form" class="input-group">
+            <p style="color: #64748b; font-size: 12px;">ID PENGGUNA</p>
+            <input type="text" name="username" placeholder="ID PENGGUNA">
+            <p style="color: #64748b; font-size: 12px;">PASSWORD</p>
+            <input type="password" name="password" placeholder="******">
+            <button class="btn-login">MASUK MEMBER</button>
+        </div>
+
+        <div id="trial-form" class="input-group">
+            <div style="border: 1px solid var(--accent-green); padding: 15px; border-radius: 12px;">
+                <p style="color: var(--accent-green); font-weight: bold;">AKSES TRIAL GRATIS</p>
+                <p style="font-size: 11px;">Nikmati internet 30 menit gratis.</p>
+                <button class="btn-login" style="background: var(--accent-green);">MULAI TRIAL</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="qr-scanner-container">
+    <video id="qr-video" playsinline></video>
+    <button id="close-qr-scanner" onclick="closeQR()">Close Camera</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+    function switchTab(type, el) {
+        // Reset Button States
+        document.querySelectorAll('.btn-tab, .btn-trial').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+
+        // Switch Form
+        document.querySelectorAll('.input-group').forEach(g => g.classList.remove('active'));
+        document.getElementById(type + '-form').classList.add('active');
+    }
+
+    const qrScannerContainer = document.getElementById('qr-scanner-container');
+    const video = document.getElementById('qr-video');
+    let stream;
+
+    function openQR() {
+        qrScannerContainer.style.display = 'flex';
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(s => {
+                stream = s;
+                video.srcObject = stream;
+                video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                video.play();
+                requestAnimationFrame(tick);
+            })
+            .catch(err => {
+                console.error("ERROR: " + err);
+                alert('Could not access camera. Please ensure you have a camera enabled and have granted permission.');
+                closeQR();
+            });
+    }
+
+    function closeQR() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        qrScannerContainer.style.display = 'none';
+    }
+
+    function tick() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        const canvasElement = document.createElement('canvas');
+        const canvas = canvasElement.getContext('2d');
+        canvasElement.height = video.videoHeight;
+        canvasElement.width = video.videoWidth;
+        canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+        const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+        if (code) {
+          // QR code found!
+          console.log("Found QR code", code.data);
+          alert("QR Code Detected: " + code.data);
+          closeQR(); // close the camera view once a code is found
+          // you can now do something with the code.data, like filling a form
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+</script>
+
+</body>
 </html>
