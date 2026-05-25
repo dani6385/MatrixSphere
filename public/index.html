@@ -27,7 +27,7 @@
         <main class="container auth-main">
             <div class="login-card-wrapper">
                 <div class="central-logo">
-                    <img src="img/logo.png" alt="Central Logo">
+                    <img src="img/logo_shop.png" alt="Central Logo">
                 </div>
 
                 <div class="title-section">
@@ -36,22 +36,22 @@
                 </div>
 
                 <div class="login-options">
-                    <button type="button" class="option-btn active" onclick="showInput('voucher')">
+                    <button type="button" class="option-btn active" data-type="voucher">
                         <i class="fas fa-ticket-alt"></i> VOUCHER
                     </button>
-                    <button type="button" class="option-btn" onclick="showInput('member')">
+                    <button type="button" class="option-btn" data-type="member">
                         <i class="fas fa-user"></i> MEMBER
                     </button>
-                    <button type="button" class="option-btn" onclick="showInput('scan')">
+                    <button type="button" class="option-btn" data-type="scan">
                         <i class="fas fa-qrcode"></i> SCAN QRIS
                     </button>
-                    <button type="button" class="option-btn" onclick="showInput('pay')">
+                    <button type="button" class="option-btn" data-type="pay">
                         <i class="fas fa-credit-card"></i> BAYAR QRIS
                     </button>
                 </div>
 
                 <div class="trial-option">
-                    <button type="button" class="trial-btn" onclick="showInput('trial')">
+                    <button type="button" class="trial-btn" data-type="trial">
                         <i class="fas fa-bolt"></i> COBA GRATIS (TRIAL)
                     </button>
                 </div>
