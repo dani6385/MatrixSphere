@@ -43,10 +43,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./web-redirect
 
+      # PERBAIKAN: Menghapus 'rm -rf android' agar kunci signature aplikasi tetap sama
       - name: Initialize Capacitor Android Platform
         run: |
-          rm -rf android
-          npx cap add android
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
           npx cap sync android
 
       - name: Setup Java JDK 21
