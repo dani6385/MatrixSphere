@@ -24,34 +24,28 @@ jobs:
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/android
 
-      # --- LANGKAH 1: KITA BUAT FOLDER DIST SECARA AMAN DENGAN MENYALIN ASET STATIS ---
-      # Diganti dari 'npm run build' agar tidak error, file public disalin untuk dibungkus Capacitor ke APK
-       Sirkuit Build Web Project for Capacitor
+      # --- LANGKAH 1: AMANKAN ASSET UNTUK APK ---
+      # Kita buat folder dist dan langsung salin folder public proyek Anda ke sana tanpa if/else
       - name: Build Web Project for Capacitor
         run: |
           mkdir -p dist
-          if [ -d "public" ]; then
-            cp -r public/* dist/
-          else
-            echo '<html><body>MatrixSphere App Ready</body></html>' > dist/index.html
-          fi
+          cp -r public/* dist/
 
-      # --- LANGKAH 2: BUAT FOLDER TERPISAH KHUSUS UNTUK GITHUB PAGES ---
-      # Menyisipkan variabel window.location.search dengan benar agar parameter IP & MAC dari MikroTik tidak hilang saat di-redirect
+      # --- LANGKAH 2: BUAT FOLDER REDIRECT GITHUB PAGES ---
+      # Membuat file index.html pengalihan menggunakan javascript murni yang aman
       - name: Create Web Redirect Directory
         run: |
           mkdir -p web-redirect
           echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MatrixSphere - Redirecting</title></head><body><p style="text-align:center;margin-top:50px;font-family:sans-serif;">Menghubungkan ke MatrixSphere Shop...</p><script>window.location.href="https://matrixsphere-shop.web.app/" + window.location.search;</script></body></html>' > web-redirect/index.html
 
-      # Kirim folder 'web-redirect' ke GitHub Pages (Bukan folder 'dist')
+      # Kirim halaman pengalihan ke GitHub Pages
       - name: Deploy Redirect to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./web-redirect
 
-      # --- LANGKAH 3: PROSES PEMBUATAN APK SEPERTI BIASA ---
-      # Menghapus folder android lama dan membuat ulang secara bersih berdasarkan folder 'dist' yang aman di atas
+      # --- LANGKAH 3: KOMPILASI ANDROID DARI NOL ---
       - name: Initialize Capacitor Android Platform
         run: |
           rm -rf android
