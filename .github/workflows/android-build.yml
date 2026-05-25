@@ -6,7 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-# ⬇️ TAMBAHAN WAJIB: MEMBERI IZIN ACTIONS UNTUK DEPLOY KE GITHUB PAGES ⬇️
 permissions:
   contents: write
 
@@ -28,31 +27,27 @@ jobs:
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/android
 
-      # --- DUNIA 1: AMANKAN ASSET UNTUK APK ANDROID ---
       - name: Build Web Project for Capacitor
         run: |
           mkdir -p dist
           cp -r public/* dist/
 
-      # --- DUNIA 2: BUAT HALAMAN RE-DIRECT UNTUK GITHUB PAGES ---
       - name: Create Web Redirect Directory
         run: |
           mkdir -p web-redirect
           echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MatrixSphere - Redirecting</title></head><body><p style="text-align:center;margin-top:50px;font-family:sans-serif;">Menghubungkan ke MatrixSphere Shop...</p><script>window.location.href="https://matrixsphere-shop.web.app/" + window.location.search;</script></body></html>' > web-redirect/index.html
 
-      # Kirim halaman pengalihan ke GitHub Pages secara aman
       - name: Deploy Redirect to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./web-redirect
 
-      # --- PROSES GENERATE & KOMPILASI APK ---
       - name: Initialize Capacitor Android Platform
         run: |
           rm -rf android
           npx cap add android
-          npx cap sync android [cite: 5]
+          npx cap sync android
 
       - name: Setup Java JDK 21
         uses: actions/setup-java@v4
@@ -62,9 +57,9 @@ jobs:
 
       - name: Build Debug Android APK
         run: |
-          cd android [cite: 6]
+          cd android
           chmod +x gradlew
-          ./gradlew assembleDebug [cite: 6]
+          ./gradlew assembleDebug
 
       - name: Upload Finished APK Artifact
         uses: actions/upload-artifact@v4
