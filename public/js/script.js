@@ -2,32 +2,37 @@ document.addEventListener('DOMContentLoaded', function () {
     // Setel status awal ke 'voucher'
     showInput('voucher');
 
-    const optionBtns = document.querySelectorAll('.option-btn');
-    optionBtns.forEach(btn => {
+    const allButtons = document.querySelectorAll('[data-type]');
+    allButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const type = e.currentTarget.getAttribute('onclick').match(/'(.*?)'/)[1];
+            const type = e.currentTarget.dataset.type;
 
-            // Hentikan pemindaian kamera jika beralih ke tab lain
+            // Hentikan pemindaian kamera jika beralih tab
             if (window.localStream) {
                 window.localStream.getTracks().forEach(track => track.stop());
             }
-            
-            optionBtns.forEach(innerBtn => innerBtn.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-            
+
+            // Kelola status aktif untuk tombol opsi
+            if (e.currentTarget.classList.contains('option-btn')) {
+                document.querySelectorAll('.option-btn').forEach(innerBtn => innerBtn.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                document.querySelector('.trial-btn').classList.remove('active');
+            }
+
+            // Kelola status aktif untuk tombol trial
+            if (e.currentTarget.classList.contains('trial-btn')) {
+                document.querySelectorAll('.option-btn').forEach(innerBtn => innerBtn.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+            }
+
             showInput(type);
         });
     });
 });
 
+
 function showInput(type) {
     const inputArea = document.getElementById('input-area');
-    const trialBtn = document.querySelector('.trial-btn');
-
-    if (type !== 'trial') {
-        trialBtn.classList.remove('active');
-    }
-
     let content = '';
 
     switch (type) {
@@ -65,12 +70,12 @@ function showInput(type) {
         case 'scan':
             content = `
                 <div id="qr-scanner-container" class="qr-scanner-container">
-                    <video id="qr-video" playsinline></video>
+                    <video id="qr-video" playsinline style="display:none;"></video>
                     <div id="qr-status-message" class="qr-status-message"></div>
                     <input type="file" id="qr-file-input" accept="image/*" style="display: none;">
                     <div class="qr-controls">
-                        <button type="button" id="upload-qr-btn" class="control-btn">Unggah Gambar</button>
-                        <button type="button" id="switch-camera-btn" class="control-btn">Ganti Kamera</button>
+                        <button type="button" id="upload-qr-btn" class="control-btn" style="display:none;">Unggah Gambar</button>
+                        <button type="button" id="switch-camera-btn" class="control-btn" style="display:none;">Ganti Kamera</button>
                      </div>
                 </div>
             `;
@@ -93,19 +98,28 @@ function showInput(type) {
 }
 
 async function initializeQrScanner() {
-    const video = document.getElementById('qr-video');
     const statusMessage = document.getElementById('qr-status-message');
     const uploadBtn = document.getElementById('upload-qr-btn');
-    const fileInput = document.getElementById('qr-file-input');
     const switchCameraBtn = document.getElementById('switch-camera-btn');
+    const video = document.getElementById('qr-video');
 
+    // Periksa koneksi aman (HTTPS)
+    if (window.isSecureContext === false) {
+        statusMessage.innerHTML = 'Akses kamera memerlukan koneksi aman (HTTPS).<br>Silakan unggah gambar QR.';
+        uploadBtn.style.display = 'block';
+        document.getElementById('qr-file-input').addEventListener('change', handleFileSelect);
+        uploadBtn.addEventListener('click', () => document.getElementById('qr-file-input').click());
+        return;
+    }
+
+    // Lanjutkan dengan logika kamera jika koneksi aman
+    const fileInput = document.getElementById('qr-file-input');
     uploadBtn.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', handleFileSelect);
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         statusMessage.textContent = 'Kamera tidak didukung oleh browser Anda.';
         uploadBtn.style.display = 'block';
-        switchCameraBtn.style.display = 'none';
         return;
     }
 
@@ -114,9 +128,11 @@ async function initializeQrScanner() {
         const videoDevices = devices.filter(device => device.kind === 'videoinput');
         
         if (videoDevices.length === 0) {
-            throw new Error('No camera found');
+            throw new Error('Tidak ada kamera yang ditemukan');
         }
 
+        video.style.display = 'block';
+        uploadBtn.style.display = 'block';
         let currentDeviceId = videoDevices[0].deviceId;
         switchCameraBtn.style.display = videoDevices.length > 1 ? 'block' : 'none';
         let deviceIndex = 0;
@@ -142,17 +158,9 @@ async function startStream(deviceId) {
         window.localStream.getTracks().forEach(track => track.stop());
     }
 
-    const constraints = {
-        video: { 
-            deviceId: { exact: deviceId },
-            width: { ideal: 400 },
-            height: { ideal: 400 }
-        }
-    };
-
+    const constraints = { video: { deviceId: { exact: deviceId } } };
     const video = document.getElementById('qr-video');
     const statusMessage = document.getElementById('qr-status-message');
-    video.style.display = 'block';
     statusMessage.textContent = 'Arahkan kamera ke QR code...';
 
     try {
@@ -162,13 +170,12 @@ async function startStream(deviceId) {
         await video.play();
         requestAnimationFrame(tick);
     } catch (err) {
-        console.error("Error starting stream:", err);
-        statusMessage.textContent = 'Gagal memulai kamera.';
+        statusMessage.textContent = 'Gagal memulai kamera. Coba ganti kamera atau unggah gambar.';
     }
 }
 
 function tick() {
-    if (!window.localStream) return;
+    if (!window.localStream || !window.localStream.active) return;
 
     const video = document.getElementById('qr-video');
     const canvas = document.createElement('canvas');
@@ -220,18 +227,12 @@ function handleQrCode(data) {
     if (window.localStream) {
         window.localStream.getTracks().forEach(track => track.stop());
     }
-    // Pindahkan ke tab voucher
-    const voucherBtn = document.querySelector("button[onclick*='voucher']");
-    if(voucherBtn) {
-        voucherBtn.click();
-    }
+    document.querySelector("button[data-type='voucher']").click();
 
-    // Tunda pengisian input untuk memastikan DOM telah diperbarui
     setTimeout(() => {
         const voucherInput = document.getElementById('voucher-code');
         if (voucherInput) {
             voucherInput.value = data;
-            // Memicu event input agar password juga terisi jika ada logika terkait
             voucherInput.dispatchEvent(new Event('input')); 
         }
     }, 100);
