@@ -8,3 +8,4 @@ Previews should run automatically when starting a workspace. Run the `Show Web P
 git add .
 git commit -m "Update: finalize structural changes and firebase config"
 git push origin main
+./deploy
