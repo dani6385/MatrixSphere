@@ -1,4 +1,4 @@
-name: Build Android APK (Capacitor) & Deploy Web Redirect
+name: MatrixSphere App Build
 
 on:
   push:
@@ -60,14 +60,32 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
+      # ==================== FITUR AUTO INCREMENT VERSION (DITARUH DI SINI) ====================
+      - name: Set Version Code and Name
+        run: |
+          # Menggunakan nomor build GitHub sebagai Version Code (harus angka)
+          # Menggunakan format 1.0.BUILD_NUMBER sebagai Version Name
+          VERSION_CODE=${{ github.run_number }}
+          VERSION_NAME="1.0.${{ github.run_number }}"
+          
+          # Mengganti nilai di build.gradle secara otomatis sebelum dirakit
+          sed -i "s/versionCode [0-9]*/versionCode $VERSION_CODE/" android/app/build.gradle
+          sed -i "s/versionName \".*\"/versionName \"$VERSION_NAME\"/" android/app/build.gradle
+          
+          echo "Membangun Aplikasi dengan Versi: $VERSION_NAME ($VERSION_CODE)"
+      # =========================================================================================
+
       - name: Build Debug Android APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
+          cd app/build/outputs/apk/debug/
+          mv app-debug.apk MatrixSphere.apk
+
       - name: Upload Finished APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MatrixSphere-Shop-Debug-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: MatrixSphere-APK-v1.0.${{ github.run_number }}
+          path: android/app/build/outputs/apk/debug/MatrixSphere.apk
