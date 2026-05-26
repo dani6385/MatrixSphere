@@ -3,8 +3,11 @@
   "appName": "MatrixSphere Shop",
   "webDir": "dist",
   "plugins": {
-    "App": {
-      "appLaunchUrl": "matrixsphere://login"
+    "Assets": {
+      "inputs": {
+        "icon": "assets/icon-adaptive.png",
+        "splash": "assets/splash.png"
+      }
     }
   }
 }
