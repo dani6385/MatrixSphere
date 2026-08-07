@@ -1,50 +1,65 @@
-// lib/screens/management/components/management_drawer.dart
+// lib/navigation/widgets/app_Management_drawer.dart
 
 import 'package:flutter/material.dart';
-import 'items/management_drawer_items.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_ui/shared_ui.dart';
+import 'items/management_drawer_items.dart'; // Impor data menu yang sudah dipecah
 
 class ManagementDrawer extends StatelessWidget {
   const ManagementDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Mendapatkan rute saat ini untuk menyorot item yang aktif
-    final String currentRoute = ModalRoute.of(context)?.settings.name ?? '';
-    final List<DrawerItemData> drawerItems = getDrawerItems(context, currentRoute);
+    // Mendapatkan rute aktif saat ini
+    final String currentRoute = GoRouterState.of(context).uri.toString();
+    
+    // Mengambil daftar item menu dari fungsi terpisah
+    final menuList = getDrawerItems(context, currentRoute);
 
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+    return SideMenu(
+      header: const DrawerHeader(
+        decoration: BoxDecoration(
+          color: Colors.blue,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment
+              .start, // Mengatur posisi teks & ikon ke sebelah kiri
+          mainAxisAlignment: MainAxisAlignment
+              .center, // Memposisikan konten agar berada di tengah secara vertikal
+          children: [
+            // 1. Menambahkan Icon di dalam DrawerHeader
+            Icon(
+              Icons
+                  .dashboard_customize, // Kamu bisa mengganti ikon ini sesuai kebutuhan (misal: Icons.account_circle)
+              size: 48, // Ukuran ikon
+              color: Colors
+                  .white, // Warna ikon agar kontras dengan latar belakang biru
             ),
-            child: Text(
-              'Menu Manajemen',
+            SizedBox(height: 12), // Jarak antara ikon dan teks
+            // 2. Menambahkan Text dengan TextStyle/AppStyle
+            Text(
+              'Menu',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Colors.white,
                 fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-          ...drawerItems.map((item) {
-            final bool isSelected = item.route.isNotEmpty && item.route == currentRoute;
-            return ListTile(
-              leading: Icon(item.icon),
-              title: Text(item.title),
-              selected: isSelected,
-              selectedTileColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              onTap: () {
-                // Tutup drawer terlebih dahulu
-                Navigator.pop(context);
-                // Jalankan aksi onTap jika ada
-                item.onTap?.call();
-              },
-            );
-          }).toList(),
-        ],
+          ],
+        ),
       ),
+      // Melakukan mapping data ke SideMenuItem secara dinamis dan bersih
+      items: menuList.map((item) {
+        return SideMenuItem(
+          title: item.title,
+          icon: item.icon,
+          route: item.route,
+          isSelected: item.route.isNotEmpty && currentRoute == item.route,
+          onTap: item.onTap ?? () {},
+        );
+      }).toList(),
+      selectedRoute: '',
+      children: null,
     );
   }
 }
