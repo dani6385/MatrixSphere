@@ -108,7 +108,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Text(product.name, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
-              'Rp ${product.price.toStringAsFixed(2)}',
+              'Rp ${product.unitPrice.toStringAsFixed(2)}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,

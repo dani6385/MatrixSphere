@@ -64,7 +64,7 @@ class _InventoryItemCardState extends State<InventoryItemCard> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Harga: Rp ${widget.product.price}',
+                    'Harga: Rp ${widget.product.sellingPrice}',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 8),

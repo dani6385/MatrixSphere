@@ -94,7 +94,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           final product = _products[index];
           return ListTile(
             title: Text(product.name),
-            trailing: Text('Rp ${product.price}'),
+            trailing: Text('Rp ${product.sellingPrice}'),
           );
         },
       ),

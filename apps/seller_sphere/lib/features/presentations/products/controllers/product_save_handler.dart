@@ -44,7 +44,7 @@ class ProductSaveHandler {
         id: isEditMode ? productId! : '',
         name: nameController.text,
         description: descriptionController.text,
-        price: priceValue,
+        unitPrice: priceValue,
         sku: skuController.text.isNotEmpty ? skuController.text : null,
         imageUrl: imageUrl,
         category: '',
@@ -52,7 +52,7 @@ class ProductSaveHandler {
         sellingPrice: priceValue,
         purchasePrice: 0.0,
         stock: 0,
-        shopId: '',
+        
       );
 
       try {

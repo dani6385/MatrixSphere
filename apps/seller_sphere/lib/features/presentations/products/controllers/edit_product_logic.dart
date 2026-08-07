@@ -42,7 +42,7 @@ class EditProductLogic {
         product = fetchedProduct;
         nameController.text = fetchedProduct.name;
         descriptionController.text = fetchedProduct.description;
-        priceController.text = fetchedProduct.price.toString();
+        priceController.text = fetchedProduct.unitPrice.toString();
         stockController.text = fetchedProduct.stock.toString();
         skuController.text = fetchedProduct.sku ?? '';
         isLoading = false;
@@ -60,7 +60,7 @@ class EditProductLogic {
       final updatedProduct = product!.copyWith(
         name: nameController.text,
         description: descriptionController.text,
-        price: double.tryParse(priceController.text) ?? product!.price,
+        unitPrice: double.tryParse(priceController.text) ?? product!.unitPrice,
         stock: int.tryParse(stockController.text) ?? product!.stock,
         sku: skuController.text,
       );
