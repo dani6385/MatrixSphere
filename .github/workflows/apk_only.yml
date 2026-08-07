@@ -108,7 +108,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ steps.vars.outputs.dir }}
-          flutter build apk --release --split-per-abi
+          flutter build apk --Release
       - name: Get Commit Message
         id: get_commit
         run: |
