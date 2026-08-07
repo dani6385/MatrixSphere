@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'components/transaction_history_body.dart';
 
 /// Layar untuk menampilkan riwayat transaksi.
 class TransactionHistoryScreen extends StatelessWidget {
@@ -11,7 +10,9 @@ class TransactionHistoryScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Riwayat Transaksi'),
       ),
-      body: const TransactionHistorybody(),
+      body: const Center(
+        child: Text('Daftar riwayat transaksi akan ditampilkan di sini.'),
+      ),
     );
   }
 }
