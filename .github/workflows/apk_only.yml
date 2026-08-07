@@ -102,14 +102,13 @@ jobs:
         shell: bash
         run: |
           cd ${{ steps.vars.outputs.dir }}
-          # flutter clean
           flutter pub get
-
+# ditambahkannya --split-per-abi
       - name: Build APK Release
         shell: bash
         run: |
           cd ${{ steps.vars.outputs.dir }}
-          flutter build apk --release
+          flutter build apk --release --split-per-abi
       - name: Get Commit Message
         id: get_commit
         run: |
