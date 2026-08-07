@@ -15,7 +15,7 @@ export 'package:seller_sphere/features/presentations/security/Security.dart';
 export 'package:seller_sphere/features/presentations/settings/setting_screen.dart';
 export 'package:seller_sphere/features/presentations/shopes/shopes_screen.dart';
 export 'package:seller_sphere/features/presentations/status/status_screen.dart';
-export 'package:seller_sphere/features/presentations/transactions/transaction_history_screen.dart';
+//export 'package:seller_sphere/features/presentations/transactions/transaction_history_screen.dart';
 //export 'package:seller_sphere/features/presentations/inventories/controllers/inventory_logic.dart';
 
 export 'package:seller_sphere/features/presentations/help/help_screen.dart';
