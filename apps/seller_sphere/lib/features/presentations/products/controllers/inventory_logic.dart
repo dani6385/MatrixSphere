@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart'; // For Product and ProductService
+import 'package:logger/logger.dart';
+
+final Logger _logger = Logger();
+
 
 class InventoryLogic {
   final ProductService _productService = ProductService();
@@ -62,7 +66,7 @@ class InventoryLogic {
                       Navigator.of(dialogContext).pop(true); // Return true if successful
                     }
                   } catch (e) {
-                    print('Error updating stock: $e');
+                    _logger.i('Error updating stock: $e');
                     if (dialogContext.mounted) {
                       ScaffoldMessenger.of(dialogContext).showSnackBar(
                         SnackBar(content: Text('Gagal memperbarui stok: $e')),
