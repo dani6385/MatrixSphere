@@ -50,7 +50,7 @@ class AddProductLogic {
       formControllers.nameController.text = product.name;
       formControllers.descriptionComponentText(product.description); // atau .text
       formControllers.descriptionController.text = product.description; 
-      formControllers.priceController.text = product.unitPrice.toString(); // Assuming 'unitPrice' is the correct field name based on common product models
+      formControllers.priceController.text = product.sellingPrice.toString(); // Assuming 'unitPrice' is the correct field name based on common product models
       formControllers.skuController.text = product.sku ?? '';
       existingImageUrl = product.imageUrl;
     }

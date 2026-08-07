@@ -37,7 +37,7 @@ class Product {
       id: id,
       name: map['name'] ?? '',
       description: map['description'] ?? '',
-      unitPrice: (map['unitPrice'] as num?)!.toDouble(),
+      unitPrice: (map['unitPrice'] as num?)?.toDouble() ?? 0.0, // Added null-check and default
       sellingPrice: ((map['sellingPrice'] as num?)?.toDouble() ?? 0.0) > 0.0
           ? (map['sellingPrice'] as num).toDouble()
           : (map['price'] as num?)?.toDouble() ?? 0.0, // Fallback to price if sellingPrice is not present or is 0
@@ -102,6 +102,7 @@ class Product {
       imageUrls: imageUrls ?? this.imageUrls,
       minStockThreshold: minStockThreshold ?? this.minStockThreshold,
       ageRating: ageRating ?? this.ageRating,
+
     );
   }
 }
