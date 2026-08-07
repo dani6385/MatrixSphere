@@ -2,19 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
-import 'package:go_router/go_router.dart';
 //import 'package:seller_sphere/navigations/app_extractor.dart';
 import 'inventory_item_card.dart';
 
 /// Widget untuk menampilkan daftar produk inventaris dalam bentuk ListView.
 class InventoryListView extends StatelessWidget {
   final List<Product> products;
-  final Function(BuildContext context, Product product) onStockManageCallback; // New callback
+  final Function(Product product, int newStock) onStockUpdateCallback; // Changed signature
 
   const InventoryListView({
     super.key,
     required this.products,
-    required this.onStockManageCallback, // Require the callback
+    required this.onStockUpdateCallback,
   });
 
   @override
@@ -53,10 +52,7 @@ class InventoryListView extends StatelessWidget {
         final product = sortedProducts[index];
         return InventoryItemCard(
           product: product,
-          // Menambahkan aksi edit, navigasi ke halaman detail produk
-          onEdit: () => context.push('/products/${product.id}'),
-          // Menambahkan aksi untuk mengelola stok
-          onStockManage: () => onStockManageCallback(context, product), // Use the callback
+          onStockUpdate: onStockUpdateCallback, // Pass the new callback
         );
       },
     );
