@@ -10,7 +10,7 @@ class PublicProductList extends StatelessWidget {
   const PublicProductList({
     super.key,
     required this.productsStream,
-    required ProductService productService,
+    
   });
 
   @override
