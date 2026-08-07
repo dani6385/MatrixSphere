@@ -132,7 +132,7 @@ jobs:
           APK_PATH=$(find ${{ steps.vars.outputs.dir }} -name "app-release.apk")
         echo "Looking for APK at: $APK_PATH"
           if [ ! -f "$APK_PATH" ]; then
-            echo "Error APK file not found!"
+            echo "Error: APK file not found!"
             exit 1
           fi
           npx firebase-tools appdistribution:distribute "$APK_PATH" \
