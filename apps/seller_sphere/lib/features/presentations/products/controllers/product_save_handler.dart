@@ -42,6 +42,7 @@ class ProductSaveHandler {
 
       final product = Product(
         id: isEditMode ? productId! : '',
+        shopId: 'toko_agan',
         name: nameController.text,
         description: descriptionController.text,
         unitPrice: priceValue,
