@@ -1,13 +1,13 @@
-// lib/features/presentations/transactions/transaction_model.dart
+// lib/features/presentations/Historys/History_model.dart
 
 /// Model sederhana untuk merepresentasikan data transaksi.
-class Transaction {
+class History {
   final String id;
   final DateTime date;
   final double amount;
   final String status;
 
-  Transaction({
+  History({
     required this.id,
     required this.date,
     required this.amount,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 /// Layar untuk menampilkan riwayat transaksi.
-class TransactionHistoryScreen extends StatelessWidget {
-  const TransactionHistoryScreen({super.key});
+class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
