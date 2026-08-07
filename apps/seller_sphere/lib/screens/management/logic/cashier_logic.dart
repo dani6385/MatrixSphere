@@ -1,36 +1,34 @@
+
 // lib/screens/management/cashier_logic.dart
 
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
 import '../widgets/cashier_sort_dropdown.dart';
+import 'cashier_cart_logic.dart';
 
 class CashierLogic {
   final ProductService _productService = ProductService();
+  
+  // Menggabungkan logika keranjang
+  final CashierCartLogic cartLogic = CashierCartLogic();
 
-  // State data
-  final List<CartItem> cartItems = [];
   List<Product> allProducts = [];
   List<Product> filteredProducts = [];
   ProductSortOption currentSortOption = ProductSortOption.none;
   final TextEditingController searchController = TextEditingController();
 
-  // Getter total amount
-  double get totalAmount => cartItems.fold(
-      0, (sum, item) => sum + (item.product.sellingPrice * item.quantity));
-// lib/screens/management/logic/cashier_logic.dart
+  // Getter delegasi untuk mempermudah akses dari UI
+  List get cartItems => cartLogic.cartItems;
+  double get totalAmount => cartLogic.totalAmount;
+  double get cashPaid => cartLogic.cashPaid;
+  double get changeAmount => cartLogic.changeAmount;
+  bool get isCashValid => cartLogic.isCashValid;
 
-// Tambahkan variabel di dalam kelas CashierLogic:
-  double cashPaid = 0.0;
-  double get changeAmount =>
-      cashPaid > totalAmount ? cashPaid - totalAmount : 0.0;
-  bool get isCashValid => cashPaid >= totalAmount;
+  void updateCashPaid(String value) => cartLogic.updateCashPaid(value);
+  String? addProductToCart(Product product) => cartLogic.addProductToCart(product);
+  String? updateQuantity(int index, int newQuantity) => cartLogic.updateQuantity(index, newQuantity);
+  void removeItem(int index) => cartLogic.removeItem(index);
 
-// Fungsi untuk memperbarui jumlah uang tunai yang dimasukkan
-  void updateCashPaid(String value) {
-    cashPaid = double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0.0;
-  }
-
-  // Inisialisasi data produk & listener pencarian
   Future<void> init(VoidCallback onUpdate) async {
     await fetchProducts(onUpdate);
     searchController.addListener(onUpdate);
@@ -45,32 +43,6 @@ class CashierLogic {
     allProducts = products;
     applyFilterAndSort();
     onUpdate();
-  }
-
-  String? addProductToCart(Product product) {
-    if (product.stock <= 0) {
-      return 'Stok ${product.name} habis!';
-    }
-    final index = cartItems.indexWhere((item) => item.product.id == product.id);
-    if (index != -1 && cartItems[index].quantity < product.stock) {
-      cartItems[index].quantity++;
-    } else if (index == -1) {
-      cartItems.add(CartItem(product: product, quantity: 1));
-    }
-    return null;
-  }
-
-  String? updateQuantity(int index, int newQuantity) {
-    final product = cartItems[index].product;
-    if (newQuantity > product.stock) {
-      return 'Stok ${product.name} tidak mencukupi.';
-    }
-    cartItems[index].quantity = newQuantity;
-    return null;
-  }
-
-  void removeItem(int index) {
-    cartItems.removeAt(index);
   }
 
   void applyFilterAndSort() {
@@ -88,12 +60,10 @@ class CashierLogic {
         filteredProducts.sort((a, b) => b.soldCount.compareTo(a.soldCount));
         break;
       case ProductSortOption.priceLowToHigh:
-        filteredProducts
-            .sort((a, b) => a.sellingPrice.compareTo(b.sellingPrice));
+        filteredProducts.sort((a, b) => a.sellingPrice.compareTo(b.sellingPrice));
         break;
       case ProductSortOption.priceHighToLow:
-        filteredProducts
-            .sort((a, b) => b.sellingPrice.compareTo(a.sellingPrice));
+        filteredProducts.sort((a, b) => b.sellingPrice.compareTo(a.sellingPrice));
         break;
       case ProductSortOption.nameAsc:
         filteredProducts.sort((a, b) => a.name.compareTo(b.name));
@@ -112,19 +82,18 @@ class CashierLogic {
     }
   }
 
-  // Eksekusi Transaksi Pembayaran
   Future<Map<String, dynamic>> executeTransaction(String paymentMethod) async {
-    if (cartItems.isEmpty) {
+    if (cartLogic.cartItems.isEmpty) {
       return {'success': false, 'message': 'Keranjang masih kosong!'};
     }
 
     final newOrder = Order(
       id: '',
       orderDate: DateTime.now(),
-      totalAmount: totalAmount,
+      totalAmount: cartLogic.totalAmount,
       paymentMethod: paymentMethod,
       status: OrderStatus.completed,
-      items: cartItems
+      items: cartLogic.cartItems
           .map((cartItem) => OrderItem(
                 productId: cartItem.product.id,
                 productName: cartItem.product.name,
@@ -142,13 +111,13 @@ class CashierLogic {
     bool success = false;
 
     if (newOrderId != null) {
-      success = await _productService.updateStockForOrder(cartItems);
+      success = await _productService.updateStockForOrder(cartLogic.cartItems.cast<CartItem>());
     }
 
     if (success) {
-      cartItems.clear();
+      cartLogic.clearCart();
     }
 
-    return {'success': success, 'total': totalAmount};
+    return {'success': success, 'total': cartLogic.totalAmount};
   }
 }

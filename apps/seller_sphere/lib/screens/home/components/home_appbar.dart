@@ -71,8 +71,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               const SnackBar(content: Text('Navigasi ke halaman Bahasa.')),
             );
             Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(
-                  builder: (context) => const ChatScreen()),
+              MaterialPageRoute(builder: (context) => const ChatScreen()),
             );
           },
         ),
@@ -82,12 +81,13 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             color: colorScheme.onSurface,
           ),
           onPressed: () {
-            logger.i('Ikon Chart diklik!');
+            logger
+                .i('Ikon Chart diklik! Navigasi ke Halaman Manajemen (Kasir).');
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Navigasi ke Keranjang.')),
+              const SnackBar(content: Text('Membuka halaman kasir...')),
             );
             Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(builder: (context) => const CashierBody()),
+              MaterialPageRoute(builder: (context) => const ManagementScreen()),
             );
           },
         ),

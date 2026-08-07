@@ -1,6 +1,7 @@
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:seller_sphere/screens/management/logic/cashier_logic.dart';
 import 'package:shared_services/shared_services.dart';
 
 
@@ -17,16 +18,19 @@ class ManagementBody extends StatefulWidget {
 class _ManagementBodyState extends State<ManagementBody>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late CashierLogic _cashierLogic;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _cashierLogic = CashierLogic(); // Initialize CashierLogic
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _cashierLogic.dispose(); // Dispose CashierLogic
     super.dispose();
   }
 
@@ -46,7 +50,12 @@ class _ManagementBodyState extends State<ManagementBody>
             controller: _tabController,
             children: [
               _buildOrderList(),
-              const CashierBody(),
+              CashierBody(
+                cashierLogic: _cashierLogic, // Pass the initialized CashierLogic instance
+                onStateChanged: () {
+                  setState(() {}); // Trigger a rebuild of the parent widget to reflect changes
+                },
+              ),
             ],
           ),
         ),
