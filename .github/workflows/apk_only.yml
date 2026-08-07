@@ -102,7 +102,7 @@ jobs:
         shell: bash
         run: |
           cd ${{ steps.vars.outputs.dir }}
-          flutter clean
+          # flutter clean
           flutter pub get
 
       - name: Build APK Release
