@@ -5,6 +5,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:seller_sphere/screens/management/management_screen.dart';
 //import 'package:matrix_sphere/navigations/app_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
@@ -69,7 +70,7 @@ class _MatrixSphereState extends State<MatrixSphere> {
       child: Builder(
         builder: (context) {
           // Add return statement here
-          return MaterialApp.router(
+          return MaterialApp(
             title: 'Matrix Sphere',
             debugShowCheckedModeBanner: false,
             // --- KONFIGURASI TEMA ---
@@ -84,6 +85,7 @@ class _MatrixSphereState extends State<MatrixSphere> {
 
             // Konfigurasi router dari GoRouter
             
+            home: ManagementScreen(),
           );
         },
       ),
