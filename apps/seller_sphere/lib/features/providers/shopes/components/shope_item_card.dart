@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //import '../providers/shopes_viewmodel.dart';
 import 'package:seller_sphere/features/domain/entities/user.dart'; // Menggunakan model User dari domain entities
-import 'package:seller_sphere/features/presentations/shopes/shope_detail_screen.dart';
+import 'package:seller_sphere/features/providers/shopes/shope_detail_screen.dart';
 
 /// Kartu untuk menampilkan satu item pelanggan dalam daftar.
 class ShopeItemCard extends StatelessWidget {

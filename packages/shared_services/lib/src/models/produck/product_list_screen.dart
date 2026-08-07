@@ -51,7 +51,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     });
 
     // Dapatkan key terakhir dari produk yang sudah dimuat
-    final String? lastKey = _products.isEmpty ? null : _products.last.name;
+    final String? lastKey = _products.isEmpty ? null : _products.last.id;
 
     final newProducts = await _rtdbService.fetchProductsPage(
       shopUid: widget.shopUid,

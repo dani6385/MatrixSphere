@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:seller_sphere/features/presentations/shopes/providers/shopes_viewmodel.dart';
+import 'package:seller_sphere/features/providers/shopes/providers/shopes_viewmodel.dart';
 import 'shope_item_card.dart';
 
 /// Komponen body untuk menampilkan daftar pelanggan.

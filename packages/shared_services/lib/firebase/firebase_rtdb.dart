@@ -228,10 +228,9 @@ class FirebaseRtdbService {
     String? startAfterKey,
   }) async {
     final List<Product> products = [];
-    final path = 'seller_sphere/$shopUid/produk';
-
-    // Membuat query dasar: urutkan berdasarkan key (nama produk)
-    Query query = _database.ref(path).orderByKey();
+    // PERBAIKAN: Mengubah path untuk membaca dari node 'products' global
+    // Query sekarang diurutkan berdasarkan 'id' produk, bukan key.
+    Query query = _database.ref('products').orderByKey();
 
     // Jika ini bukan halaman pertama, mulai query SETELAH key terakhir
     if (startAfterKey != null) {
@@ -245,10 +244,9 @@ class FirebaseRtdbService {
       final snapshot = await query.get();
       if (snapshot.exists && snapshot.value is Map) {
         final data = Map<String, dynamic>.from(snapshot.value as Map);
-        data.forEach((productName, productData) {
+        data.forEach((productId, productData) {
           if (productData is Map) {
-            // Use Product.fromMap to correctly parse all fields, including the new soldCount
-            products.add(Product.fromMap(Map<String, dynamic>.from(productData), productName));
+            products.add(Product.fromMap(Map<String, dynamic>.from(productData), productId));
           }
         });
       }
