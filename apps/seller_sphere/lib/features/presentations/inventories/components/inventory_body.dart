@@ -28,9 +28,12 @@ class _InventoryBodyState extends State<InventoryBody> {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const InventoryListView(products: []);
+          return InventoryListView(
+            products: const [],
+            onStockManageCallback: (BuildContext context, Product product) {},
+          );
         }
-        return InventoryListView(products: snapshot.data!);
+        return InventoryListView(products: snapshot.data!, onStockManageCallback: (BuildContext context, Product product) {  },);
       },
     );
   }
