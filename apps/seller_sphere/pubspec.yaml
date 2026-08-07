@@ -1,0 +1,65 @@
+name: seller_sphere
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  curved_navigation_bar: ^1.0.6
+  firebase_core: ^4.12.1
+  firebase_crashlytics: ^5.2.6
+  go_router: ^17.3.0
+  provider: ^6.1.5+1
+  shared_services:
+    path: ../../packages/shared_services
+  shared_ui:
+    path: ../../packages/shared_ui
+  firebase_database: ^12.4.6
+  table_calendar: ^3.2.0
+  camera: ^0.12.0+2
+  logger: ^2.7.0
+  cross_file: ^0.3.5+4
+  intl: ^0.20.3
+  video_player: ^2.13.0
+  rxdart: ^0.28.0
+  permission_handler: ^12.0.3
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.4.0
+  media_info:
+    path: third_party/media_info
+  cached_network_image: ^3.4.1
+  image_picker: ^1.2.3
+  path_provider: ^2.1.6
+  google_nav_bar: ^5.0.7
+  geolocator: ^14.0.3
+  geodesy: ^0.11.0
+  flutter_bloc: ^9.1.1
+  bloc: ^9.2.1
+  equatable: ^2.1.0
+  firebase_auth: ^6.5.6
+  shared_preferences: ^2.5.5
+  http: ^1.2.1
+  image: ^4.2.0
+  auto_route: ^11.1.0
+  cloud_firestore: ^6.7.1
+  apivideo_live_stream: ^1.2.0
+  collection: ^1.19.1
+  url_launcher: ^6.3.2
+  
+  flutter_image_compress: ^2.5.1
+  
+
+
+dev_dependencies:
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
