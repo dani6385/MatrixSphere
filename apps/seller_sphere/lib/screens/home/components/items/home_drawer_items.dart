@@ -126,7 +126,7 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
         logger.i('Menu Riwayat diklik!');
         Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
-            builder: (context) => const ShopesScreen(),// transactionscreen
+            builder: (context) => const HistoryScreen(),// transactionscreen
           ),
         );
       },
