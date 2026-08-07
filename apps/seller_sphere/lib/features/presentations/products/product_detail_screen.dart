@@ -8,7 +8,7 @@ import 'controllers/product_detail_logic.dart'; // Impor file logika baru
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
 
-  const ProductDetailScreen({super.key, required this.productId});
+  const ProductDetailScreen({super.key, required this.productId, required String shopId});
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
