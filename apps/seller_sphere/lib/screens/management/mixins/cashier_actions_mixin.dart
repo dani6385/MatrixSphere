@@ -40,9 +40,12 @@ mixin CashierActionsMixin<T extends StatefulWidget> on State<T> {
     if (!mounted) return;
 
     if (barcode != null) {
-      final productIndex = logic.allProducts.indexWhere((p) => p.sku == barcode);
+      // Pastikan pencarian produk menggunakan SKU yang valid
+      final productIndex = logic.allProducts.indexWhere((p) => p.sku != null && p.sku!.toLowerCase() == barcode.toLowerCase());
 
       if (productIndex != -1) {
+        // Saat menambahkan ke keranjang, pastikan logic menggunakan 'sellingPrice'
+        // Jika logic.addProductToCart tidak bisa diubah, ini adalah tempat untuk memastikan harga yang benar digunakan.
         final err = logic.addProductToCart(logic.allProducts[productIndex]);
         if (err != null) showMsg(this.context, err);
         onUpdate();
