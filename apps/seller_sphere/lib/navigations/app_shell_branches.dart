@@ -1,18 +1,21 @@
 // lib/navigation/app_shell_branches.dart
 
+
 //import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'app_routes.dart';
 import 'custom_transition_page.dart';
-//import 'app_common_routes.dart'; // Mengimpor rute umum
-
+//import 'app_common_routes.dart';
+import 'app_extractor.dart';
 // Kunci navigator untuk setiap cabang/tab.
 // Ini penting agar navigasi ke halaman detail (seperti add/edit product)
 // tetap berada di dalam tab yang sama dan tidak menutupi bottom nav bar.
 final _shellNavigatorHomeKey =
     GlobalKey<NavigatorState>(debugLabel: 'ShellHome');
+final _shellNavigatorSellersKey =
+    GlobalKey<NavigatorState>(debugLabel: 'ShellSellers');
 
 /// Daftar cabang untuk [StatefulShellRoute].
 /// Setiap [StatefulShellBranch] mewakili satu tab pada bottom navigation bar.
@@ -45,28 +48,28 @@ final List<StatefulShellBranch> appShellBranches = [
   ]),
 
   // Branch untuk Tab Sellers (Products)
-  /*StatefulShellBranch(
+  StatefulShellBranch(
     navigatorKey: _shellNavigatorSellersKey,
     routes: [
       GoRoute(
-        path: AppRoutes.sellers,
-        name: AppRoutes.publicProduct,
-        builder: (context, state) => const PublicProductScreen(),
+        path: AppRoutes.product,
+        // name: AppRoutes.publicProduct, // Name is often better on the top-level route for clarity
+        builder: (context, state) => const ProductScreen(),
         routes: [
           GoRoute(
             path: 'add',
-            name: AppRoutes.addProduct,
+            // name: AppRoutes.addProduct,
             builder: (context, state) => const ProductFormScreen(),
           ),
           GoRoute(
               path: 'edit/:productId',
-              name: AppRoutes.editProduct,
+              // name: AppRoutes.editProduct,
               builder: (context, state) => ProductFormScreen(
                   productId: state.pathParameters['productId'])),
         ],
       ),
     ],
-  ),*/
+  ),
 
   // Branch untuk Tab Attendance
   StatefulShellBranch(

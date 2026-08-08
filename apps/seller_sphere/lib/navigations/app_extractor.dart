@@ -30,6 +30,7 @@ export 'package:seller_sphere/screens/sellers/seller_screen.dart';
 export 'package:seller_sphere/screens/financials/financial_screen.dart';
 export 'package:seller_sphere/screens/attendance/attendance_screen.dart';
 
+export 'package:seller_sphere/features/presentations/products/Components/product_form_screen.dart';
 export 'package:seller_sphere/features/presentations/inventories/inventory_screen.dart';
 
 

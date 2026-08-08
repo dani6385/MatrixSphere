@@ -1,4 +1,3 @@
-
 // lib/screens/product_form_screen.dart
 
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ import '../viewmodels/product_view_model.dart';
 class ProductFormScreen extends StatefulWidget {
   final Product? product;
 
-  const ProductFormScreen({super.key, this.product});
+  const ProductFormScreen({super.key, this.product, String? productId});
 
   @override
   State<ProductFormScreen> createState() => _ProductFormScreenState();
@@ -26,8 +25,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.product?.name ?? '');
-    _priceController = TextEditingController(text: widget.product?.price.toString() ?? '');
-    _stockController = TextEditingController(text: widget.product?.stock.toString() ?? '');
+    _priceController =
+        TextEditingController(text: widget.product?.price.toString() ?? '');
+    _stockController =
+        TextEditingController(text: widget.product?.stock.toString() ?? '');
   }
 
   @override
@@ -64,7 +65,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product == null ? 'Tambah Produk Baru' : 'Edit Produk'),
+        title:
+            Text(widget.product == null ? 'Tambah Produk Baru' : 'Edit Produk'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -115,7 +117,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: Text(widget.product == null ? 'Tambah Produk' : 'Simpan Perubahan'),
+                child: Text(widget.product == null
+                    ? 'Tambah Produk'
+                    : 'Simpan Perubahan'),
               ),
             ],
           ),
