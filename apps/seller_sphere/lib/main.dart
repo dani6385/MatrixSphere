@@ -5,10 +5,13 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
 //import 'package:provider/provider.dart';
-import 'package:seller_sphere/navigations/app_router.dart';
+//import 'package:seller_sphere/navigations/app_router.dart';
 //import 'package:go_router/go_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
+
+// hapus seetelah  selesai membuat management menjadi benar
+import 'navigations/app_extractor.dart';
 
 void main() async {
   // 1. Pastikan binding diinisialisasi terlebih dahulu
@@ -65,7 +68,7 @@ class _SellerSphereState extends State<SellerSphere> {
       // akan menangani redirect secara otomatis berdasarkan perubahan state.
       child: Builder(
         builder: (context) {*/
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'Seller Sphere',
       debugShowCheckedModeBanner: false,
       // --- KONFIGURASI TEMA ---
@@ -77,12 +80,11 @@ class _SellerSphereState extends State<SellerSphere> {
 
       // Ini adalah kuncinya: aplikasi akan mengikuti pengaturan sistem
       themeMode: currentThemeMode,
-
+      home: const ManagementScreen(),
       // Konfigurasi router dari GoRouter
-      routerConfig: appRouter, // Menggunakan variabel appRouter langsung
+      //routerConfig: appRouter, // Menggunakan variabel appRouter langsung
     );
     /*},
       ),*/
   }
 }
-
