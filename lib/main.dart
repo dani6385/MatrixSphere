@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:matrix_sphere/scrrens/management_screen.dart';
+import 'package:matrix_sphere/services/product_screen.dart';
 import 'package:matrix_sphere/services/scanner_screen.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -53,6 +54,11 @@ final GoRouter _router = GoRouter(
     ),
     // Rute untuk halaman scanner
     GoRoute(path: '/scan', builder: (context, state) => const ScannerScreen()),
+    // Rute untuk halaman daftar produk
+    GoRoute(
+      path: '/products',
+      builder: (context, state) => const ProductScreen(),
+    ),
   ],
 );
 
