@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 //import 'package:go_router/go_router.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'controllers/add_product_logic.dart'; // Menggunakan logika terpusat
-import 'widgets/product_form_fields.dart';
-import 'widgets/product_image_picker.dart';
-import 'widgets/product_form_actions.dart';
-import 'widgets/image_picker_bottom_sheet.dart';
+import '../controllers/add_product_logic.dart'; // Menggunakan logika terpusat
+import '../widgets/product_form_fields.dart';
+import '../widgets/product_image_picker.dart';
+import '../widgets/product_form_actions.dart';
+import '../widgets/image_picker_bottom_sheet.dart';
 
 /// Halaman gabungan untuk menambah produk baru atau mengedit produk yang sudah ada.
 class ProductFormScreen extends StatefulWidget {

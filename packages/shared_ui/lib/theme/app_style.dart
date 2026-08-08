@@ -117,10 +117,19 @@ class AppStyles {
       textTheme.bodySmall!.copyWith(color: kDarkTextSecondary);
 
   /// Untuk tampilan jam yang besar
-  static TextStyle timeDisplay(TextTheme textTheme) =>
-  textTheme.displaySmall! .copyWith(color: kDarkTextPrimary, fontWeight: FontWeight.bold);
+  static TextStyle timeDisplay(TextTheme textTheme) => textTheme.displaySmall!
+      .copyWith(color: kDarkTextPrimary, fontWeight: FontWeight.bold);
 
   /// Untuk tampilan tanggal di bawah jam
   static TextStyle dateDisplay(TextTheme textTheme) =>
       textTheme.bodyMedium!.copyWith(color: kDarkTextSecondary);
+
+  /// Gaya untuk Elevated Button standar
+  static ButtonStyle get elevatedButtonStyle => ElevatedButton.styleFrom(
+        backgroundColor: kBrandPrimary,
+        foregroundColor: kBrandWhite,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      );
 }

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'controllers/product_detail_logic.dart'; // Impor file logika baru
+import '../controllers/product_detail_logic.dart'; // Impor file logika baru
 
 /// Layar untuk menampilkan detail lengkap dari sebuah produk.
 class ProductDetailScreen extends StatefulWidget {

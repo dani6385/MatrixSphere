@@ -20,20 +20,19 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     final indicatorColor = _getStockIndicatorColor(product.stock);
 
     return Card(
-      color: colorScheme.surface,
+      color: Theme.of(context).cardColor,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: ListTile(
         onTap: onTap, // <-- PASANG AKSI KLIK DI SINI
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        title: Text(product.name, style: textTheme.titleMedium),
+        title: Text(product.name, style: context.textTheme.titleMedium),
         subtitle: Text(
           'ID: ${product.id}',
-          style: textTheme.bodySmall?.copyWith(color: kDarkTextSecondary),
+          style: context.textTheme.bodySmall
+          ?.copyWith(color: kDarkTextSecondary),
         ),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -43,7 +42,7 @@ class ProductCard extends StatelessWidget {
           ),
           child: Text(
             'Stok: ${product.stock}',
-            style: textTheme.bodyMedium?.copyWith(
+            style: context.textTheme.bodySmall?.copyWith(
               color: indicatorColor,
               fontWeight: FontWeight.bold,
             ),
