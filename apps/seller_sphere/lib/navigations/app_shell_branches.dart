@@ -3,9 +3,10 @@
 //import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:seller_sphere/features/presentations/products/product_form_screen.dart';
+import 'package:seller_sphere/features/presentations/products/public_product_screen.dart';
 import 'app_routes.dart';
 import 'custom_transition_page.dart';
-import 'app_extractor.dart';
 //import 'app_common_routes.dart'; // Mengimpor rute umum
 
 // Kunci navigator untuk setiap cabang/tab.
@@ -13,42 +14,16 @@ import 'app_extractor.dart';
 // tetap berada di dalam tab yang sama dan tidak menutupi bottom nav bar.
 final _shellNavigatorHomeKey =
     GlobalKey<NavigatorState>(debugLabel: 'ShellHome');
+final _shellNavigatorSellersKey =
+    GlobalKey<NavigatorState>(debugLabel: 'ShellSellers');
 
 /// Daftar cabang untuk [StatefulShellRoute].
 /// Setiap [StatefulShellBranch] mewakili satu tab pada bottom navigation bar.
 final List<StatefulShellBranch> appShellBranches = [
   // Branch untuk Tab Home
   StatefulShellBranch(
-    navigatorKey:
-        _shellNavigatorHomeKey, // Gunakan navigator key untuk branch ini
-    routes: [
-      GoRoute(
-        path: '/',
-        name: AppRoutes.home,
-        builder: (context, state) => const HomeScreen(),
-        /*routes: [
-          // Sub-rute dari Home
-          GoRoute(
-            path: 'products', // Path relatif: /products
-            name: AppRoutes.publicProduct,
-            builder: (context, state) => const PublicProductScreen(),
-            routes: [
-              // Rute ini sekarang akan menggunakan navigator dari branch Home
-              GoRoute(
-                path: 'add', // Path relatif: /products/add
-                name: AppRoutes.addProduct,
-                builder: (context, state) => const AddProductScreen(),
-              ),
-              GoRoute(
-                path: 'edit', // Path relatif: /products/edit
-                name: AppRoutes.editProduct,
-                builder: (context, state) => const AddProductScreen(),
-              ),
-            ],
-          ),
-        ],*/
-      ),
-    ],
+    navigatorKey: _shellNavigatorHomeKey,
+    routes: [GoRoute(path: '/', builder: (context, state) => const Center())],
   ),
 
   // Branch untuk Tab Stream
@@ -56,53 +31,42 @@ final List<StatefulShellBranch> appShellBranches = [
     routes: [
       GoRoute(
         path: AppRoutes.financial,
-        pageBuilder: (context, state) => FadeTransitionPage(
-            child: const FinancialScreen()),
+        pageBuilder: (context, state) =>
+            FadeTransitionPage(child: const Center()),
         routes: const [],
       ),
     ],
   ),
 
   // Branch untuk Tab Management
-  StatefulShellBranch(
-    routes: [
-      GoRoute(
-        path: AppRoutes.management,
-        pageBuilder: (context, state) =>
-            FadeTransitionPage(child: const ManagementScreen()),
-        /*routes: [
-          // Sub-rute dari Home
-          GoRoute(
-            path: 'products', // Path relatif: /products
-            name: AppRoutes.publicProduct,
-            builder: (context, state) => const PublicProductScreen(),
-            routes: [
-              // Rute ini sekarang akan menggunakan navigator dari branch Home
-              GoRoute(
-                path: 'add', // Path relatif: /products/add
-                name: AppRoutes.addProduct,
-                builder: (context, state) => const AddProductScreen(),
-              ),
-              GoRoute(
-                path: 'edit', // Path relatif: /products/edit
-                name: AppRoutes.editProduct,
-                builder: (context, state) => const AddProductScreen(),
-              ),
-            ],
-          ),
-        ],*/
-      ),
-    ],
-  ),
+  StatefulShellBranch(routes: [
+    GoRoute(
+      path: AppRoutes.management,
+      pageBuilder: (context, state) =>
+          FadeTransitionPage(child: const Center()),
+    )
+  ]),
 
   // Branch untuk Tab Sellers (Products)
   StatefulShellBranch(
+    navigatorKey: _shellNavigatorSellersKey,
     routes: [
       GoRoute(
         path: AppRoutes.sellers,
-        pageBuilder: (context, state) =>
-            FadeTransitionPage(child: const SellerScreen()),
-        //routes: commonDetailRoutes,
+        name: AppRoutes.publicProduct,
+        builder: (context, state) => const PublicProductScreen(),
+        routes: [
+          GoRoute(
+            path: 'add',
+            name: AppRoutes.addProduct,
+            builder: (context, state) => const ProductFormScreen(),
+          ),
+          GoRoute(
+              path: 'edit/:productId',
+              name: AppRoutes.editProduct,
+              builder: (context, state) => ProductFormScreen(
+                  productId: state.pathParameters['productId'])),
+        ],
       ),
     ],
   ),
@@ -112,8 +76,8 @@ final List<StatefulShellBranch> appShellBranches = [
     routes: [
       GoRoute(
         path: AppRoutes.attendance,
-        pageBuilder: (context, state) =>
-            FadeTransitionPage(child: const AttendanceScreen()),
+        pageBuilder: (context, state) => FadeTransitionPage(
+            child: const Center()), // Placeholder, ganti dengan screen Anda
         routes: const [],
       ),
     ],
