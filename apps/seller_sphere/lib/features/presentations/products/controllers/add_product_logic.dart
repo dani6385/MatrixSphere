@@ -19,7 +19,8 @@ class AddProductLogic {
   // Getter singkat untuk mempermudah akses dari UI
   GlobalKey<FormState> get formKey => formControllers.formKey;
   TextEditingController get nameController => formControllers.nameController;
-  TextEditingController get descriptionController => formControllers.descriptionController;
+  TextEditingController get descriptionController =>
+      formControllers.descriptionController;
   TextEditingController get priceController => formControllers.priceController;
   TextEditingController get skuController => formControllers.skuController;
   ValueNotifier<bool> get isLoading => formControllers.isLoading;
@@ -27,7 +28,7 @@ class AddProductLogic {
 
   void initControllers() {
     formControllers.init();
-    mediaHandler.selectedImage.addListener(() {}); 
+    mediaHandler.selectedImage.addListener(() {});
   }
 
   void disposeControllers() {
@@ -36,7 +37,8 @@ class AddProductLogic {
   }
 
   Future<void> scanBarcode(BuildContext context) async {
-    await mediaHandler.scanBarcode(context, formControllers.skuController, formControllers.skuValue);
+    await mediaHandler.scanBarcode(
+        context, formControllers.skuController, formControllers.skuValue);
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -48,9 +50,11 @@ class AddProductLogic {
     final product = await _productService.getProductById(productId);
     if (product != null) {
       formControllers.nameController.text = product.name;
-      formControllers.descriptionComponentText(product.description); // atau .text
-      formControllers.descriptionController.text = product.description; 
-      formControllers.priceController.text = product.sellingPrice.toString(); // Assuming 'unitPrice' is the correct field name based on common product models
+      formControllers
+          .descriptionComponentText(product.description); // atau .text
+      formControllers.descriptionController.text = product.description;
+      formControllers.priceController.text = product.sellingPrice
+          .toString(); // Assuming 'unitPrice' is the correct field name based on common product models
       formControllers.skuController.text = product.sku ?? '';
       existingImageUrl = product.imageUrl;
     }
@@ -74,6 +78,8 @@ class AddProductLogic {
       existingImageUrl: existingImageUrl,
       selectedImageFile: mediaHandler.selectedImage.value,
       isLoading: formControllers.isLoading,
+      purchasePriceController: formControllers.purchasePriceController,
+      itemCountController: formControllers.itemCountController,
     );
   }
 }

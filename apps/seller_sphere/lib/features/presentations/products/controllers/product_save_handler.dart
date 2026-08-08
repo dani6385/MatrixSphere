@@ -23,6 +23,8 @@ class ProductSaveHandler {
     required TextEditingController descriptionController,
     required TextEditingController priceController,
     required TextEditingController skuController,
+    required TextEditingController purchasePriceController,
+    required TextEditingController itemCountController,
     required String? existingImageUrl,
     required XFile? selectedImageFile,
     required ValueNotifier<bool> isLoading,
@@ -41,6 +43,16 @@ class ProductSaveHandler {
       }
 
       final priceValue = double.tryParse(priceController.text) ?? 0.0;
+      final purchasePriceValue =
+          double.tryParse(purchasePriceController.text) ?? 0.0;
+      // Default ke 1 untuk menghindari pembagian dengan nol jika input tidak valid
+      final itemCountValue = int.tryParse(itemCountController.text) ?? 1;
+
+      // Hitung unitPrice (harga modal per item).
+      // Pastikan itemCountValue tidak nol untuk menghindari error pembagian.
+      final unitPriceValue = (itemCountValue > 0)
+          ? purchasePriceValue / itemCountValue
+          : purchasePriceValue;
 
       // Dapatkan shopId dari user yang sedang login.
       final shopId = AuthService().currentUser?.uid ?? '';
@@ -57,8 +69,8 @@ class ProductSaveHandler {
         category: '',
         soldCount: 0,
         sellingPrice: priceValue,
-        purchasePrice: 0.0,
-        stock: 0, unitPrice: 0,
+        purchasePrice: purchasePriceValue,
+        stock: 0, unitPrice: unitPriceValue,
       );
 
       try {
