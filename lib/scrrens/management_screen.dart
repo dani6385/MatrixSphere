@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:matrix_sphere/scrrens/components/management_appbar.dart';
 import 'package:shared_services/shared_services.dart';
 
 import 'package:shared_ui/shared_ui.dart';
@@ -63,9 +64,11 @@ class _ManagementScreenState extends State<ManagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kasir (POS)'),
-        centerTitle: true,
+      drawerEnableOpenDragGesture: false,
+      endDrawerEnableOpenDragGesture: false,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: ManagementAppBarScreen(),
       ),
       body: Column(
         children: [

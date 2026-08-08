@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:matrix_sphere/scrrens/management_screen.dart';
-import 'package:matrix_sphere/scrrens/scanner_screen.dart';
+import 'package:matrix_sphere/services/scanner_screen.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 void main() async {
