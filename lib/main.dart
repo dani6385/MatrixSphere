@@ -5,11 +5,8 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
+//import 'package:matrix_sphere/navigations/app_router.dart';
 import 'package:shared_services/shared_services.dart';
-import 'package:matrix_sphere/scrrens/management_screen.dart';
-import 'package:matrix_sphere/services/product_screen.dart';
-import 'package:matrix_sphere/services/scanner_screen.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 void main() async {
@@ -43,24 +40,6 @@ void main() async {
   // 4. Selalu panggil runApp di luar blok inisialisasi agar layar hitam terhindari
   runApp(const MatrixSphere());
 }
-
-// Konfigurasi router untuk navigasi
-final GoRouter _router = GoRouter(
-  initialLocation: '/',
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const ManagementScreen(),
-    ),
-    // Rute untuk halaman scanner
-    GoRoute(path: '/scan', builder: (context, state) => const ScannerScreen()),
-    // Rute untuk halaman daftar produk
-    GoRoute(
-      path: '/products',
-      builder: (context, state) => const ProductScreen(),
-    ),
-  ],
-);
 
 class MatrixSphere extends StatefulWidget {
   const MatrixSphere({super.key});
@@ -103,8 +82,8 @@ class _MatrixSphereState extends State<MatrixSphere> {
             // Ini adalah kuncinya: aplikasi akan mengikuti pengaturan sistem
             themeMode: ThemeMode.system,
 
-            // Menggunakan konfigurasi router yang telah dibuat
-            routerConfig: _router,
+            // Konfigurasi router dari GoRouter
+            
           );
         },
       ),
