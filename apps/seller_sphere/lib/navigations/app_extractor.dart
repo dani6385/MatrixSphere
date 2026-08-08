@@ -7,9 +7,7 @@ export 'package:seller_sphere/features/services/language/language_screen.dart';
 export 'package:seller_sphere/features/providers/members/member_screen.dart';
 export 'package:seller_sphere/features/notifs/notifications/notification_setting.dart';
 export 'package:seller_sphere/features/services/permissions/permissions_screens.dart';
-export 'package:seller_sphere/features/presentations/products/product_form_screen.dart';
-export 'package:seller_sphere/features/presentations/products/product_detail_screen.dart';
-export 'package:seller_sphere/features/presentations/products/public_product_screen.dart';
+
 export 'package:seller_sphere/features/providers/sales/sales_screen.dart';
 export 'package:seller_sphere/features/services/security/Security.dart';
 export 'package:seller_sphere/features/services/settings/setting_screen.dart';

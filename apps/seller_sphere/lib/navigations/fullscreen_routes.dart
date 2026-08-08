@@ -18,7 +18,7 @@ List<RouteBase> buildFullscreenRoutes(GlobalKey<NavigatorState> rootNavigatorKey
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const OrderScreen(),
     ),
-    GoRoute(
+    /*GoRoute(
       path: AppRoutes.addProduct,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ProductFormScreen(),
@@ -42,6 +42,6 @@ List<RouteBase> buildFullscreenRoutes(GlobalKey<NavigatorState> rootNavigatorKey
         final id = state.pathParameters['productId']!;
         return ProductFormScreen(productId: id);
       },
-    ),
+    ),*/
   ];
 }

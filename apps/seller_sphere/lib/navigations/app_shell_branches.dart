@@ -3,8 +3,7 @@
 //import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:seller_sphere/features/presentations/products/product_form_screen.dart';
-import 'package:seller_sphere/features/presentations/products/public_product_screen.dart';
+
 import 'app_routes.dart';
 import 'custom_transition_page.dart';
 //import 'app_common_routes.dart'; // Mengimpor rute umum
@@ -14,8 +13,6 @@ import 'custom_transition_page.dart';
 // tetap berada di dalam tab yang sama dan tidak menutupi bottom nav bar.
 final _shellNavigatorHomeKey =
     GlobalKey<NavigatorState>(debugLabel: 'ShellHome');
-final _shellNavigatorSellersKey =
-    GlobalKey<NavigatorState>(debugLabel: 'ShellSellers');
 
 /// Daftar cabang untuk [StatefulShellRoute].
 /// Setiap [StatefulShellBranch] mewakili satu tab pada bottom navigation bar.
@@ -48,7 +45,7 @@ final List<StatefulShellBranch> appShellBranches = [
   ]),
 
   // Branch untuk Tab Sellers (Products)
-  StatefulShellBranch(
+  /*StatefulShellBranch(
     navigatorKey: _shellNavigatorSellersKey,
     routes: [
       GoRoute(
@@ -69,7 +66,7 @@ final List<StatefulShellBranch> appShellBranches = [
         ],
       ),
     ],
-  ),
+  ),*/
 
   // Branch untuk Tab Attendance
   StatefulShellBranch(
