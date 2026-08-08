@@ -8,7 +8,7 @@ class AppRoutes {
   //bottom nav bar
   static const String home = '/';
   static const String financial = '/Financial';
-
+  
   static const String management = '/management';
   static const String sellers = '/sellers';
   static const String attendance = '/attendance';
@@ -26,13 +26,13 @@ class AppRoutes {
   static const String status = '/status';
   static const String inventory = '/inventory';
   //static const String editprofile = '/profile/edit';
-  static const String product = '/products';
+  static const String publicProduct = '/products';
   static const String productDetail = '/products/:productId';
   static const String addProduct = '/products/add';
   static const String editProduct = '/products/edit';
 
   static const String settings = '/settings';
-  static const String scanQr = '/scan-qr';
-
+static const String scanQr = '/scan-qr';
+  
 //static const String profile = '/profile';
 }

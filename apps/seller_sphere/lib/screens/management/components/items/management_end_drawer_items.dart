@@ -30,10 +30,10 @@ class EndDrawerItemData {
 List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
   return [
     EndDrawerItemData(
-      title: 'Toko Agan',
+      title: 'Profile / Profil',
       icon: Icons.person,
-      label: 'Melihat dan mengubah informasi profil Toko Agan.',
-      route: AppRoutes.profile, // Pastikan route ini mengarah ke profil toko
+      label: 'Melihat dan mengubah informasi profil akun administrator.',
+      route: AppRoutes.profile,
       onTap: () {
         logger.i('Menu Profile Toko diklik!');
         Navigator.of(context, rootNavigator: true).push(
@@ -42,15 +42,15 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       },
     ),
     EndDrawerItemData(
-      title: 'Kelola Akun Toko',
+      title: 'Account Management / Kelola Akun',
       icon: Icons.manage_accounts,
-      label: 'Mengatur hak akses dan kredensial pengguna untuk Toko Agan.',
+      label: 'Mengatur hak akses dan kredensial pengguna sistem.',
       route: '',
       onTap: () {},
     ),
     EndDrawerItemData(
-      title: 'Manajemen Data Toko',
-      icon: Icons.store,
+      title: 'Data Management / Manajemen Data',
+      icon: Icons.data_usage,
       label:
           'Mengelola basis data, penyimpanan, dan pembersihan cache aplikasi.',
       route: '',
@@ -64,7 +64,7 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       onTap: () {},
     ),
     EndDrawerItemData(
-      title: 'Pengaturan Notifikasi',
+      title: 'Notifications Settings / Pengaturan Notifikasi',
       icon: Icons.notifications_active,
       label:
           'Mengatur preferensi pemberitahuan sistem dan peringatan operasional.',
@@ -98,14 +98,14 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       onTap: () {},
     ),
     EndDrawerItemData(
-      title: 'Pengaturan Sistem Toko',
+      title: 'Settings / Pengaturan Sistem',
       icon: Icons.settings,
       label: 'Mengubah konfigurasi lanjutan dan preferensi aplikasi.',
       route: '',
       onTap: () {
-        logger.i('Menu Pengaturan Sistem diklik!');
+        logger.i('Menu Security / Keamanan diklik!');
         Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const SettingScreen()), // Pastikan SettingScreen ada
+          MaterialPageRoute(builder: (context) => const SettingScreen()),
         );
       },
     ),
