@@ -54,10 +54,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
     final String? lastKey = _products.isEmpty ? null : _products.last.id;
 
     final newProducts = await _rtdbService.fetchProductsPage(
-      
+      // PERBAIKAN: Gunakan shopUid dari widget, bukan string kosong.
+      shopId: widget.shopUid,
       pageSize: _pageSize,
       startAfterKey: lastKey,
-      shopId: '',
     );
 
     setState(() {
