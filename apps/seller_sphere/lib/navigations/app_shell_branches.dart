@@ -54,7 +54,7 @@ final List<StatefulShellBranch> appShellBranches = [
       GoRoute(
         path: AppRoutes.sellers,
         // name: AppRoutes.publicProduct, // Name is often better on the top-level route for clarity
-        builder: (context, state) => const ProductScreen(),
+        builder: (context, state) => const SellerScreen(),
         routes: [
           GoRoute(
             path: AppRoutes.product,
@@ -64,13 +64,13 @@ final List<StatefulShellBranch> appShellBranches = [
               GoRoute(
                 path: '/products/add',
                 // name: AppRoutes.addProduct,
-                builder: (context, state) => const ProductFormScreen(),
+                builder: (context, state) => const ProductScreen(),
               ),
-              GoRoute(
+              /*GoRoute(
                   path: '/products/edit/:productId',
                   // name: AppRoutes.editProduct,
                   builder: (context, state) => ProductFormScreen(
-                      productId: state.pathParameters['productId'])),
+                      productId: state.pathParameters['productId'])),*/
             ],
           ),
         ],
