@@ -18,6 +18,48 @@ class _ProductScreenState extends State<ProductScreen> {
   // Instance dari ProductService untuk berinteraksi dengan database.
   final ProductService _productService = ProductService();
 
+  // Method untuk menghapus produk dengan dialog konfirmasi
+  Future<void> _deleteProduct(Product product) async {
+    // Tampilkan dialog konfirmasi sebelum menghapus
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Hapus'),
+          content: Text('Apakah Anda yakin ingin menghapus produk "${product.name}"?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Hapus', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+            ),
+          ],
+        );
+      },
+    );
+
+    // Jika pengguna menekan "Hapus" pada dialog
+    if (confirmed == true) {
+      try {
+        await _productService.deleteProduct(product.id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Produk berhasil dihapus.')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal menghapus produk: $e')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +68,18 @@ class _ProductScreenState extends State<ProductScreen> {
       ),
       body: ProductList(
         productsStream: _productService.getProductsStream(),
-        
+        onProductTap: (product) {
+          // Navigasi ke halaman detail produk (contoh)
+          // Anda bisa menyesuaikan rute dan parameter sesuai kebutuhan
+          context.push('/product-detail/${product.id}');
+        },
+        onEditTap: (product) {
+          // Navigasi ke halaman edit produk
+          context.push('/edit-product/${product.id}');
+        },
+        onDeleteTap: (product) {
+          _deleteProduct(product);
+        },
       ),
       // Tombol untuk menambah produk baru
       floatingActionButton: FloatingActionButton(

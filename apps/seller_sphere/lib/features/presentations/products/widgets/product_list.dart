@@ -10,7 +10,9 @@ class ProductList extends StatelessWidget {
   const ProductList({
     super.key,
     required this.productsStream,
-    
+    required Null Function(Product) onProductTap,
+    required Null Function(Product) onEditTap,
+    required Null Function(Product) onDeleteTap,
   });
 
   @override
