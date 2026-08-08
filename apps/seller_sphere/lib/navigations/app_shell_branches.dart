@@ -1,6 +1,5 @@
 // lib/navigation/app_shell_branches.dart
 
-
 //import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +8,7 @@ import 'app_routes.dart';
 import 'custom_transition_page.dart';
 //import 'app_common_routes.dart';
 import 'app_extractor.dart';
+
 // Kunci navigator untuk setiap cabang/tab.
 // Ini penting agar navigasi ke halaman detail (seperti add/edit product)
 // tetap berada di dalam tab yang sama dan tidak menutupi bottom nav bar.
@@ -52,20 +52,27 @@ final List<StatefulShellBranch> appShellBranches = [
     navigatorKey: _shellNavigatorSellersKey,
     routes: [
       GoRoute(
-        path: AppRoutes.product,
+        path: AppRoutes.sellers,
         // name: AppRoutes.publicProduct, // Name is often better on the top-level route for clarity
         builder: (context, state) => const ProductScreen(),
         routes: [
           GoRoute(
-            path: 'add',
-            // name: AppRoutes.addProduct,
-            builder: (context, state) => const ProductFormScreen(),
+            path: AppRoutes.product,
+            // name: AppRoutes.publicProduct, // Name is often better on the top-level route for clarity
+            builder: (context, state) => const ProductScreen(),
+            routes: [
+              GoRoute(
+                path: '/products/add',
+                // name: AppRoutes.addProduct,
+                builder: (context, state) => const ProductFormScreen(),
+              ),
+              GoRoute(
+                  path: '/products/edit/:productId',
+                  // name: AppRoutes.editProduct,
+                  builder: (context, state) => ProductFormScreen(
+                      productId: state.pathParameters['productId'])),
+            ],
           ),
-          GoRoute(
-              path: 'edit/:productId',
-              // name: AppRoutes.editProduct,
-              builder: (context, state) => ProductFormScreen(
-                  productId: state.pathParameters['productId'])),
         ],
       ),
     ],

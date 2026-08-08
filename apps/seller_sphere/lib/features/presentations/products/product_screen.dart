@@ -16,7 +16,7 @@ class ProductScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => ProductViewModel(),
       child: Scaffold(
-        appBar: const ProductAppBar(),
+        appBar: const ProductAppBar(products: '',),
         body: const ProductBody(),
         floatingActionButton: Builder(
           builder: (context) {
