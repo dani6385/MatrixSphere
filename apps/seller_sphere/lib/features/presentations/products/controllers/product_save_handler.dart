@@ -32,7 +32,9 @@ class ProductSaveHandler {
 
       String imageUrl = existingImageUrl ?? '';
       if (selectedImageFile != null) {
-        final uploadedUrl = await _imageUploadService.uploadImageToImgBB(File(selectedImageFile.path));
+        // Menggunakan service yang aman dan method yang sesuai
+        final uploadedUrl = await _imageUploadService
+            .uploadImageToImgBB(File(selectedImageFile.path));
         if (uploadedUrl != null) {
           imageUrl = uploadedUrl;
         }
@@ -40,20 +42,23 @@ class ProductSaveHandler {
 
       final priceValue = double.tryParse(priceController.text) ?? 0.0;
 
+      // Dapatkan shopId dari user yang sedang login.
+      final shopId = AuthService().currentUser?.uid ?? '';
+
       final product = Product(
         id: isEditMode ? productId! : '',
-        shopId: 'toko_agan',
+        shopId: shopId, // Menggunakan ID toko dari pengguna yang sedang login
         name: nameController.text,
         description: descriptionController.text,
-        unitPrice: priceValue,
-        sku: skuController.text.isNotEmpty ? skuController.text : null,
+        sku: skuController.text.isNotEmpty
+            ? skuController.text
+            : null, // Menghapus unitPrice yang duplikat
         imageUrl: imageUrl,
         category: '',
         soldCount: 0,
         sellingPrice: priceValue,
         purchasePrice: 0.0,
-        stock: 0,
-        
+        stock: 0, unitPrice: 0,
       );
 
       try {
@@ -63,7 +68,9 @@ class ProductSaveHandler {
           await _productService.addProduct(product);
         }
         if (context.mounted) {
-          final successMessage = isEditMode ? 'Produk berhasil diperbarui' : 'Produk berhasil ditambahkan';
+          final successMessage = isEditMode
+              ? 'Produk berhasil diperbarui'
+              : 'Produk berhasil ditambahkan';
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(successMessage)),
           );
