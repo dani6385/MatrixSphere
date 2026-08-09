@@ -1,99 +1,96 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:logger/logger.dart';
+import 'inventory_logger_mixin.dart';
 
-class InventoryService {
-  // Referensi ke Realtime Database
-  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
-  final Logger _logger = Logger();
+class InventoryService with InventoryLoggerMixin {
+  @override
+  final DatabaseReference dbRef = FirebaseDatabase.instance.ref();
+  
+  @override
+  final Logger logger = Logger();
 
   Future<void> decreaseStock(String productId, int quantityToSubtract) async {
-    try {
-      final productRef = _dbRef.child('products').child(productId).child('stock');
+    final productRef = dbRef.child('products').child(productId).child('stock');
+    int? originalStock;
 
-      await productRef.runTransaction((mutableData) async {
-        int currentStock = (mutableData.value ?? 0) as int;
-        _logger.d('Current stock for product $productId: $currentStock');
+    final transactionResult = await productRef.runTransaction((MutableData mutableData) {
+      final Object? rawValue = mutableData.value;
+      final int currentStock = rawValue is int ? rawValue : 0;
+      originalStock = currentStock;
 
-        if (currentStock < quantityToSubtract) {
-          _logger.w('Attempted to subtract $quantityToSubtract from stock $currentStock for product $productId. Not enough stock.');
-          // Optionally, you can throw an error or return null to abort the transaction
-          // For now, we'll just prevent negative stock and log a warning.
-          mutableData.value = currentStock; // Keep current stock if not enough
-          return mutableData;
-        }
+      if (currentStock < quantityToSubtract) {
+        return Transaction.abort();
+      }
 
-        mutableData.value = currentStock - quantityToSubtract;
-        _logger.d('New stock for product $productId: ${mutableData.value}');
-        return mutableData;
-      } as TransactionHandler);
-      _logger.i('Stock for product $productId decreased by $quantityToSubtract successfully.');
-    } catch (e) {
-      _logger.e('Failed to decrease stock for product $productId: $e');
-      rethrow; // Re-throw the exception for upstream error handling
+      mutableData.value = currentStock - quantityToSubtract;
+      return Transaction.success(mutableData);
+    });
+
+    if (transactionResult.committed && originalStock != null) {
+      final newStock = transactionResult.snapshot.value as int;
+      await writeStockLog(
+        productId: productId,
+        previousStock: originalStock!,
+        newStock: newStock,
+        reason: 'pengurangan_manual',
+      );
+    } else {
+      throw Exception('Stok tidak mencukupi atau transaksi dibatalkan.');
     }
-    
   }
 
   Future<void> increaseStock(String productId, int quantityToAdd) async {
-    try {
-      final productRef = _dbRef.child('products').child(productId).child('stock');
+    final productRef = dbRef.child('products').child(productId).child('stock');
+    int? originalStock;
 
-      await productRef.runTransaction((mutableData) async {
-        int currentStock = (mutableData.value ?? 0) as int;
-        _logger.d('Current stock for product $productId: $currentStock');
+    final transactionResult = await productRef.runTransaction((MutableData mutableData) {
+      // Menggunakan cara yang lebih aman untuk mendapatkan nilai, sama seperti di decreaseStock
+      final Object? rawValue = mutableData.value;
+      final int currentStock = rawValue is int ? rawValue : 0;
+      originalStock = currentStock;
 
-        mutableData.value = currentStock + quantityToAdd;
-        _logger.d('New stock for product $productId: ${mutableData.value}');
-        return mutableData;
-      } as TransactionHandler);
-      _logger.i('Stock for product $productId increased by $quantityToAdd successfully.');
-    } catch (e) {
-      _logger.e('Failed to increase stock for product $productId: $e');
-      rethrow; // Re-throw the exception for upstream error handling
+      mutableData.value = currentStock + quantityToAdd;
+      return Transaction.success(mutableData);
+    });
+
+    if (transactionResult.committed && originalStock != null) {
+      final newStock = transactionResult.snapshot.value as int;
+      await writeStockLog(
+        productId: productId,
+        previousStock: originalStock!,
+        newStock: newStock,
+        reason: 'penambahan_manual',
+      );
+    } else {
+      throw Exception('Transaksi penambahan stok dibatalkan.');
     }
   }
+
   Future<int> getStock(String productId) async {
-    try {
-      final productRef = _dbRef.child('products').child(productId).child('stock');
-      final snapshot = await productRef.get();
+    final productRef = dbRef.child('products').child(productId).child('stock');
+    final snapshot = await productRef.get();
 
-      if (snapshot.exists) {
-        final stock = snapshot.value;
-        if (stock is int) {
-          _logger.d('Retrieved stock for product $productId: $stock');
-          return stock;
-        } else {
-          _logger.w('Stock for product $productId is not an integer: $stock');
-          return 0; // Or throw an error, depending on desired behavior
-        }
-      } else {
-        _logger.w('Stock for product $productId not found. Assuming 0.');
-        return 0;
-      }
-    } catch (e) {
-      _logger.e('Failed to get stock for product $productId: $e');
-      rethrow;
+    if (snapshot.exists && snapshot.value is int) {
+      return snapshot.value as int;
     }
+    return 0;
   }
+
   Future<void> updateStock(String productId, int newStock) async {
-    try {
-      final productRef = _dbRef.child('products').child(productId).child('stock');
-      await productRef.set(newStock);
-      _logger.i('Stock for product $productId updated to $newStock successfully.');
-    } catch (e) {
-      _logger.e('Failed to update stock for product $productId to $newStock: $e');
-      rethrow;
-    }
+    final int previousStock = await getStock(productId);
+    final productRef = dbRef.child('products').child(productId).child('stock');
+    
+    await productRef.set(newStock);
+    await writeStockLog(
+      productId: productId,
+      previousStock: previousStock,
+      newStock: newStock,
+      reason: 'stok_opname',
+    );
   }
+
   Future<bool> hasSufficientStock(String productId, int quantityNeeded) async {
-    try {
-      final currentStock = await getStock(productId);
-      _logger.d('Checking sufficient stock for product $productId. Current: $currentStock, Needed: $quantityNeeded');
-      return currentStock >= quantityNeeded;
-      
-    } catch (e) {
-      _logger.e('Failed to check sufficient stock for product $productId: $e');
-      rethrow;
-    }
+    final currentStock = await getStock(productId);
+    return currentStock >= quantityNeeded;
   }
 }

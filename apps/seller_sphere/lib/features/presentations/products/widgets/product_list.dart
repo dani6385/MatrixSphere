@@ -13,6 +13,7 @@ class ProductList extends StatelessWidget {
     required Null Function(Product) onProductTap,
     required Null Function(Product) onEditTap,
     required Null Function(Product) onDeleteTap,
+    required Null Function(Product) onManageStockTap,
   });
 
   @override

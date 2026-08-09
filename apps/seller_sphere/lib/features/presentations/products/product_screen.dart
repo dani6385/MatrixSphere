@@ -26,7 +26,8 @@ class _ProductScreenState extends State<ProductScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Konfirmasi Hapus'),
-          content: Text('Apakah Anda yakin ingin menghapus produk "${product.name}"?'),
+          content: Text(
+              'Apakah Anda yakin ingin menghapus produk "${product.name}"?'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -34,7 +35,8 @@ class _ProductScreenState extends State<ProductScreen> {
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Hapus', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              child: Text('Hapus',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error)),
             ),
           ],
         );
@@ -80,8 +82,10 @@ class _ProductScreenState extends State<ProductScreen> {
         onDeleteTap: (product) {
           _deleteProduct(product);
         },
+        onManageStockTap: (product) {
+          context.push('/inventory-detail/${product.id}');
+        },
       ),
-      // Tombol untuk menambah produk baru
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/add-product'),
         child: const Icon(Icons.add),
