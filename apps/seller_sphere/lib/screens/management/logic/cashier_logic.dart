@@ -1,5 +1,6 @@
 // lib/screens/management/cashier_logic.dart
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
 import '../widgets/cashier_sort_dropdown.dart';
@@ -17,15 +18,13 @@ class CashierLogic {
   // Getter total amount
   double get totalAmount => cartItems.fold(
       0, (sum, item) => sum + (item.product.sellingPrice * item.quantity));
-// lib/screens/management/logic/cashier_logic.dart
 
-// Tambahkan variabel di dalam kelas CashierLogic:
   double cashPaid = 0.0;
   double get changeAmount =>
       cashPaid > totalAmount ? cashPaid - totalAmount : 0.0;
   bool get isCashValid => cashPaid >= totalAmount;
 
-// Fungsi untuk memperbarui jumlah uang tunai yang dimasukkan
+  // Fungsi untuk memperbarui jumlah uang tunai yang dimasukkan
   void updateCashPaid(String value) {
     cashPaid = double.tryParse(value.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0.0;
   }
@@ -112,7 +111,7 @@ class CashierLogic {
     }
   }
 
-  // Eksekusi Transaksi Pembayaran
+  // Eksekusi Transaksi Pembayaran & Catat ke Riwayat Firebase
   Future<Map<String, dynamic>> executeTransaction(String paymentMethod) async {
     if (cartItems.isEmpty) {
       return {'success': false, 'message': 'Keranjang masih kosong!'};
@@ -138,17 +137,51 @@ class CashierLogic {
       customerPhone: '',
     );
 
+    // 1. Buat order melalui service
     final String? newOrderId = await _productService.createOrder(newOrder);
     bool success = false;
 
     if (newOrderId != null) {
+      // 2. Perbarui/kurangi stok produk berdasarkan item di keranjang
       success = await _productService.updateStockForOrder(cartItems);
+
+      if (success) {
+        try {
+          // 3. Catat juga ke riwayat node 'transactions' di Firebase Realtime Database
+          final dbRef = FirebaseDatabase.instance.ref();
+          final transactionId = 'TRX-${DateTime.now().millisecondsSinceEpoch}';
+
+          await dbRef.child('transactions').child(transactionId).set({
+            'id': transactionId,
+            'totalAmount': totalAmount,
+            'paymentMethod': paymentMethod,
+            'changeAmount':
+                paymentMethod.toLowerCase() == 'tunai' ? changeAmount : 0,
+            'status': 'Berhasil',
+            'timestamp': ServerValue.timestamp,
+            'items': cartItems
+                .map((item) => {
+                      'productId': item.product.id,
+                      'productName': item.product.name,
+                      'quantity': item.quantity,
+                      'price': item.product.sellingPrice,
+                    })
+                .toList(),
+          });
+        } catch (e) {
+          debugPrint("Gagal mencatat riwayat transaksi ke database: $e");
+        }
+
+        // 4. Bersihkan keranjang belanja setelah sukses
+        cartItems.clear();
+      }
     }
 
-    if (success) {
-      cartItems.clear();
-    }
-
-    return {'success': success, 'total': totalAmount};
+    return {
+      'success': success,
+      'total': totalAmount,
+      'transactionId': newOrderId,
+      'items': List.from(cartItems),
+    };
   }
 }
