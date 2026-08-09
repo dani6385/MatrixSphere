@@ -54,6 +54,7 @@ dependencies:
   flutter_launcher_icons: "^0.14.0"
   flutter_image_compress: ^2.5.1
   uuid: ^4.6.0
+  flutter_riverpod: ^2.6.1
   
 
 
