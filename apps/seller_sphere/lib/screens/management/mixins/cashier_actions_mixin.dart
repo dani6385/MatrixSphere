@@ -15,7 +15,8 @@ mixin CashierActionsMixin<T extends StatefulWidget> on State<T> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  Future<void> showProductSelection(BuildContext context, VoidCallback onUpdate) async {
+  Future<void> showProductSelection(
+      BuildContext context, VoidCallback onUpdate) async {
     final selectedProduct = await showDialog<Product>(
       context: context,
       builder: (context) => ProductSelectionDialog(
@@ -40,7 +41,8 @@ mixin CashierActionsMixin<T extends StatefulWidget> on State<T> {
     if (!mounted) return;
 
     if (barcode != null) {
-      final productIndex = logic.allProducts.indexWhere((p) => p.sku == barcode);
+      final productIndex =
+          logic.allProducts.indexWhere((p) => p.sku == barcode);
 
       if (productIndex != -1) {
         final err = logic.addProductToCart(logic.allProducts[productIndex]);
@@ -52,13 +54,15 @@ mixin CashierActionsMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  Future<void> processPayment(BuildContext context, String paymentMethod, VoidCallback onUpdate) async {
+  Future<void> processPayment(
+      BuildContext context, String paymentMethod, VoidCallback onUpdate) async {
     if (logic.cartItems.isEmpty) {
       showMsg(context, 'Keranjang masih kosong!');
       return;
     }
 
-    final bool isCash = paymentMethod.toLowerCase() == 'cash' || paymentMethod.toLowerCase() == 'tunai';
+    final bool isCash = paymentMethod.toLowerCase() == 'cash' ||
+        paymentMethod.toLowerCase() == 'tunai';
 
     if (isCash) {
       final bool? isConfirmed = await showDialog<bool>(
