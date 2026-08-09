@@ -96,7 +96,6 @@ extension AppThemeExtensions on BuildContext {
   //TextStyle? get displayMedium => textTheme.displayMedium;
   //TextStyle? get displaySmall => textTheme.displaySmall;
   Color get cardColor => colorScheme.surface; //panggil context.cardColor
-  //Color get dividerColor => Theme.of(this).dividerColor;
   Color get primary => colorScheme.primary;
   Color get onPrimary => colorScheme.onPrimary;
   Color get secondary => colorScheme.secondary;
@@ -133,7 +132,7 @@ extension AppThemeExtensions on BuildContext {
   Color get surfaceContainerLowest => colorScheme.surfaceContainerLowest;
   Color get surfaceBright => colorScheme.surfaceBright;
   Color get primaryColor => colorScheme.primary;
-  
+  Color get dividerColor => Theme.of(this).dividerColor;
   
   
   

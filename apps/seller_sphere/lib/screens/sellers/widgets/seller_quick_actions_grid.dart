@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -7,7 +6,6 @@ class SellerQuickActionsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // Data untuk aksi cepat
     final List<_QuickActionCardData> quickActions = [
       _QuickActionCardData(
@@ -83,7 +81,6 @@ class _QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
       elevation: 2,
@@ -98,22 +95,22 @@ class _QuickActionCard extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: colorScheme.primary,
+                color: context.primary,
                 size: 32,
               ),
               const SizedBox(height: 8),
               Text(
                 title,
-                style: AppStyles.dateDisplay(Theme.of(context).textTheme).copyWith(
-                  color: colorScheme.onSurface,
+                style: AppStyles.dateDisplay(context.textTheme).copyWith(
+                  color: context.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 description,
-                style: AppStyles.secondarySubtitle(Theme.of(context).textTheme).copyWith(
-                  color: colorScheme.onSurfaceVariant,
+                style: AppStyles.secondarySubtitle(context.textTheme).copyWith(
+                  color: context.onSurfaceVariant,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

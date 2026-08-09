@@ -11,7 +11,7 @@ class OrderDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    
     final formattedDate =
         DateFormat('dd MMM yyyy, HH:mm', 'id_ID').format(order.orderDate);
     final formattedPrice =
@@ -77,7 +77,7 @@ class OrderDetailScreen extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   '${item.productName} x ${item.quantity}',
-                                  style: textTheme.bodyMedium,
+                                  style: AppStyles.bodyMedium,
                                 ),
                               ),
                               Text(
@@ -86,7 +86,7 @@ class OrderDetailScreen extends StatelessWidget {
                                         symbol: 'Rp ',
                                         decimalDigits: 0)
                                     .format(item.price * item.quantity),
-                                style: textTheme.bodyMedium,
+                                style: AppStyles.bodyMedium,
                               ),
                             ],
                           ),
@@ -102,7 +102,7 @@ class OrderDetailScreen extends StatelessWidget {
                             .format(order.totalAmount)),
                     const Divider(height: AppSpacing.lg),
                     _buildDetailRow(context, 'Total', formattedPrice,
-                        valueStyle: textTheme.titleMedium?.copyWith(
+                        valueStyle: AppStyles.titleMedium?.copyWith(
                             color: kBrandPrimary, fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -119,8 +119,7 @@ class OrderDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Text(
         title,
-        style: Theme.of(context)
-            .textTheme
+        style: AppStyles
             .titleLarge
             ?.copyWith(fontWeight: FontWeight.bold),
       ),
@@ -136,15 +135,14 @@ class OrderDetailScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: AppStyles.bodyMedium,
           ),
           Text(
             value,
             style: valueStyle ??
-                Theme.of(context)
-                    .textTheme
+                AppStyles
                     .bodyMedium
-                    ?.copyWith(color: valueColor),
+                    .copyWith(color: valueColor),
           ),
         ],
       ),

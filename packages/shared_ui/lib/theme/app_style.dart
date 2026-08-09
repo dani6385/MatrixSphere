@@ -142,4 +142,7 @@ class AppStyles {
       const TextStyle(fontSize: 18, color: kDarkTextPrimary);
 
   static Color? get primaryContainer => kBrandPrimary.withOpacity(0.1);
+
+  static get bodySmall => const TextStyle(fontSize: 12, color: kDarkTextPrimary);
+
 }
