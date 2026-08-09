@@ -1,72 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
-// Impor file provider dan dialog yang sudah dipisah di atas
-import '../providers/cashier_providers.dart';
-import '../dialogs/cashier_dialogs.dart';
+import '../widgets/cashier_bottom_panel.dart';
+import '../widgets/cashier_sort_dropdown.dart';
+import '../widgets/cashier_cart_list.dart';
+import '../mixins/cashier_actions_mixin.dart';
 
-class CashierBody extends ConsumerWidget {
+class CashierBody extends StatefulWidget {
   const CashierBody({super.key});
 
-  Future<void> _processPayment(BuildContext context, WidgetRef ref) async {
-    CashierDialogs.showLoading(context);
+  @override
+  State<CashierBody> createState() => _CashierBodyState();
+}
 
-    try {
-      final cartItems = ref.read(cartProvider);
-      final total = ref.read(cartProvider.notifier).calculateTotal();
-
-      final newTransaction =
-          await ref.read(transactionServiceProvider).createTransaction(
-                items: cartItems,
-                totalAmount: total,
-                paymentMethod: 'CASH',
-              );
-      if (!context.mounted) return;
-      Navigator.of(context).pop(); // Tutup loading
-      await CashierDialogs.showSuccess(context, newTransaction.id);
-
-      ref.read(cartProvider.notifier).clearCart();
-    } catch (e) {
-      if (!context.mounted) return;
-      Navigator.of(context).pop(); // Tutup loading
-      CashierDialogs.showError(context, e.toString());
-    }
+class _CashierBodyState extends State<CashierBody> with CashierActionsMixin {
+  @override
+  void initState() {
+    super.initState();
+    logic.init(() => setState(() {}));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    logic.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final formattedTotal = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(logic.totalAmount);
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        CashierSortDropdown(
+          currentSortOption: logic.currentSortOption,
+          onChanged: (val) =>
+              logic.changeSortOption(val, () => setState(() {})),
+        ),
         Expanded(
-          child: Consumer(
-            builder: (context, ref, child) {
-              final cartItems = ref.watch(cartProvider);
-              if (cartItems.isEmpty) {
-                return const Center(child: Text('Keranjang kosong'));
-              }
-              return ListView.builder(
-                itemCount: cartItems.length,
-                itemBuilder: (context, index) {
-                  final item = cartItems[index];
-                  return ListTile(
-                    title: Text(item.name),
-                    subtitle: Text('Rp ${item.price} x ${item.quantity}'),
-                    trailing: Text('Rp ${item.price * item.quantity}'),
-                  );
-                },
-              );
+          child: CashierCartList(
+            cartItems: logic.cartItems,
+            onQuantityChanged: (index, newQty) {
+              final err = logic.updateQuantity(index, newQty);
+              if (err != null) showMsg(context, err);
+              setState(() {});
+            },
+            onRemove: (index) {
+              logic.removeItem(index);
+              setState(() {});
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton(
-            onPressed: () => _processPayment(context, ref),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 50),
-            ),
-            child: const Text('Proses Pembayaran'),
-          ),
+        CashierBottomPanel(
+          searchController: logic.searchController,
+          onSearchTap: () =>
+              showProductSelection(context, () => setState(() {})),
+          onScanBarcode: () => scanBarcode(context, () => setState(() {})),
+          formattedTotal: formattedTotal,
+          onProcessPayment: (method) =>
+              processPayment(context, method, () => setState(() {})),
         ),
       ],
     );
