@@ -13,17 +13,15 @@ class InventoryService with InventoryLoggerMixin {
     final productRef = dbRef.child('products').child(productId).child('stock');
     int? originalStock;
 
-    final transactionResult = await productRef.runTransaction((MutableData mutableData) {
-      final Object? rawValue = mutableData.value;
-      final int currentStock = rawValue is int ? rawValue : 0;
+    final transactionResult = await productRef.runTransaction((Object? currentStockValue) {
+      final int currentStock = currentStockValue is int ? currentStockValue : 0;
       originalStock = currentStock;
 
       if (currentStock < quantityToSubtract) {
         return Transaction.abort();
       }
 
-      mutableData.value = currentStock - quantityToSubtract;
-      return Transaction.success(mutableData);
+      return Transaction.success(currentStock - quantityToSubtract);
     });
 
     if (transactionResult.committed && originalStock != null) {
@@ -43,14 +41,11 @@ class InventoryService with InventoryLoggerMixin {
     final productRef = dbRef.child('products').child(productId).child('stock');
     int? originalStock;
 
-    final transactionResult = await productRef.runTransaction((MutableData mutableData) {
-      // Menggunakan cara yang lebih aman untuk mendapatkan nilai, sama seperti di decreaseStock
-      final Object? rawValue = mutableData.value;
-      final int currentStock = rawValue is int ? rawValue : 0;
+    final transactionResult = await productRef.runTransaction((Object? currentStockValue) {
+      final int currentStock = currentStockValue is int ? currentStockValue : 0;
       originalStock = currentStock;
 
-      mutableData.value = currentStock + quantityToAdd;
-      return Transaction.success(mutableData);
+      return Transaction.success(currentStock + quantityToAdd);
     });
 
     if (transactionResult.committed && originalStock != null) {
