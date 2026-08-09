@@ -22,12 +22,17 @@ class CashierBottomPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
+      padding: const EdgeInsets.only(
+        left: AppSpacing.md,
+        right: AppSpacing.md,
+        top: AppSpacing.md,
+        bottom: 80.0, // <-- Tambahkan padding bawah yang lebih tinggi di sini agar naik ke atas
+      ),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: context.cardColor,
         boxShadow: const [
           BoxShadow(
-              color: Colors.black12, blurRadius: 5, offset: Offset(0, -2)),
+              color: kDarkDivider, blurRadius: 5, offset: Offset(0, -2)),
         ],
       ),
       child: SingleChildScrollView(

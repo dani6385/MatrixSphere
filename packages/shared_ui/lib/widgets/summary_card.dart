@@ -7,7 +7,7 @@ class SummaryCard extends StatelessWidget {
     required this.icon,
     required this.value,
     required this.label,
-    required this.iconColor,
+    required this.iconColor, required String title, required MaterialColor color,
   });
 
   final IconData icon;
