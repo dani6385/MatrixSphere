@@ -77,8 +77,6 @@ class CashierLogic {
       final skuMatch = product.sku?.toLowerCase().contains(query) ?? false;
       return nameMatch || skuMatch;
     }).toList();
-
-    // Logika sorting lainnya tetap...
   }
 
   void changeSortOption(ProductSortOption? newOption, VoidCallback onUpdate) {
@@ -89,17 +87,11 @@ class CashierLogic {
     }
   }
 
-  // Eksekusi Transaksi & Pemotongan 2% dari Saldo Top-Up Penjual
-  Future<Map<String, dynamic>> executeTransaction(String paymentMethod) async {
-    if (cartItems.isEmpty) {
-      return {'success': false, 'message': 'Keranjang masih kosong!'};
-    }
-
-    final double total = totalAmount;
-    // Hitung potongan 2% dari total transaksi
-    final double feeDeduction = total * 0.02;
-
-    final newOrder = Order(
+  // ==========================================
+  // PECAHAN 1: Membuat Objek Order
+  // ==========================================
+  Order _buildOrderPayload(String paymentMethod, double total) {
+    return Order(
       id: '',
       orderDate: DateTime.now(),
       totalAmount: total,
@@ -118,55 +110,81 @@ class CashierLogic {
       customerEmail: '',
       customerPhone: '',
     );
+  }
 
+  // ==========================================
+  // PECAHAN 2: Mencatat Riwayat ke Firebase
+  // ==========================================
+  Future<void> _saveTransactionHistory(
+      String transactionId, double total, double feeDeduction, String paymentMethod) async {
+    final dbRef = FirebaseDatabase.instance.ref();
+    await dbRef.child('transactions').child(transactionId).set({
+      'id': transactionId,
+      'totalAmount': total,
+      'feeDeducted': feeDeduction,
+      'paymentMethod': paymentMethod,
+      'changeAmount': paymentMethod.toLowerCase() == 'tunai' ? changeAmount : 0,
+      'status': 'Berhasil',
+      'timestamp': ServerValue.timestamp,
+      'items': cartItems
+          .map((item) => {
+                'productId': item.product.id,
+                'productName': item.product.name,
+                'quantity': item.quantity,
+                'price': item.product.sellingPrice,
+              })
+          .toList(),
+    });
+  }
+
+  // ==========================================
+  // PECAHAN 3: Memotong Saldo Top-Up Penjual (2%)
+  // ==========================================
+  Future<void> _deductSellerBalance(double feeDeduction) async {
+    final dbRef = FirebaseDatabase.instance.ref();
+    final sellerSaldoRef = dbRef.child('seller/saldo');
+    await sellerSaldoRef.runTransaction((mutableData) {
+      double currentSaldo = 0.0;
+      if (mutableData != null) {
+        currentSaldo = double.tryParse(mutableData.toString()) ?? 0.0;
+      }
+      double updatedSaldo = currentSaldo - feeDeduction;
+      if (updatedSaldo < 0) updatedSaldo = 0;
+      return Transaction.success(updatedSaldo);
+    });
+  }
+
+  // ==========================================
+  // FUNGSI UTAMA: Eksekusi Transaksi
+  // ==========================================
+  Future<Map<String, dynamic>> executeTransaction(String paymentMethod) async {
+    if (cartItems.isEmpty) {
+      return {'success': false, 'message': 'Keranjang masih kosong!'};
+    }
+
+    final double total = totalAmount;
+    final double feeDeduction = total * 0.02; // Potongan 2%
+
+    // 1. Buat data order
+    final newOrder = _buildOrderPayload(paymentMethod, total);
+
+    // 2. Kirim order ke service
     final String? newOrderId = await _productService.createOrder(newOrder);
     bool success = false;
 
     if (newOrderId != null) {
+      // 3. Perbarui stok produk
       success = await _productService.updateStockForOrder(cartItems);
-      
+
       if (success) {
         try {
-          final dbRef = FirebaseDatabase.instance.ref();
           final transactionId = 'TRX-${DateTime.now().millisecondsSinceEpoch}';
-          
-          // 1. Catat riwayat transaksi penjualan
-          await dbRef.child('transactions').child(transactionId).set({
-            'id': transactionId,
-            'totalAmount': total,
-            'feeDeducted': feeDeduction, // Catat nominal potongan 2%
-            'paymentMethod': paymentMethod,
-            'changeAmount': paymentMethod.toLowerCase() == 'tunai' ? changeAmount : 0,
-            'status': 'Berhasil',
-            'timestamp': ServerValue.timestamp,
-            'items': cartItems
-                .map((item) => {
-                      'productId': item.product.id,
-                      'productName': item.product.name,
-                      'quantity': item.quantity,
-                      'price': item.product.sellingPrice,
-                    })
-                .toList(),
-          });
 
-          // 2. Potong saldo top-up penjual di database (Contoh path node: /seller/saldo)
-          // Pastikan sesuaikan ID penjual jika aplikasinya multi-user
-          final sellerSaldoRef = dbRef.child('seller/saldo');
-          await sellerSaldoRef.runTransaction((mutableData) {
-            double currentSaldo = 0.0;
-            if (mutableData != null) {
-              currentSaldo = double.tryParse(mutableData.toString()) ?? 0.0;
-            }
-            
-            // Kurangi saldo dengan biaya potongan transaksi 2%
-            double updatedSaldo = currentSaldo - feeDeduction;
-            if (updatedSaldo < 0) updatedSaldo = 0; // Batasi minimal 0
-            
-            return Transaction.success(updatedSaldo);
-          });
-
+          // 4. Jalankan fungsi terpecah: Simpan riwayat & potong saldo
+          await _saveTransactionHistory(transactionId, total, feeDeduction, paymentMethod);
+          await _deductSellerBalance(feeDeduction);
         } catch (e) {
-          debugPrint("Gagal memproses potongan saldo penjual: $e");
+          debugPrint("Gagal memproses riwayat atau saldo penjual: $e");
         }
 
         cartItems.clear();
@@ -174,10 +192,28 @@ class CashierLogic {
     }
 
     return {
-      'success': success, 
+      'success': success,
       'total': total,
       'transactionId': newOrderId,
       'items': List.from(cartItems),
     };
+  }
+
+  Future<void> processPaymentSafe(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+    } catch (e) {
+      debugPrint("Terjadi error: $e");
+    } finally {
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    }
   }
 }
