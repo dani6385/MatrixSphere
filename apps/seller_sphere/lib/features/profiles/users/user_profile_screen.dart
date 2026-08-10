@@ -3,14 +3,14 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_services/auth/auth_service.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class UserProfileScreen extends StatefulWidget {
+  const UserProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _UserProfileScreenState extends State<UserProfileScreen> {
   final AuthService _authService = AuthService();
   late Future<Map<String, dynamic>?> _userDataFuture;
 

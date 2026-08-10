@@ -36,7 +36,8 @@ export 'package:seller_sphere/screens/attendance/attendance_screen.dart';
 export 'package:seller_sphere/features/presentations/inventories/inventory_screen.dart';
 
 
-export 'package:seller_sphere/features/services/profiles/user/user_profile_screen.dart';
+
 export 'package:seller_sphere/features/notifs/orders/order_screen.dart';
 */
 export 'package:seller_sphere/screens/home/home_screen.dart';
+export 'package:seller_sphere/features/profiles/users/user_profile_screen.dart';

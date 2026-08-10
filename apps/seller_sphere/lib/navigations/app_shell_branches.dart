@@ -105,17 +105,21 @@ final List<StatefulShellBranch> appShellBranches = [
         //routes: commonDetailRoutes,
       ),
     ],
-  ),
+  ),*/
 
   // Branch untuk Tab Attendance
   StatefulShellBranch(
     routes: [
       GoRoute(
-        path: AppRoutes.attendance,
+        path: AppRoutes.profile,
         pageBuilder: (context, state) =>
-            FadeTransitionPage(child: const AttendanceScreen()),
-        routes: const [],
+            const MaterialPage(child: UserProfileScreen()),
+        routes: [
+          GoRoute(
+              path: AppRoutes.profile,
+              builder: (context, state) => const UserProfileScreen()),
+        ],
       ),
     ],
-  ),*/
+  ),
 ];
