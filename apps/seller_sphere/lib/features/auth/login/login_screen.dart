@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_sphere/core/services/session_manager.dart'; // Sesuaikan path jika perlu
+import 'package:shared_services/shared_services.dart'; // Tambahkan ini
+import 'package:go_router/go_router.dart'; // Tambahkan ini
+import 'package:seller_sphere/navigations/app_routes.dart'; // Tambahkan ini
 import 'widgets/login_body.dart';
 import 'widgets/login_form_fields.dart';
-import 'widgets/login_header.dart';
+//import 'widgets/login_header.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final SessionManager _sessionManager = SessionManager();
+  final AuthService _authService = AuthService(); // Gunakan AuthService
   bool _isLoading = true; // Tambahkan state untuk loading
 
   // Controllers for text fields
@@ -41,19 +43,20 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _initSession() async {
-    final isLoggedIn = await _sessionManager.isLoggedIn();
+    // Periksa status login menggunakan AuthService (Firebase)
+    final isLoggedIn = _authService.isLoggedIn();
     if (isLoggedIn) {
       // Jika sudah login, arahkan ke halaman utama atau dashboard
-      // Contoh: Navigator.of(context).pushReplacementNamed('/home');
       if (kDebugMode) {
-        print('User is already logged in. Navigating to home screen.');
+        print('User is already logged in via Firebase. Navigating via GoRouter.');
       }
-      // Untuk demo, kita bisa langsung set isLoading ke false
-      setState(() {
-        _isLoading = false;
-      });
+      if (!mounted) return;
+      // Gunakan GoRouter untuk navigasi, ini akan memicu logika redirect di app_router.dart
+      context.go(AppRoutes.home);
     } else {
+      // Jika belum login, tampilkan form login
       setState(() {
+        // Pastikan _isLoading diatur ke false agar UI login ditampilkan
         _isLoading = false;
       });
     }
@@ -65,28 +68,22 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      // Simulasi proses login
-      await Future.delayed(const Duration(seconds: 2));
+      // Gunakan AuthService untuk login sebenarnya dengan Firebase
+      await _authService.login(email, password);
 
-      // Anggap login berhasil dan kita mendapatkan token
-      const String dummyToken = 'your_super_secret_jwt_token_here';
-      await _sessionManager.saveSession(dummyToken);
-
-      // Navigasi ke halaman berikutnya setelah login berhasil
-      // Contoh: Navigator.of(context).pushReplacementNamed('/home');
       if (kDebugMode) {
-        print('Login successful! Token saved.');
+        print('Login successful! Firebase user authenticated.');
       }
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Login successful!')),
       );
-      Navigator.of(context)
-          .pushReplacementNamed('/home'); // Navigate to home screen
-    } catch (e) {
+      // Gunakan GoRouter untuk navigasi, ini akan memicu logika redirect di app_router.dart
+      context.go(AppRoutes.home);
+    } on Exception catch (e) { // Tangkap Exception spesifik dari AuthService
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $e')),
+        SnackBar(content: Text('Login failed: ${e.toString().replaceAll("Exception: ", "")}')),
       );
     } finally {
       setState(() {
@@ -114,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const LoginHeader(),
+              //const LoginHeader(),
               LoginBody(
                 formFields: LoginFormFields(
                   onLogin: _login,
