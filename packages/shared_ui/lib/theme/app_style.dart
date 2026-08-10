@@ -145,4 +145,13 @@ class AppStyles {
 
   static get bodySmall => const TextStyle(fontSize: 12, color: kDarkTextPrimary);
 
+  static ButtonStyle? get filledButton => FilledButton.styleFrom(
+        backgroundColor: kBrandPrimary,
+        foregroundColor: kBrandWhite,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      );
+      
+
 }

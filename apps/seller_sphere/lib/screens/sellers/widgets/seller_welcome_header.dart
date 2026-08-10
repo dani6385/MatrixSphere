@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart'; // Impor AppStyles
+import '../../top_up/top_up_screen.dart';
 
 class SellerWelcomeHeader extends StatelessWidget {
   final String sellerName;
@@ -31,9 +32,9 @@ class SellerWelcomeHeader extends StatelessWidget {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // TODO: Implementasi logika Top Up
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Fitur Top Up belum tersedia.')),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const TopUpScreen()),
                   );
                 },
                 icon: const Icon(Icons.add_card_outlined),
