@@ -29,6 +29,10 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) => const ScannerScreen(),
     ),
     GoRoute(
+      path: AppRoutes.simulation,
+      builder: (context, state) => const SimulationScreen(),
+    ),
+    GoRoute(
       path: '/products/:productId', // Menggunakan parameter dinamis ID
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {

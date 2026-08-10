@@ -39,13 +39,16 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       },
     ),
     DrawerItemData(
-      title: 'Dashboard',
+      title: 'Simulasi',
       icon: Icons.dashboard,
       label:
           'Menampilkan ringkasan statistik penjualan, grafik, dan performa toko.',
       route: '',
       onTap: () {
-        logger.i('Menu Dashboard diklik!');
+        logger.i('Memasuki Halaman Simulasi!');
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(builder: (context) => const SimulationScreen()),
+        );
       },
     ),
     DrawerItemData(
