@@ -6,7 +6,8 @@ import 'app_routes.dart';
 import 'app_extractor.dart';
 // Impor layar-layar terkait (pastikan jalurnya sesuai project-mu)
 
-List<RouteBase> buildFullscreenRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
+List<RouteBase> buildFullscreenRoutes(
+    GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     GoRoute(
       path: AppRoutes.profile,
@@ -32,15 +33,27 @@ List<RouteBase> buildFullscreenRoutes(GlobalKey<NavigatorState> rootNavigatorKey
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {
         final id = state.pathParameters['productId']!;
-        return ProductDetailScreen(productId: id, shopId: '',);
+        return ProductDetailScreen(
+          productId: id,
+          shopId: '',
+        );
       },
     ),
     GoRoute(
-      path: '/products/edit/:productId', // Menggunakan parameter dinamis ID untuk edit
+      path:
+          '/products/edit/:productId', // Menggunakan parameter dinamis ID untuk edit
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {
         final id = state.pathParameters['productId']!;
         return ProductFormScreen(productId: id);
+      },
+    ),
+    GoRoute(
+      path: '/orders',
+      builder: (context, state) {
+        const activeShopId = 'toko_agan';
+
+        return const OrderListView(shopId: activeShopId, orders: [],);
       },
     ),
   ];

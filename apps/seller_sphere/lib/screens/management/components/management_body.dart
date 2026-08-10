@@ -1,11 +1,9 @@
-
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
 
-
 import 'cashier_body.dart';
-import '../widgets/order_list_view.dart';
+// Impor widget untuk menampilkan daftar pesanan
+import 'order_list_view.dart';
 
 class ManagementBody extends StatefulWidget {
   const ManagementBody({super.key});
@@ -17,11 +15,21 @@ class ManagementBody extends StatefulWidget {
 class _ManagementBodyState extends State<ManagementBody>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  // Buat instance dari service RTDB dan stream pesanan
+  final FirebaseRtdbService _rtdbService = FirebaseRtdbService();
+  late final Stream<List<Order>> _ordersStream;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Inisialisasi stream di sini. Ganti 'toko_agan' dengan ID toko dinamis jika perlu.
+    _ordersStream = _rtdbService.getOrdersStreamForShop('toko_agan');
   }
 
   @override
@@ -45,7 +53,30 @@ class _ManagementBodyState extends State<ManagementBody>
           child: TabBarView(
             controller: _tabController,
             children: [
-              _buildOrderList(),
+              // Gunakan StreamBuilder untuk menampilkan daftar pesanan secara real-time
+              StreamBuilder<List<Order>>(
+                stream: _ordersStream,
+                builder: (context, snapshot) {
+                  // 1. Saat sedang memuat data
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  // 2. Jika terjadi error
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Terjadi error: ${snapshot.error}'));
+                  }
+
+                  // 3. Jika data berhasil didapat (meskipun kosong)
+                  if (snapshot.hasData) {
+                    final orders = snapshot.data!;
+                    return OrderListView(orders: orders, shopId: '',);
+                  }
+
+                  // 4. State lainnya (jika stream belum menghasilkan data)
+                  return const Center(child: Text('Memuat data pesanan...'));
+                },
+              ),
               const CashierBody(),
             ],
           ),
@@ -53,32 +84,4 @@ class _ManagementBodyState extends State<ManagementBody>
       ],
     );
   }
-}
-
-Widget _buildOrderList() {
-  // Asumsi FirebaseRtdbService memiliki getter 'ordersRef'
-  final DatabaseReference ordersRef = FirebaseRtdbService().ordersRef;
-
-  return StreamBuilder<DatabaseEvent>(
-    stream: ordersRef.onValue,
-    builder: (context, snapshot) {
-      if (snapshot.hasError) {
-        return Center(child: Text('Terjadi kesalahan: ${snapshot.error}'));
-      }
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      final data = snapshot.data?.snapshot.value;
-      if (data == null || (data is Map && data.isEmpty)) {
-        return const Center(child: Text('Belum ada orderan masuk.'));
-      }
-
-      final ordersMap = Map<String, dynamic>.from(data as Map);
-      final List<Order> orders = ordersMap.entries.map((entry) {
-        return Order.fromMap(Map<String, dynamic>.from(entry.value), entry.key);
-      }).toList();
-
-      return OrderListView(orders: orders);
-    },
-  );
 }

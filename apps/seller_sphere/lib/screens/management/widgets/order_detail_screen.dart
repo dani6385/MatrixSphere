@@ -11,7 +11,7 @@ class OrderDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
+    final textTheme = context.textTheme;
     final formattedDate =
         DateFormat('dd MMM yyyy, HH:mm', 'id_ID').format(order.orderDate);
     final formattedPrice =
@@ -58,10 +58,12 @@ class OrderDetailScreen extends StatelessWidget {
                     _buildDetailRow(context, 'Email', order.customerEmail),
                     _buildDetailRow(context, 'Telepon', order.customerPhone),
                   ],
-                ),              ),
+                ),
+              ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _buildSectionTitle(context, 'Detail Produk'),            Card(
+            _buildSectionTitle(context, 'Detail Produk'),
+            Card(
               margin: EdgeInsets.zero,
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.md),
@@ -77,7 +79,7 @@ class OrderDetailScreen extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   '${item.productName} x ${item.quantity}',
-                                  style: AppStyles.bodyMedium,
+                                  style: textTheme.bodyMedium,
                                 ),
                               ),
                               Text(
@@ -86,7 +88,7 @@ class OrderDetailScreen extends StatelessWidget {
                                         symbol: 'Rp ',
                                         decimalDigits: 0)
                                     .format(item.price * item.quantity),
-                                style: AppStyles.bodyMedium,
+                                style: textTheme.bodyMedium,
                               ),
                             ],
                           ),
@@ -96,13 +98,13 @@ class OrderDetailScreen extends StatelessWidget {
                         context,
                         'Subtotal',
                         NumberFormat.currency(
-                                locale:                                'id_ID',
+                                locale: 'id_ID',
                                 symbol: 'Rp ',
-                                decimalDigits:0)
+                                decimalDigits: 0)
                             .format(order.totalAmount)),
                     const Divider(height: AppSpacing.lg),
                     _buildDetailRow(context, 'Total', formattedPrice,
-                        valueStyle: AppStyles.titleMedium?.copyWith(
+                        valueStyle: textTheme.titleMedium?.copyWith(
                             color: kBrandPrimary, fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -119,7 +121,8 @@ class OrderDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: Text(
         title,
-        style: AppStyles
+        style: Theme.of(context)
+            .textTheme
             .titleLarge
             ?.copyWith(fontWeight: FontWeight.bold),
       ),
@@ -135,14 +138,15 @@ class OrderDetailScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: AppStyles.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           Text(
             value,
             style: valueStyle ??
-                AppStyles
+                Theme.of(context)
+                    .textTheme
                     .bodyMedium
-                    .copyWith(color: valueColor),
+                    ?.copyWith(color: valueColor),
           ),
         ],
       ),

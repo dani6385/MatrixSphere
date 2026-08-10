@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-import 'order_detail_screen.dart';
-import 'order_card.dart';
+
+import '../widgets/order_card.dart';
 
 /// Widget untuk menampilkan daftar pesanan dalam bentuk ListView.
 class OrderListView extends StatelessWidget {
   final List<Order> orders;
-  const OrderListView({super.key, required this.orders});
+  const OrderListView({super.key, required this.orders, required String shopId});
 
   @override
   Widget build(BuildContext context) {
@@ -50,12 +51,11 @@ class OrderListView extends StatelessWidget {
         return OrderCard(
           order: order,
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OrderDetailScreen(order: order),
-              ),
-            );
+            // PERBAIKAN: Gunakan GoRouter untuk navigasi.
+            // Anda perlu mendaftarkan rute untuk OrderDetailScreen terlebih dahulu.
+            // Asumsikan rutenya adalah '/orders/detail'.
+            // Kita juga bisa mengirim seluruh objek 'order' melalui 'extra'.
+            context.push('/orders/detail', extra: order);
           },
         );
       },
