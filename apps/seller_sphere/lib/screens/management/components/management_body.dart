@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_services/shared_services.dart';
 
 import 'cashier_body.dart';
-// Impor widget untuk menampilkan daftar pesanan
 import 'order_list_view.dart';
 
 class ManagementBody extends StatefulWidget {
@@ -15,21 +13,11 @@ class ManagementBody extends StatefulWidget {
 class _ManagementBodyState extends State<ManagementBody>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  // Buat instance dari service RTDB dan stream pesanan
-  final FirebaseRtdbService _rtdbService = FirebaseRtdbService();
-  late final Stream<List<Order>> _ordersStream;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Inisialisasi stream di sini. Ganti 'toko_agan' dengan ID toko dinamis jika perlu.
-    _ordersStream = _rtdbService.getOrdersStreamForShop('toko_agan');
   }
 
   @override
@@ -52,32 +40,13 @@ class _ManagementBodyState extends State<ManagementBody>
         Expanded(
           child: TabBarView(
             controller: _tabController,
-            children: [
+            children: const [
               // Gunakan StreamBuilder untuk menampilkan daftar pesanan secara real-time
-              StreamBuilder<List<Order>>(
-                stream: _ordersStream,
-                builder: (context, snapshot) {
-                  // 1. Saat sedang memuat data
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  // 2. Jika terjadi error
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Terjadi error: ${snapshot.error}'));
-                  }
-
-                  // 3. Jika data berhasil didapat (meskipun kosong)
-                  if (snapshot.hasData) {
-                    final orders = snapshot.data!;
-                    return OrderListView(orders: orders, shopId: '',);
-                  }
-
-                  // 4. State lainnya (jika stream belum menghasilkan data)
-                  return const Center(child: Text('Memuat data pesanan...'));
-                },
-              ),
-              const CashierBody(),
+              // OrderListView sekarang akan mengambil datanya sendiri menggunakan FirebaseAnimatedList
+              // Anda perlu mengganti 'toko_agan' dengan shopId yang sebenarnya dari pengguna yang login.
+              // Ini bisa didapatkan dari Firebase Auth atau state management lainnya.
+              OrderListView(shopId: 'toko_agan'),
+              CashierBody(),
             ],
           ),
         ),

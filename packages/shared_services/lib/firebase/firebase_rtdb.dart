@@ -16,7 +16,7 @@ class FirebaseRtdbService {
 
   /// Mendapatkan referensi ke node 'seller-orders'.
   /// Path ini bisa disesuaikan jika struktur database Anda berbeda.
-  DatabaseReference get ordersRef => _database.ref('seller-orders');
+  DatabaseReference get ordersRef => _database.ref('orders'); // Diubah dari 'seller-orders'
 
   /// Mendapatkan referensi ke node 'products'.
   /// Path ini bisa disesuaikan jika struktur database Anda berbeda.
@@ -312,7 +312,7 @@ class FirebaseRtdbService {
         }
 
         // 3. Buat pesanan baru di node 'seller-orders'
-        final newOrderRef = _database.ref('seller-orders').push();
+        final newOrderRef = _database.ref('orders').push(); // Diubah dari 'seller-orders'
         final orderData = {
           'shopId': shopUid,
           'buyerId': buyerUid,
@@ -325,7 +325,7 @@ class FirebaseRtdbService {
         // Gabungkan semua update (stok dan pesanan baru)
         final Map<String, dynamic> finalUpdates = {
           ...productUpdates,
-          '/seller-orders/${newOrderRef.key}': orderData
+          '/orders/${newOrderRef.key}': orderData // Diubah dari 'seller-orders'
         };
         return Transaction.success(finalUpdates);
       });
@@ -364,8 +364,8 @@ class FirebaseRtdbService {
       }
 
       // Siapkan data untuk order baru
-      final Map<String, dynamic> orderUpdate = {
-        '/seller-orders/$orderId': order.toMap(),
+      final Map<String, dynamic> orderUpdate = { // Path ini juga perlu disesuaikan
+        '/orders/$orderId': order.toMap(),
       };
 
       // Gabungkan semua update menjadi satu operasi atomik

@@ -57,7 +57,7 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) {
         const activeShopId = 'toko_agan';
 
-        return const OrderListView(shopId: activeShopId, orders: [],);
+        return const OrderListView(shopId: activeShopId,);
       },
     ),
   ];

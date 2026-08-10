@@ -1,7 +1,7 @@
 // lib/features/management/screens/order_screen.dart (atau sesuaikan dengan direktori project-mu)
 
 import 'package:flutter/material.dart';
-import 'package:shared_services/shared_services.dart'; // Menyesuaikan dengan import service yang kamu miliki
+// Menyesuaikan dengan import service yang kamu miliki
 import 'package:seller_sphere/navigations/app_extractor.dart'; // Mengimpor file OrderListView yang sudah ada
 
 class OrderScreen extends StatelessWidget {
@@ -29,9 +29,9 @@ class OrderScreen extends StatelessWidget {
     // Di sini kita sediakan wadah penampung data pesanan.
     // Kamu bisa mengganti bagian ini dengan StreamBuilder/FutureBuilder jika mengambil dari API/Database.
     
-    List<Order> sampleOrders = []; // Ganti dengan sumber data pesaneanan aslimu
+// Ganti dengan sumber data pesaneanan aslimu
 
     // Jika data kosong, OrderListView sudah memiliki widget tampilan kosong (empty state) yang informatif
-    return OrderListView(orders: sampleOrders, shopId: '',);
+    return const OrderListView(shopId: 'toko_agan',);
   }
 }

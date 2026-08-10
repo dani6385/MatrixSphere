@@ -13,15 +13,23 @@
     "status": "Selesai"
   },
   "orders": {
-    "f349d6ed": {
-      "buyerId": "ikmal",
-      "items": {
-        "baju": 25000,
-        "sepatu": 25000
-      },
-      "shopId": "toko_agan",
-      "status": "processing",
-      "totalAmount": 50000
+    "-NqAsd...": {
+      "customerName": "Budi Santoso",
+      "orderId": "ORD-001",
+      "totalAmount": 150000,
+      "status": "Pending"
+    },
+    "-NqAsf...": {
+      "customerName": "Citra Lestari",
+      "orderId": "ORD-002",
+      "totalAmount": 250000,
+      "status": "Shipped"
+    },
+    "-NqAsg...": {
+      "customerName": "Agus Wijaya",
+      "orderId": "ORD-003",
+      "totalAmount": 95000,
+      "status": "Completed"
     }
   },
   "products": {
