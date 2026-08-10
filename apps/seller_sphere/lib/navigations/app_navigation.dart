@@ -18,6 +18,21 @@ class AppNavigation {
     context.go(AppRoutes.login);
   }
 
+  /// Navigates to the Forgot Password screen.
+  static void goToForgotPassword(BuildContext context) {
+    context.push(AppRoutes.forgotPassword); // Menggunakan push karena ini adalah alur terpisah dari login
+  }
+
+  
+  static void goToRegister(BuildContext context) {
+    context.push(AppRoutes.register); // Menggunakan push untuk menambahkan ke stack navigasi
+  }
+
+  /// Navigates to the Shop Registration screen.
+  static void goToShopRegister(BuildContext context) {
+    context.go(AppRoutes.shopRegister); // Menggunakan go karena ini adalah alur utama setelah login jika belum ada toko
+  }
+
   static void pushTosetting(BuildContext context) {
     context.push(AppRoutes.settings);
   }

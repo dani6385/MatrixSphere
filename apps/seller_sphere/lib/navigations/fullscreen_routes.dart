@@ -2,7 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:seller_sphere/features/auth/login_screen.dart';
+import 'package:seller_sphere/features/auth/forgot_password_screen.dart';
+import 'package:seller_sphere/features/auth/registration_screen.dart';
+import 'package:seller_sphere/features/auth/shop_registration_screen.dart';
+import 'package:seller_sphere/features/auth/login/login_screen.dart';
 //import 'package:seller_sphere/features/services/profiles/user/profile_screen.dart';
 import 'app_routes.dart';
 
@@ -13,6 +16,21 @@ List<RouteBase> buildFullscreenRoutes(GlobalKey<NavigatorState> rootNavigatorKey
       path: AppRoutes.login,
       parentNavigatorKey: rootNavigatorKey, // Penting agar rute ini tidak berada di dalam shell
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.forgotPassword,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.register,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const RegistrationScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.shopRegister,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ShopRegistrationScreen(),
     ),
     // Anda bisa menambahkan rute fullscreen lain di sini
     // Contoh:
