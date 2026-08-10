@@ -44,8 +44,7 @@ class _OrderListViewState extends State<OrderListView> {
       //   title: const Text('Daftar Pesanan'),
       // ),
       body: FirebaseAnimatedList(
-        query: _ordersQuery
-            .orderByChild('createdAt'), // Urutkan berdasarkan waktu pembuatan
+        query: _ordersQuery, // HANYA gunakan query yang sudah difilter berdasarkan shopId
         reverse: true, // Tampilkan pesanan terbaru di atas
         padding: const EdgeInsets.all(AppSpacing.md),
         itemBuilder: (context, snapshot, animation, index) {
