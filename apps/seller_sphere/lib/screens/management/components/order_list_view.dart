@@ -99,7 +99,7 @@ class _OrderListViewState extends State<OrderListView> {
           style: AppStyles.titleMedium,
         ),
         subtitle: Text(
-          'ID: ${order.orderId.substring(0, 8)}...\n${DateFormat.yMMMd('id_ID').add_jm().format(order.orderDate)}',
+          'ID: ${order.orderId}\n${DateFormat.yMMMd('id_ID').add_jm().format(order.orderDate)}',
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,

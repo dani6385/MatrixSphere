@@ -18,17 +18,18 @@ class OrderService {
       final String newOrderId = newOrderRef.key ?? '';
 
       final orderWithId = Order(
-        orderId: newOrderId,
-        orderDate: order.orderDate,
-        totalAmount: order.totalAmount,
-        paymentMethod: order.paymentMethod,
-        status: order.status,
-        items: order.items,
-        customerName: order.customerName,
-        customerEmail: order.customerEmail,
-        customerPhone: order.customerPhone,
-        shopId: '',
         buyerId: '',
+        id: '',
+        customerEmail: order.customerEmail,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        items: order.items,
+        orderDate: order.orderDate,
+        orderId: newOrderId,
+        paymentMethod: order.paymentMethod,
+        shopId: '',
+        status: order.status,
+        totalAmount: order.totalAmount,
       );
 
       await newOrderRef.set(orderWithId.toMap());

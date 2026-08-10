@@ -57,9 +57,10 @@ class OrderItem {
 
 /// Model untuk pesanan.
 class Order {
-  // Tambahkan properti yang hilang
+  final String id; // ID unik dari Firebase (push key)
   final String shopId;
   final String buyerId;
+  // Ubah nama 'orderId' menjadi 'displayId' agar lebih jelas
   final String orderId;
   final String customerName;
   final String customerEmail;
@@ -71,6 +72,7 @@ class Order {
   final String paymentMethod;
 
   Order({
+    required this.id,
     required this.shopId,
     required this.buyerId,
     required this.orderId,
@@ -85,7 +87,7 @@ class Order {
   });
 
   /// Factory constructor untuk membuat instance Order dari Map (data RTDB).
-  factory Order.fromMap(Map<String, dynamic> data, String orderId) {
+  factory Order.fromMap(Map<String, dynamic> data, String id) {
     // Fungsi helper untuk parsing tanggal yang aman
     DateTime parseOrderDate(dynamic dateValue) {
       if (dateValue is int) {
@@ -100,10 +102,11 @@ class Order {
     }
 
     return Order(
-      orderId: orderId,
+      id: id, // Simpan Firebase push key sebagai 'id'
       // Gunakan parsing yang aman dengan nilai default
       shopId: data['shopId'] as String? ?? 'unknown_shop',
       buyerId: data['buyerId'] as String? ?? 'unknown_buyer',
+      orderId: data['orderId'] as String? ?? id.substring(0, 8), // Baca 'orderId' dari data
       customerName: data['customerName'] as String? ?? 'Tanpa Nama',
       customerEmail: data['customerEmail'] as String? ?? '-',
       customerPhone: data['customerPhone'] as String? ?? '-',
@@ -123,6 +126,7 @@ class Order {
     return {
       'shopId': shopId,
       'buyerId': buyerId,
+      'orderId': orderId, // <-- PENTING: Tambahkan ini ke map
       'customerName': customerName,
       'customerEmail': customerEmail,
       'customerPhone': customerPhone,
