@@ -70,6 +70,28 @@ class AuthService {
     }
   }
 
+  /// Mengambil shopId yang aktif.
+  /// - Jika pengguna login, akan mengambil shopId dari database.
+  /// - Jika tidak ada pengguna yang login (mode percobaan), akan mengembalikan ID toko percobaan.
+  /// - Mengembalikan `null` jika pengguna login tapi tidak punya shopId.
+  Future<String?> getCurrentShopId() async {
+    final user = currentUser;
+    if (user == null) {
+      // Mode Percobaan: Tidak ada pengguna yang login, kembalikan ID toko default.
+      return 'toko_percobaan';
+    }
+
+    try {
+      final snapshot = await _dbRef.child('sellers/${user.uid}/shopId').get();
+      if (snapshot.exists) {
+        return snapshot.value as String?;
+      }
+      return null;
+    } catch (e) {
+      throw Exception('Gagal mengambil shopId: $e');
+    }
+  }
+
   // Fungsi Kirim Email Reset Password
   Future<void> sendPasswordResetEmail(String email) async {
     try {

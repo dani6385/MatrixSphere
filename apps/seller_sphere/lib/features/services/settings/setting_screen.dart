@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-
-
-
-
-
 import 'package:seller_sphere/navigations/app_extractor.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -45,7 +40,22 @@ class _SettingScreenState extends State<SettingScreen> {
                 const SnackBar(content: Text('Navigasi ke halaman Profile.')),
               );
               Navigator.of(context, rootNavigator: true).push(
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person_outline),
+            title: const Text('Profil'),
+            subtitle: const Text('Ubah informasi profil Anda'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              logger.i('Menu profile diklik!');
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Navigasi ke halaman Profile.')),
+              );
+              Navigator.of(context, rootNavigator: true).push(
+                MaterialPageRoute(builder: (context) => const ShopProfileScreen(shopId: '',)),
               );
             },
           ),

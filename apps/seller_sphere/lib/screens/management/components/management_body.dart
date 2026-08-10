@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_services/shared_services.dart';
 
 import 'cashier_body.dart';
 import 'order_list_view.dart';
@@ -13,11 +14,25 @@ class ManagementBody extends StatefulWidget {
 class _ManagementBodyState extends State<ManagementBody>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String? _shopId;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _fetchShopId();
+  }
+
+  Future<void> _fetchShopId() async {
+    final authService = AuthService();
+    final id = await authService.getCurrentShopId();
+    if (mounted) {
+      setState(() {
+        _shopId = id;
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -38,17 +53,18 @@ class _ManagementBodyState extends State<ManagementBody>
           ],
         ),
         Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: const [
-              // Gunakan StreamBuilder untuk menampilkan daftar pesanan secara real-time
-              // OrderListView sekarang akan mengambil datanya sendiri menggunakan FirebaseAnimatedList
-              // Anda perlu mengganti 'toko_agan' dengan shopId yang sebenarnya dari pengguna yang login.
-              // Ini bisa didapatkan dari Firebase Auth atau state management lainnya.
-              OrderListView(shopId: 'toko_agan'),
-              CashierBody(),
-            ],
-          ),
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _shopId == null
+                  ? const Center(child: Text('Toko tidak ditemukan.'))
+                  : TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Gunakan _shopId yang sudah didapat secara dinamis
+                        OrderListView(shopId: _shopId!),
+                        const CashierBody(),
+                      ],
+                    ),
         ),
       ],
     );

@@ -12,7 +12,12 @@ List<RouteBase> buildFullscreenRoutes(
     GoRoute(
       path: AppRoutes.profile,
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const ProfileScreen(),
+      builder: (context, state) => const UserProfileScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.profile,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ShopProfileScreen(shopId: '',),
     ),
     GoRoute(
       path: AppRoutes.order,
