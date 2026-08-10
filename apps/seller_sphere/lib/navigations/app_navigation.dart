@@ -13,16 +13,11 @@ class AppNavigation {
     context.go(AppRoutes.financial);
   }
 
-  
-  //static void goToLogin(BuildContext context) {
-    //context.go(AppRoutes.login);
-  //}
+  /// Navigates to the Login screen.
+  static void goToLogin(BuildContext context) {
+    context.go(AppRoutes.login);
+  }
 
-  /// Navigates to the Profile screen.
-  /// This uses `push` to stack the screen on top of the current one.
-  /*static void pushToProfile(BuildContext context) {
-    context.push(AppRoutes.profile);
-  }*/
   static void pushTosetting(BuildContext context) {
     context.push(AppRoutes.settings);
   }

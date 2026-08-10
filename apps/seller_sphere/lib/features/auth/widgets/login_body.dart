@@ -23,6 +23,7 @@ class LoginBody extends StatelessWidget {
     required this.onTogglePasswordVisibility,
     required this.onRememberMeChanged,
     required this.onLoginPressed,
+    required LoginFormFields formFields,
   });
 
   @override
@@ -47,6 +48,8 @@ class LoginBody extends StatelessWidget {
                   onTogglePasswordVisibility: onTogglePasswordVisibility,
                   onRememberMeChanged: onRememberMeChanged,
                   onLoginPressed: onLoginPressed,
+                  onLogin: (String email, String password) async {},
+                  isLoading: false, // The LoginBody itself doesn't have an isLoading property, but LoginForm,
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton(

@@ -18,7 +18,7 @@ class LoginFormFields extends StatelessWidget {
     required this.rememberMe,
     required this.onTogglePasswordVisibility,
     required this.onRememberMeChanged,
-    required this.onLoginPressed,
+    required this.onLoginPressed, required Future<void> Function(String email, String password) onLogin, required bool isLoading,
   });
 
   @override
