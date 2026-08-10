@@ -13,12 +13,11 @@ class OrderService {
     try {
       final DatabaseReference ordersRef =
           FirebaseDatabase.instance.ref().child('orders');
-      
+
       final newOrderRef = ordersRef.push();
       final String newOrderId = newOrderRef.key ?? '';
 
       final orderWithId = Order(
-        id: newOrderId,
         orderId: newOrderId,
         orderDate: order.orderDate,
         totalAmount: order.totalAmount,
@@ -28,6 +27,8 @@ class OrderService {
         customerName: order.customerName,
         customerEmail: order.customerEmail,
         customerPhone: order.customerPhone,
+        shopId: '',
+        buyerId: '',
       );
 
       await newOrderRef.set(orderWithId.toMap());
@@ -46,7 +47,7 @@ class OrderService {
         final productId = cartItem.product.id;
         final int currentStock = cartItem.product.stock;
         final int purchasedQty = cartItem.quantity;
-        
+
         final int updatedStock = currentStock - purchasedQty;
 
         await _productsRef.child(productId).update({

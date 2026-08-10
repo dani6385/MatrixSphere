@@ -57,6 +57,9 @@ class OrderItem {
 
 /// Model untuk pesanan.
 class Order {
+  // Tambahkan properti yang hilang
+  final String shopId;
+  final String buyerId;
   final String orderId;
   final String customerName;
   final String customerEmail;
@@ -65,8 +68,11 @@ class Order {
   final List<OrderItem> items;
   final double totalAmount;
   final OrderStatus status;
+  final String paymentMethod;
 
   Order({
+    required this.shopId,
+    required this.buyerId,
     required this.orderId,
     required this.customerName,
     required this.customerEmail,
@@ -75,33 +81,48 @@ class Order {
     required this.items,
     required this.totalAmount,
     required this.status,
-    required String id,
-    required String paymentMethod,
+    required this.paymentMethod,
   });
 
   /// Factory constructor untuk membuat instance Order dari Map (data RTDB).
   factory Order.fromMap(Map<String, dynamic> data, String orderId) {
+    // Fungsi helper untuk parsing tanggal yang aman
+    DateTime parseOrderDate(dynamic dateValue) {
+      if (dateValue is int) {
+        // Handle timestamp (epoch in milliseconds)
+        return DateTime.fromMillisecondsSinceEpoch(dateValue);
+      } else if (dateValue is String) {
+        // Handle ISO 8601 string
+        return DateTime.tryParse(dateValue) ?? DateTime.now();
+      }
+      // Default jika format tidak dikenali
+      return DateTime.now();
+    }
+
     return Order(
       orderId: orderId,
-      customerName: data['customerName'] as String,
-      customerEmail: data['customerEmail'] as String,
-      customerPhone: data['customerPhone'] as String,
-      // Mengonversi string ISO 8601 dari RTDB menjadi DateTime
-      orderDate: DateTime.parse(data['orderDate'] as String),
-      items: (data['items'] as List<dynamic>)
-          .map((item) => OrderItem.fromMap(item as Map<String, dynamic>))
-          .toList(),
-      totalAmount: (data['totalAmount'] as num).toDouble(),
-      status: OrderStatus.fromString(data['status'] as String), id: '',
-      paymentMethod: '',
+      // Gunakan parsing yang aman dengan nilai default
+      shopId: data['shopId'] as String? ?? 'unknown_shop',
+      buyerId: data['buyerId'] as String? ?? 'unknown_buyer',
+      customerName: data['customerName'] as String? ?? 'Tanpa Nama',
+      customerEmail: data['customerEmail'] as String? ?? '-',
+      customerPhone: data['customerPhone'] as String? ?? '-',
+      orderDate: parseOrderDate(data['orderDate'] ?? data['createdAt']),
+      items: (data['items'] as List<dynamic>?)
+              ?.map((item) => OrderItem.fromMap(item as Map<String, dynamic>))
+              .toList() ??
+          [],
+      totalAmount: (data['totalAmount'] as num?)?.toDouble() ?? 0.0,
+      status: OrderStatus.fromString(data['status'] as String? ?? 'pending'),
+      paymentMethod: data['paymentMethod'] as String? ?? 'N/A',
     );
   }
-
-  String get paymentMethod => '';
 
   /// Mengonversi instance Order menjadi Map untuk disimpan di RTDB.
   Map<String, dynamic> toMap() {
     return {
+      'shopId': shopId,
+      'buyerId': buyerId,
       'customerName': customerName,
       'customerEmail': customerEmail,
       'customerPhone': customerPhone,
@@ -110,6 +131,7 @@ class Order {
       'items': items.map((item) => item.toMap()).toList(),
       'totalAmount': totalAmount,
       'status': status.name,
+      'paymentMethod': paymentMethod,
     };
   }
 }

@@ -92,7 +92,8 @@ class CashierLogic {
   // ==========================================
   Order _buildOrderPayload(String paymentMethod, double total) {
     return Order(
-      id: '',
+      shopId: '', // For cashier transactions, shopId might be determined elsewhere or not directly relevant.
+      buyerId: '', // For cashier transactions, buyerId might not be available or relevant.
       orderDate: DateTime.now(),
       totalAmount: total,
       paymentMethod: paymentMethod,
