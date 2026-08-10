@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
-import 'custom_transition_page.dart';
+//import 'custom_transition_page.dart';
 import 'app_extractor.dart';
 //import 'app_common_routes.dart'; // Mengimpor rute umum
 
@@ -52,7 +52,7 @@ final List<StatefulShellBranch> appShellBranches = [
   ),
 
   // Branch untuk Tab Stream
-  StatefulShellBranch(
+  /*StatefulShellBranch(
     routes: [
       GoRoute(
         path: AppRoutes.financial,
@@ -70,7 +70,7 @@ final List<StatefulShellBranch> appShellBranches = [
         path: AppRoutes.management,
         pageBuilder: (context, state) =>
             FadeTransitionPage(child: const ManagementScreen()),
-        /*routes: [
+        routes: [
           // Sub-rute dari Home
           GoRoute(
             path: 'products', // Path relatif: /products
@@ -90,7 +90,7 @@ final List<StatefulShellBranch> appShellBranches = [
               ),
             ],
           ),
-        ],*/
+        ],
       ),
     ],
   ),
@@ -117,5 +117,5 @@ final List<StatefulShellBranch> appShellBranches = [
         routes: const [],
       ),
     ],
-  ),
+  ),*/
 ];

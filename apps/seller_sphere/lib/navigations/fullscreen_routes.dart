@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'app_routes.dart';
-import 'app_extractor.dart';
+//import 'app_routes.dart';
+//import 'app_extractor.dart';
 // Impor layar-layar terkait (pastikan jalurnya sesuai project-mu)
 
 List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
-    GoRoute(
+    /*GoRoute(
       path: AppRoutes.profile,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const UserProfileScreen(),
@@ -64,6 +64,6 @@ List<RouteBase> buildFullscreenRoutes(
 
         return const OrderListView(shopId: activeShopId,);
       },
-    ),
+    ),*/
   ];
 }

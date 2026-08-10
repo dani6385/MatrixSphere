@@ -1,4 +1,4 @@
-export 'package:seller_sphere/features/notifs/chat/chat_screen.dart';
+/*export 'package:seller_sphere/features/notifs/chat/chat_screen.dart';
 export 'package:seller_sphere/core/services/notifications/notification_screen.dart';
 // feature
 export 'package:seller_sphere/features/helpes/about/about_screen.dart';
@@ -22,7 +22,7 @@ export 'package:seller_sphere/features/services/profiles/shop/shop_profile_scree
 export 'package:seller_sphere/features/helpes/help/help_screen.dart';
 export 'package:seller_sphere/features/presentations/streams/streaming_screen.dart';
 
-export 'package:seller_sphere/screens/home/home_screen.dart';
+
 //export 'package:seller_sphere/screens/reports/reports_screen.dart';
 // management
 export 'package:seller_sphere/screens/management/management_screen.dart';
@@ -38,3 +38,5 @@ export 'package:seller_sphere/features/presentations/inventories/inventory_scree
 
 export 'package:seller_sphere/features/services/profiles/user/user_profile_screen.dart';
 export 'package:seller_sphere/features/notifs/orders/order_screen.dart';
+*/
+export 'package:seller_sphere/screens/home/home_screen.dart';
