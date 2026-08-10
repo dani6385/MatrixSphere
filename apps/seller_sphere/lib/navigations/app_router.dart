@@ -13,6 +13,7 @@ final AuthService _authService = AuthService();
 
 final GoRouter appRouter = GoRouter(
   // Kita mulai dari rute awal di salah satu branch, yaitu Home ('/')
+  refreshListenable: GoRouterRefreshStream(_authService.authStateChanges),
   initialLocation: AppRoutes.login,
   navigatorKey: _rootNavigatorKey,
   errorBuilder: (context, state) => Scaffold(
@@ -24,16 +25,7 @@ final GoRouter appRouter = GoRouter(
     buildAppShellRoute(),
     ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
-  redirect: (BuildContext context, GoRouterState state) {
-    // Menggunakan async untuk redirect karena getCurrentShopId adalah Future
-    // Namun, GoRouter redirect tidak mendukung async secara langsung di sini.
-    // Kita akan menggunakan FutureBuilder atau sejenisnya di root widget
-    // atau memastikan _authService.isLoggedIn() dan _authService.getCurrentShopId()
-    // sudah di-resolve sebelum redirect dievaluasi.
-    // Untuk saat ini, kita akan asumsikan _authService.isLoggedIn() cukup cepat.
-    // getCurrentShopId akan dipanggil secara sinkron di sini, yang mungkin
-    // memblokir UI jika belum di-cache.
-
+  redirect: (BuildContext context, GoRouterState state) async {
     final bool loggedIn = _authService.isLoggedIn();
     const String loginLocation = AppRoutes.login;
     const String registerLocation = AppRoutes.register;
@@ -57,8 +49,8 @@ final GoRouter appRouter = GoRouter(
     }
 
     // Jika pengguna sudah login
-    // Periksa apakah toko sudah terdaftar (ini akan memblokir jika tidak di-cache)
-    final String? shopId = _authService.getCurrentShopIdSync(); // Menggunakan versi sinkron
+    // Periksa apakah toko sudah terdaftar secara asinkron
+    final String? shopId = await _authService.getCurrentShopId();
     final bool hasShop = shopId != null && shopId.isNotEmpty;
 
     // Jika pengguna sudah login dan mencoba mengakses halaman login, register, atau forgot password
@@ -85,3 +77,11 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
 );
+
+/// Stream wrapper untuk digunakan dengan GoRouter's refreshListenable
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    stream.asBroadcastStream().listen((_) => notifyListeners());
+  }
+}

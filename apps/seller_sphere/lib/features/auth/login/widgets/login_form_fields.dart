@@ -9,6 +9,7 @@ class LoginFormFields extends StatelessWidget {
   final VoidCallback onTogglePasswordVisibility;
   final ValueChanged<bool?> onRememberMeChanged;
   final VoidCallback onLoginPressed;
+  final GlobalKey<FormState> formKey; // <--- Add this line
 
   const LoginFormFields({
     super.key,
@@ -18,7 +19,9 @@ class LoginFormFields extends StatelessWidget {
     required this.rememberMe,
     required this.onTogglePasswordVisibility,
     required this.onRememberMeChanged,
-    required this.onLoginPressed, required Future<void> Function(String email, String password) onLogin, required bool isLoading,
+    required this.onLoginPressed,
+    required bool isLoading,
+    required this.formKey, // <--- Update this line to use 'this.'
   });
 
   @override
@@ -56,9 +59,7 @@ class LoginFormFields extends StatelessWidget {
             border: const OutlineInputBorder(),
             suffixIcon: IconButton(
               icon: Icon(
-                isPasswordVisible
-                    ? Icons.visibility_off
-                    : Icons.visibility,
+                isPasswordVisible ? Icons.visibility_off : Icons.visibility,
               ),
               onPressed: onTogglePasswordVisibility,
             ),

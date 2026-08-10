@@ -1,167 +1,104 @@
-import 'package:flutter/foundation.dart';
+// lib/features/auth/login/login_screen.dart
 import 'package:flutter/material.dart';
-import 'package:shared_services/shared_services.dart'; // Tambahkan ini
-import 'package:go_router/go_router.dart'; // Tambahkan ini
-import 'package:seller_sphere/navigations/app_routes.dart'; // Tambahkan ini
+import 'states/login_state.dart';
+import 'logics/login_logic.dart';
+
 import 'widgets/login_body.dart';
 import 'widgets/login_form_fields.dart';
-//import 'widgets/login_header.dart';
+import 'widgets/login_header.dart';
+import 'widgets/login_loading_body.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthService _authService = AuthService(); // Gunakan AuthService
-  bool _isLoading = true; // Tambahkan state untuk loading
+  final LoginLogic _loginLogic = LoginLogic();
 
-  // Controllers for text fields
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  // State for password visibility
-  bool _isPasswordVisible = false;
-
-  // State for remember me checkbox
-  bool _rememberMe = false;
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // Inisialisasi state login
+  late final LoginState _loginState;
 
   @override
   void initState() {
     super.initState();
+    _loginState = LoginState(
+      isLoading: true,
+      isPasswordVisible: false,
+      rememberMe: false,
+      emailController: TextEditingController(),
+      passwordController: TextEditingController(),
+      formKey: GlobalKey<FormState>(),
+    );
+
     _initSession();
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _loginState.emailController.dispose();
+    _loginState.passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _initSession() async {
-    // Periksa status login menggunakan AuthService (Firebase)
-    final isLoggedIn = _authService.isLoggedIn();
-    if (isLoggedIn) {
-      // Jika sudah login, arahkan ke halaman utama atau dashboard
-      if (kDebugMode) {
-        print('User is already logged in via Firebase. Navigating via GoRouter.');
-      }
-      if (!mounted) return;
-      // Gunakan GoRouter untuk navigasi, ini akan memicu logika redirect di app_router.dart
-      context.go(AppRoutes.home);
-    } else {
-      // Jika belum login, tampilkan form login
-      setState(() {
-        // Pastikan _isLoading diatur ke false agar UI login ditampilkan
-        _isLoading = false;
-      });
-    }
+  void _initSession() {
+    _loginLogic.initSession(
+      setLoading: (loading) => setState(() => _loginState.isLoading = loading),
+      onLoggedIn: () {
+        if (!mounted) return;
+        // Navigasi ditangani otomatis oleh app_router atau go_router
+      },
+    );
   }
 
-  Future<void> _login(String email, String password) async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // Gunakan AuthService untuk login sebenarnya dengan Firebase
-      await _authService.login(email, password);
-
-      if (kDebugMode) {
-        print('Login successful! Firebase user authenticated.');
-      }
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login successful!')),
+  void _handleLoginPressed() {
+    if (_loginState.formKey.currentState?.validate() ?? false) {
+      _loginLogic.login(
+        email: _loginState.emailController.text.trim(),
+        password: _loginState.passwordController.text,
+        context: context,
+        setLoading: (loading) => setState(() => _loginState.isLoading = loading),
       );
-      // Gunakan GoRouter untuk navigasi, ini akan memicu logika redirect di app_router.dart
-      context.go(AppRoutes.home);
-    } on Exception catch (e) { // Tangkap Exception spesifik dari AuthService
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: ${e.toString().replaceAll("Exception: ", "")}')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+    if (_loginState.isLoading) {
+      return const LoginLoadingBody();
     }
 
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          // The SingleChildScrollView has one child, which is Padding
           padding: const EdgeInsets.all(16.0),
-          // The Column is the child of the Padding widget
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //const LoginHeader(),
+              const LoginHeader(),
               LoginBody(
+                onLogin: _handleLoginPressed,
                 formFields: LoginFormFields(
-                  onLogin: _login,
-                  isLoading: _isLoading,
-                  emailController: _emailController,
-                  passwordController: _passwordController,
-                  isPasswordVisible: _isPasswordVisible,
-                  rememberMe: _rememberMe,
+                  formKey: _loginState.formKey,
+                  isLoading: _loginState.isLoading,
+                  emailController: _loginState.emailController,
+                  passwordController: _loginState.passwordController,
+                  isPasswordVisible: _loginState.isPasswordVisible,
+                  rememberMe: _loginState.rememberMe,
+                  onLoginPressed: _handleLoginPressed,
                   onTogglePasswordVisibility: () {
                     setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
+                      _loginState.isPasswordVisible = !_loginState.isPasswordVisible;
                     });
                   },
                   onRememberMeChanged: (bool? value) {
                     setState(() {
-                      _rememberMe = value ?? false;
+                      _loginState.rememberMe = value ?? false;
                     });
                   },
-                  onLoginPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      _login(
-                        _emailController.text.trim(),
-                        _passwordController.text,
-                      );
-                    }
-                  },
                 ),
-                formKey: _formKey,
-                emailController: _emailController,
-                passwordController: _passwordController,
-                isPasswordVisible: _isPasswordVisible,
-                rememberMe: _rememberMe,
-                onTogglePasswordVisibility: () {
-                  setState(() {
-                    _isPasswordVisible = !_isPasswordVisible;
-                  });
-                },
-                onRememberMeChanged: (bool? value) {
-                  setState(() {
-                    _rememberMe = value ?? false;
-                  });
-                },
-                onLoginPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    _login(
-                      _emailController.text.trim(),
-                      _passwordController.text,
-                    );
-                  }
-                },
               ),
             ],
           ),

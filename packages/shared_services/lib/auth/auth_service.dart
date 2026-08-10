@@ -107,27 +107,6 @@ class AuthService {
     }
   }
 
-  /// Mengambil shopId yang aktif secara sinkron.
-  ///
-  /// Catatan: Metode ini mengasumsikan bahwa shopId telah di-cache atau
-  /// dapat diambil dengan cepat tanpa operasi I/O yang memblokir.
-  /// Dalam implementasi nyata, Anda mungkin perlu menyimpan shopId di
-  /// Shared Preferences atau state management setelah login.
-  /// Untuk tujuan demo, ini akan mengembalikan 'toko_percobaan' jika tidak ada user,
-  /// atau null jika user ada tapi shopId belum diambil/disimpan.
-  String? getCurrentShopIdSync() {
-    final user = currentUser;
-    if (user == null) {
-      // Mode Percobaan: Tidak ada pengguna yang login, kembalikan ID toko default.
-      return 'toko_percobaan';
-    }
-    // Dalam implementasi nyata, Anda akan mengambil shopId dari cache/state management di sini.
-    // Untuk demo, kita akan mengembalikan null, yang akan memicu redirect ke shop-register.
-    // Atau, jika Anda ingin mensimulasikan toko sudah ada, kembalikan string non-null.
-    // Contoh: return _cachedShopId;
-    return null; // Asumsi belum ada toko terdaftar secara default
-  }
-
   // Fungsi Kirim Email Reset Password
   Future<void> sendPasswordResetEmail(String email) async {
     try {
