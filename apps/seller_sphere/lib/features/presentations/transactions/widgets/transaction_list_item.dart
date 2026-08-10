@@ -1,9 +1,10 @@
 // lib/screens/transaction/widgets/transaction_list_item.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:seller_sphere/models/transaction.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-import 'package:seller_sphere/models/transaction_model.dart';
+
 import '../transaction_detail_screen.dart';
 
 class TransactionListItem extends StatelessWidget {

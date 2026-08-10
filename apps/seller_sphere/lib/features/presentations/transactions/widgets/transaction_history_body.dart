@@ -3,7 +3,7 @@ import 'package:firebase_database/firebase_database.dart' hide Transaction;
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 
-import 'package:seller_sphere/models/transaction_model.dart';
+import 'package:seller_sphere/models/transaction.dart' ;
 import 'transaction_list_item.dart';
 
 class TransactionHistoryBody extends StatelessWidget {
