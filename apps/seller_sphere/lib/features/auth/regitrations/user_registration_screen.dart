@@ -122,8 +122,31 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                 ),
                 const SizedBox(height: 12),
                 TextButton(
-                  onPressed: () {
-                    context.pop(AppRoutes.login); // Kembali ke halaman login
+                  onPressed: () async {
+                    // 1. Tampilkan indikator splash / loading sederhana di tengah layar
+                    showDialog(
+                      context: context,
+                      barrierDismissible:
+                          false, // Pengguna tidak bisa menutup dialog sembarangan
+                      builder: (BuildContext context) {
+                        return const Center(
+                          child:
+                              CircularProgressIndicator(), // Bisa diganti dengan widget splash/loading kustom
+                        );
+                      },
+                    );
+
+                    // 2. Berikan jeda waktu sebentar (misalnya 1 detik) untuk efek transisi splash
+                    await Future.delayed(const Duration(seconds: 1));
+
+                    // 3. Pastikan widget masih aktif sebelum melakukan navigasi
+                    if (!context.mounted) return;
+
+                    // 4. Tutup dialog loading
+                    context.pop();
+
+                    // 5. Kirim pengguna secara otomatis ke halaman login
+                    context.go(AppRoutes.login);
                   },
                   child: const Text('Sudah punya akun? Login'),
                 ),
