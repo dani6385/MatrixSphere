@@ -19,7 +19,7 @@ export 'package:seller_sphere/features/presentations/histories/history_screen.da
 //export 'package:seller_sphere/features/presentations/inventories/controllers/inventory_logic.dart';
 
 export 'package:seller_sphere/features/helpes/simulations/simulation_screen.dart';
-export 'package:seller_sphere/features/services/profiles/shop/shop_profile_screen.dart';
+export 'package:seller_sphere/features/profiles/shop/shop_profile_screen.dart';
 
 
 
@@ -41,8 +41,8 @@ export 'package:seller_sphere/features/presentations/inventories/inventory_scree
 
 
 
-export 'package:seller_sphere/features/services/profiles/user/user_profile_screen.dart';
+export 'package:seller_sphere/features/profiles/user/user_profile_screen.dart';
 
-export 'package:seller_sphere/features/services/profiles/profile_screen.dart';
+export 'package:seller_sphere/features/profiles/profile_screen.dart';
 
 export 'package:seller_sphere/features/notifs/orders/order_screen.dart';

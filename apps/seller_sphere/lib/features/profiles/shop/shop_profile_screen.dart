@@ -1,8 +1,8 @@
 // lib/screens/shop/shop_profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
-import 'package:seller_sphere/features/services/profiles/shop/widgets/shop_profile_appbar.dart';
-import 'package:seller_sphere/features/services/profiles/shop/widgets/shop_profile_form.dart';
+import 'package:seller_sphere/features/profiles/shop/widgets/shop_profile_appbar.dart';
+import 'package:seller_sphere/features/profiles/shop/widgets/shop_profile_form.dart';
 import 'widgets/shop_profile_body.dart';
 
 class ShopProfileScreen extends StatefulWidget {

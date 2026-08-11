@@ -3,6 +3,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:seller_sphere/features/auth/forgot_password_screen.dart';
+import 'package:seller_sphere/features/auth/logins/login_screen.dart';
+import 'package:seller_sphere/features/auth/register_screen.dart';
+import 'package:seller_sphere/features/auth/regitrations/shop_registration_screen.dart';
 import 'app_routes.dart';
 import 'app_extractor.dart';
 // Impor layar-layar terkait (pastikan jalurnya sesuai project-mu)
@@ -10,6 +14,30 @@ import 'app_extractor.dart';
 List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
+    GoRoute(
+      path: '/login',
+      builder: (context, state) {
+        return const LoginScreen();
+      },
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) {
+        return const RegisterScreen();
+      },
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      builder: (context, state) {
+        return const ForgotPasswordScreen();
+      },
+    ),
+    GoRoute(
+      path: '/shop-registration',
+      builder: (context, state) {
+        return const ShopRegistrationScreen();
+      },
+    ),
     GoRoute(
       path: AppRoutes.profile,
       parentNavigatorKey: rootNavigatorKey,

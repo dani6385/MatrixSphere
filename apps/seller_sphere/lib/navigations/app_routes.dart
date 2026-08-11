@@ -1,10 +1,10 @@
 class AppRoutes {
   //auth
   static const String login = '/login';
-  static const String productDetailEdit = '/products/:productId/edit';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
   static const String shopRegistration = '/shop-registration';
+  static const String productDetailEdit = '/products/:productId/edit';
   //bottom nav bar
   static const String home = '/';
   static const String financial = '/Financial';
