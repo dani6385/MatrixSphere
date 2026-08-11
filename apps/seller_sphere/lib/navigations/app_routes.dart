@@ -22,7 +22,8 @@ class AppRoutes {
   // Route with parameter
   // Rute baru untuk detail produk publik berdasarkan toko dan produk
 
-  static const String profile = '/profile';
+  static const String userProfile = '/user-profile';
+  static const String shopProfile = '/shop-profile';
   static const String order = '/order';
   static const String status = '/status';
   static const String inventory = '/inventory';

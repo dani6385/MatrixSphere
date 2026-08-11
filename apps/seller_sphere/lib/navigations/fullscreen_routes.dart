@@ -10,52 +10,52 @@ List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     GoRoute(
-      path: AppRoutes.login,
+      path: '/login',
       builder: (context, state) {
         return const LoginScreen();
       },
     ),
     GoRoute(
-      path: AppRoutes.register,
+      path: '/register',
       builder: (context, state) {
         return const UserRegistrationScreen();
       },
     ),
     GoRoute(
-      path: AppRoutes.forgotPassword,
+      path: '/forgot-password',
       builder: (context, state) {
         return const ForgotPasswordScreen();
       },
     ),
     GoRoute(
-      path: AppRoutes.shopRegister,
+      path: '/shop-registration',
       builder: (context, state) {
         return const ShopRegistrationScreen();
       },
     ),
     GoRoute(
-      path: AppRoutes.map,
+      path: '/map',
       builder: (context, state) => const WindowsMapView(),
     ),
     GoRoute(
-      path: AppRoutes.profile,
+      path: '/user-profile',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const UserProfileScreen(),
     ),
     GoRoute(
-      path: AppRoutes.profile,
+      path: '/shop-profile',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ShopProfileScreen(
         shopId: '',
       ),
     ),
     GoRoute(
-      path: AppRoutes.order,
+      path: '/order',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const OrderScreen(),
     ),
     GoRoute(
-      path: AppRoutes.addProduct,
+      path: '/products/add',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ProductFormScreen(),
     ),
@@ -64,11 +64,11 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) => const ScannerScreen(),
     ),
     GoRoute(
-      path: AppRoutes.simulation,
+      path: '/simulasi',
       builder: (context, state) => const SimulationScreen(),
     ),
     GoRoute(
-      path: AppRoutes.productDetail, // Menggunakan parameter dinamis ID
+      path: '/products/:productId', // Menggunakan parameter dinamis ID
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {
         final id = state.pathParameters['productId']!;
@@ -79,21 +79,11 @@ List<RouteBase> buildFullscreenRoutes(
       },
     ),
     GoRoute(
-      path:AppRoutes.editProduct, // Menggunakan parameter dinamis ID untuk edit
+      path: '/products/edit', // Menggunakan parameter dinamis ID untuk edit
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {
         final id = state.pathParameters['productId']!;
         return ProductFormScreen(productId: id);
-      },
-    ),
-    GoRoute(
-      path: AppRoutes.order,
-      builder: (context, state) {
-        const activeShopId = 'toko_agan';
-        return const OrderListView(
-          shopId: activeShopId,
-          orders: [],
-        );
       },
     ),
   ];
