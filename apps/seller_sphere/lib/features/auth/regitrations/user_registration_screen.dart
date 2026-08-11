@@ -1,60 +1,24 @@
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_services/shared_services.dart';
+import 'states/user_registration_state.dart';
+import 'logics/user_registration_logic.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({super.key});
+class UserRegistrationScreen extends StatefulWidget {
+  const UserRegistrationScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  State<UserRegistrationScreen> createState() => _UserRegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-  final AuthService _authService = AuthService();
+class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
+  final UserRegistrationLogic _logic = UserRegistrationLogic();
+  final UserRegistrationState _state = UserRegistrationState();
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
+    _state.dispose();
     super.dispose();
-  }
-
-  Future<void> _registerUser() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      try {
-        // Panggil AuthService untuk membuat akun
-        await _authService.createUserAccount(
-          _emailController.text.trim(),
-          _passwordController.text,
-        );
-
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registrasi berhasil! Silakan login.')),
-        );
-        context.pop(); // Kembali ke halaman login setelah registrasi berhasil
-      } on Exception catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll("Exception: ", ""))),
-        );
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
-      }
-    }
   }
 
   @override
@@ -66,7 +30,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: _state.formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -77,7 +41,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 24),
               TextFormField(
-                controller: _nameController,
+                controller: _state.nameController,
                 decoration: const InputDecoration(labelText: 'Nama Lengkap'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -88,7 +52,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _emailController,
+                controller: _state.emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
@@ -103,7 +67,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _passwordController,
+                controller: _state.passwordController,
                 decoration: const InputDecoration(labelText: 'Kata Sandi'),
                 obscureText: true,
                 validator: (value) {
@@ -118,14 +82,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _confirmPasswordController,
+                controller: _state.confirmPasswordController,
                 decoration: const InputDecoration(labelText: 'Konfirmasi Kata Sandi'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Konfirmasi kata sandi tidak boleh kosong';
                   }
-                  if (value != _passwordController.text) {
+                  if (value != _state.passwordController.text) {
                     return 'Kata sandi tidak cocok';
                   }
                   return null;
@@ -133,8 +97,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: _isLoading ? null : _registerUser,
-                child: _isLoading
+                onPressed: _state.isLoading
+                    ? null
+                    : () => _logic.registerUser(
+                          context: context,
+                          state: _state,
+                          onUpdate: () => setState(() {
+                            _state.isLoading = !_state.isLoading;
+                          }),
+                        ),
+                child: _state.isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Daftar'),
               ),

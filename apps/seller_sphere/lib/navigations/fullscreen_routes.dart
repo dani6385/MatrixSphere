@@ -3,10 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:seller_sphere/features/auth/forgot_password_screen.dart';
-import 'package:seller_sphere/features/auth/logins/login_screen.dart';
-import 'package:seller_sphere/features/auth/register_screen.dart';
-import 'package:seller_sphere/features/auth/regitrations/shop_registration_screen.dart';
 import 'app_routes.dart';
 import 'app_extractor.dart';
 // Impor layar-layar terkait (pastikan jalurnya sesuai project-mu)
@@ -23,7 +19,7 @@ List<RouteBase> buildFullscreenRoutes(
     GoRoute(
       path: '/register',
       builder: (context, state) {
-        return const RegisterScreen();
+        return const UserRegistrationScreen();
       },
     ),
     GoRoute(

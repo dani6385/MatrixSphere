@@ -20,32 +20,21 @@ final GoRouter appRouter = GoRouter(
   ),
   redirect: (BuildContext context, GoRouterState state) async {
     final AuthService authService = AuthService();
-    
-    // 1. Cek apakah pengguna sudah login
     final bool isLoggedIn = authService.isLoggedIn();
-    
-    // Mengecek apakah rute saat ini adalah halaman login
-    final bool isLoggingIn = state.matchedLocation == AppRoutes.login;
+    final String currentPath = state.matchedLocation;
 
-    // Jika belum login dan tidak sedang berada di halaman login, arahkan ke login
-    if (!isLoggedIn && !isLoggingIn) {
+    // Izinkan akses bebas untuk halaman Login, Register, dan Forgot Password
+    final bool isAuthRoute = currentPath == AppRoutes.login || 
+                             currentPath == AppRoutes.register || 
+                             currentPath == AppRoutes.forgotPassword;
+    // Jika belum login dan tidak sedang di halaman auth, lempar ke login
+    if (!isLoggedIn && !isAuthRoute) {
       return AppRoutes.login;
     }
-
-    // Jika sudah login, cek apakah sudah memiliki toko (syarat lanjutan)
-    if (isLoggedIn) {
-      final shopId = await authService.getCurrentShopId();
-      final bool hasShop = shopId != null && shopId.isNotEmpty && shopId != 'toko_percobaan';
-      
-      final bool isRegisteringShop = state.matchedLocation == AppRoutes.shopRegistration;
-
-      // Jika belum punya toko dan sedang tidak di halaman registrasi toko, arahkan ke pendaftaran toko
-      if (!hasShop && !isRegisteringShop) {
-        return AppRoutes.shopRegistration;
-      }
+    // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
+    if (isLoggedIn && isAuthRoute) {
+        return '/';
     }
-
-    // Jika aman, izinkan melanjutkan perjalanan ke rute tujuan
     return null; 
   },
   routes: <RouteBase>[
