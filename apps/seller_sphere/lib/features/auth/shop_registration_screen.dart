@@ -1,7 +1,9 @@
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shared_services/auth/auth_service.dart';
-import 'package:seller_sphere/navigations/app_routes.dart';
+import 'package:seller_sphere/navigations/app_extractor.dart';
+import 'package:shared_services/shared_services.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class ShopRegistrationScreen extends StatefulWidget {
   const ShopRegistrationScreen({super.key});
@@ -11,10 +13,11 @@ class ShopRegistrationScreen extends StatefulWidget {
 }
 
 class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
-  final TextEditingController _shopNameController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final AuthService _authService = AuthService();
-  bool _isLoading = false;
+  final _formKey = GlobalKey<FormState>();
+  final _shopNameController = TextEditingController();
+  final _authService = AuthService();
+  final _rtdbService = FirebaseRtdbService();
+
 
   @override
   void dispose() {
@@ -22,85 +25,138 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
     super.dispose();
   }
 
-  Future<void> _registerShop() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      setState(() {
-        _isLoading = true;
-      });
+  Future<void> _submitForApproval() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-      try {
-        final currentUser = _authService.currentUser;
-        if (currentUser == null) {
-          throw Exception('Pengguna tidak ditemukan. Silakan login kembali.');
-        }
 
-        await _authService.registerShop(
-          user: currentUser,
-          shopName: _shopNameController.text.trim(),
-        );
+    final currentUser = _authService.currentUser;
+    if (currentUser == null) {
+      _showError("Sesi Anda telah berakhir. Silakan login kembali.");
+      LoginScreen;
+      return;
+    }
 
-        if (!mounted) return;
+    final shopName = _shopNameController.text.trim();
+    final uid = currentUser.uid;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Toko "${_shopNameController.text}" berhasil didaftarkan!'),
-          ),
-        );
-        // Navigasi ke halaman utama setelah pendaftaran toko berhasil
-        context.go(AppRoutes.home);
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal mendaftarkan toko: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    // Data yang akan dikirim ke node 'approval'
+    final approvalData = {
+      'nama': shopName,
+      'ownerUid': uid,
+      'email': currentUser.email,
+      'submittedAt': ServerValue.timestamp,
+    };
+
+    // Menggunakan FirebaseRtdbService untuk menulis data
+    final success = await _rtdbService.writeData('approval/$uid', approvalData);
+
+
+    if (success && mounted) {
+      showInfoDialog(
+        context: context,
+        title: 'Pendaftaran Terkirim',
+        message:
+            'Pendaftaran toko "$shopName" telah berhasil dikirim. Mohon tunggu persetujuan dari admin.',
+        buttonText: 'Mengerti',
+        onPressed: () {
+          // Arahkan ke halaman login atau halaman tunggu
+          LoginScreen;
+        },
+      );
+    } else {
+      _showError("Gagal mengirim pendaftaran toko. Silakan coba lagi.");
+    }
+  }
+
+  void _showError(String message) {
+    if (mounted) {
+      showErrorDialog(context: context, message: message);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daftar Toko Anda'),
-        automaticallyImplyLeading: false, // Sembunyikan tombol kembali
+      appBar: AppBar(title: const Text('Registrasi Toko')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Daftarkan toko Anda untuk menunggu persetujuan admin.',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _shopNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nama Toko',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama toko wajib diisi.';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _submitForApproval,
+                  child: const Text('Ajukan Pendaftaran'),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
+    );
+  }
+}
+
+/// Widget yang menampilkan pesan "Menunggu Persetujuan"
+class WaitingForApprovalScreen extends StatelessWidget {
+  const WaitingForApprovalScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Status Pendaftaran")),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Selamat datang! Silakan daftarkan nama toko Anda untuk melanjutkan.',
+              const Icon(Icons.hourglass_top_rounded, size: 60, color: Colors.blue),
+              const SizedBox(height: 20),
+              Text(
+                'Menunggu Persetujuan',
+                style: Theme.of(context).textTheme.headlineSmall,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 24),
-              TextFormField(
-                controller: _shopNameController,
-                decoration: const InputDecoration(labelText: 'Nama Toko'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama toko tidak boleh kosong';
-                  }
-                  return null;
-                },
+              const SizedBox(height: 12),
+              const Text(
+                'Pendaftaran toko Anda sedang kami tinjau. Anda akan dapat mengakses dashboard setelah disetujui oleh admin.',
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: _isLoading ? null : _registerShop,
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Daftarkan Toko'),
-              ),
+                onPressed: () async {
+                  await AuthService().logout();
+                  if (context.mounted) {
+                    LoginScreen;
+                  }
+                },
+                child: const Text('Logout'),
+              )
             ],
           ),
         ),

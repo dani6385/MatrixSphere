@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_services/shared_services.dart';
+import 'package:shared_services/auth/auth_service.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -10,10 +11,13 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _authService = AuthService();
+
   bool _isLoading = false;
-  final AuthService _authService = AuthService();
+  String? _message;
+  bool _isError = false;
 
   @override
   void dispose() {
@@ -21,30 +25,30 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _sendResetLink() async {
+  Future<void> _sendResetEmail() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _isLoading = true;
+        _message = null;
       });
 
       try {
         await _authService.sendPasswordResetEmail(_emailController.text.trim());
-
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Link reset password telah dikirim ke ${_emailController.text}'),
-          ),
-        );
-        context.pop(); // Kembali ke halaman login
-      } on Exception catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceAll("Exception: ", ""))),
-        );
+        setState(() {
+          _message = 'Email reset password telah dikirim. Silakan periksa inbox Anda.';
+          _isError = false;
+        });
+      } catch (e) {
+        setState(() {
+          _message = e.toString().replaceFirst('Exception: ', '');
+          _isError = true;
+        });
       } finally {
-        if (mounted) setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
@@ -52,50 +56,46 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kDarkBackground,
       appBar: AppBar(
-        title: const Text('Lupa Kata Sandi'),
+        title: const Text('Lupa Password'),
+        backgroundColor: kDarkSecondary,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const SizedBox(height: 20),
               const Text(
-                'Masukkan alamat email Anda untuk menerima tautan reset kata sandi.',
+                'Masukkan email Anda untuk menerima link reset password.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: kLightTextSecondary),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Email tidak boleh kosong';
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Masukkan email yang valid';
-                  }
-                  return null;
-                },
+                validator: (value) => (value?.isEmpty ?? true) ? 'Email tidak boleh kosong' : null,
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _sendResetLink,
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Kirim Tautan Reset'),
-              ),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: () {
-                  context.pop(); // Kembali ke halaman login
-                },
-                child: const Text('Kembali ke Login'),
-              ),
+              if (_message != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Text(
+                    _message!,
+                    style: TextStyle(color: _isError ? kSemanticError : kSemanticSuccess, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              _isLoading ? const Center(child: CircularProgressIndicator()) : ElevatedButton(onPressed: _sendResetEmail, child: const Text('Kirim Email Reset')),
             ],
           ),
         ),
