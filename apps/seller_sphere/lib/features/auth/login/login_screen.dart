@@ -1,8 +1,10 @@
 // lib/features/auth/login/login_screen.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:seller_sphere/navigations/app_routes.dart';
 import 'states/login_state.dart';
 import 'logics/login_logic.dart';
-
 import 'widgets/login_body.dart';
 import 'widgets/login_form_fields.dart';
 import 'widgets/login_header.dart';
@@ -78,6 +80,19 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const LoginHeader(),
+              // Memindahkan "Forgot Password?" ke sini, di atas tombol Login
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    if (kDebugMode) {
+                      print('Lupa Password!');
+                    }
+                    context.go(AppRoutes.forgotPassword);
+                  },
+                  child: const Text('Forgot Password?'),
+                ),
+              ),
               LoginBody(
                 onLogin: _handleLoginPressed,
                 formFields: LoginFormFields(
@@ -98,6 +113,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       _loginState.rememberMe = value ?? false;
                     });
                   },
+                ),
+              ),
+              const SizedBox(height: 8), // Tambahkan sedikit spasi vertikal
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    if (kDebugMode) {
+                      print('Navigating to Register screen!');
+                    }
+                    // Asumsikan AppRoutes.register sudah didefinisikan di navigations/app_routes.dart
+                    context.go(AppRoutes.register);
+                  },
+                  child: const Text('Don\'t have an account? Register'),
                 ),
               ),
             ],
