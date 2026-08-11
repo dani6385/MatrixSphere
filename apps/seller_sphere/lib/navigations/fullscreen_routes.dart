@@ -1,4 +1,3 @@
-
 // lib/routes/fullscreen_routes.dart
 
 import 'package:flutter/material.dart';
@@ -11,28 +10,32 @@ List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     GoRoute(
-      path: '/login',
+      path: AppRoutes.login,
       builder: (context, state) {
         return const LoginScreen();
       },
     ),
     GoRoute(
-      path: '/register',
+      path: AppRoutes.register,
       builder: (context, state) {
         return const UserRegistrationScreen();
       },
     ),
     GoRoute(
-      path: '/forgot-password',
+      path: AppRoutes.forgotPassword,
       builder: (context, state) {
         return const ForgotPasswordScreen();
       },
     ),
     GoRoute(
-      path: '/shop-registration',
+      path: AppRoutes.shopRegister,
       builder: (context, state) {
         return const ShopRegistrationScreen();
       },
+    ),
+    GoRoute(
+      path: AppRoutes.map,
+      builder: (context, state) => const WindowsMapView(),
     ),
     GoRoute(
       path: AppRoutes.profile,
@@ -42,7 +45,9 @@ List<RouteBase> buildFullscreenRoutes(
     GoRoute(
       path: AppRoutes.profile,
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const ShopProfileScreen(shopId: '',),
+      builder: (context, state) => const ShopProfileScreen(
+        shopId: '',
+      ),
     ),
     GoRoute(
       path: AppRoutes.order,
@@ -63,7 +68,7 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) => const SimulationScreen(),
     ),
     GoRoute(
-      path: '/products/:productId', // Menggunakan parameter dinamis ID
+      path: AppRoutes.productDetail, // Menggunakan parameter dinamis ID
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {
         final id = state.pathParameters['productId']!;
@@ -74,8 +79,7 @@ List<RouteBase> buildFullscreenRoutes(
       },
     ),
     GoRoute(
-      path:
-          '/products/edit/:productId', // Menggunakan parameter dinamis ID untuk edit
+      path:AppRoutes.editProduct, // Menggunakan parameter dinamis ID untuk edit
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) {
         final id = state.pathParameters['productId']!;
@@ -83,10 +87,13 @@ List<RouteBase> buildFullscreenRoutes(
       },
     ),
     GoRoute(
-      path: '/orders',
+      path: AppRoutes.order,
       builder: (context, state) {
         const activeShopId = 'toko_agan';
-        return const OrderListView(shopId: activeShopId, orders: [],);
+        return const OrderListView(
+          shopId: activeShopId,
+          orders: [],
+        );
       },
     ),
   ];

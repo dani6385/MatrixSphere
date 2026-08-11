@@ -122,6 +122,16 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       },
     ),
     DrawerItemData(
+      title: 'Google MAP',
+      icon: Icons.map,
+      label: 'Melihat daftar data pembeli atau pelanggan setia toko.',
+      route: '',
+      onTap: () {
+        logger.i('Menu MAP diklik!');
+        Navigator.of(context, rootNavigator: true).push(AppRoutes.map as Route<Object?>);
+      },
+    ),
+    DrawerItemData(
       title: 'Riwayat / Transaksi',
       icon: Icons.payment,
       label: 'Memeriksa riwayat pembayaran atau transaksi yang masuk.',
