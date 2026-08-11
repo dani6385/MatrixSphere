@@ -23,7 +23,7 @@ final List<StatefulShellBranch> appShellBranches = [
         _shellNavigatorHomeKey, // Gunakan navigator key untuk branch ini
     routes: [
       GoRoute(
-        path: '/',
+        path: AppRoutes.home,
         name: AppRoutes.home,
         builder: (context, state) => const HomeScreen(),
         /*routes: [
@@ -113,12 +113,7 @@ final List<StatefulShellBranch> appShellBranches = [
       GoRoute(
         path: AppRoutes.profile,
         pageBuilder: (context, state) =>
-            const MaterialPage(child: UserProfileScreen()),
-        routes: [
-          GoRoute(
-              path: AppRoutes.profile,
-              builder: (context, state) => const UserProfileScreen()),
-        ],
+            const NoTransitionPage(child: UserProfileScreen()),
       ),
     ],
   ),

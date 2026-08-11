@@ -17,7 +17,7 @@ export 'package:seller_sphere/features/providers/shopes/shopes_screen.dart';
 export 'package:seller_sphere/features/presentations/status/status_screen.dart';
 export 'package:seller_sphere/features/presentations/histories/history_screen.dart';
 //export 'package:seller_sphere/features/presentations/inventories/controllers/inventory_logic.dart';
-export 'package:seller_sphere/features/helpes/simulations/simulation_screen.dart';
+export 'package:seller_sphere/features/helpes/sexulations/sexulation_screen.dart';
 export 'package:seller_sphere/features/services/profiles/shop/shop_profile_screen.dart';
 export 'package:seller_sphere/features/helpes/help/help_screen.dart';
 export 'package:seller_sphere/features/presentations/streams/streaming_screen.dart';
@@ -39,5 +39,11 @@ export 'package:seller_sphere/features/presentations/inventories/inventory_scree
 
 export 'package:seller_sphere/features/notifs/orders/order_screen.dart';
 */
+export 'package:seller_sphere/features/auth/forgot_password_screen.dart';
+export 'package:seller_sphere/features/auth/registration_screen.dart';
+export 'package:seller_sphere/features/auth/shop_registration_screen.dart';
+export 'package:seller_sphere/features/auth/login/login_screen.dart';
+
+
 export 'package:seller_sphere/screens/home/home_screen.dart';
 export 'package:seller_sphere/features/profiles/users/user_profile_screen.dart';

@@ -14,7 +14,7 @@ final AuthService _authService = AuthService();
 final GoRouter appRouter = GoRouter(
   // Kita mulai dari rute awal di salah satu branch, yaitu Home ('/')
   refreshListenable: GoRouterRefreshStream(_authService.authStateChanges),
-  initialLocation: AppRoutes.login,
+  initialLocation: AppRoutes.home,
   navigatorKey: _rootNavigatorKey,
   errorBuilder: (context, state) => Scaffold(
     body: Center(
