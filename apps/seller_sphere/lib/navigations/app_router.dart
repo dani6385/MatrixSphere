@@ -4,6 +4,7 @@ import 'package:shared_services/shared_services.dart';
 import 'shell_route_config.dart';
 import 'fullscreen_routes.dart';
 import 'app_routes.dart';
+import 'app_extractor.dart';
 
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
