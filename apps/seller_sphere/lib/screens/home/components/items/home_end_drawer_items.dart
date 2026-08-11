@@ -34,7 +34,7 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       title: 'Profile',
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun toko.',
-      route: AppRoutes.profile,
+      route: AppRoutes.userProfile,
       onTap: () {
         logger.i('Menu Status Toko diklik!');
         Navigator.of(context, rootNavigator: true).push(

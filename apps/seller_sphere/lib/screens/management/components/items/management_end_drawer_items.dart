@@ -34,7 +34,7 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       title: 'Profil Pengguna',
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun administrator.',
-      route: AppRoutes.profile,
+      route: AppRoutes.userProfile,
       onTap: () {
         logger.i('Menu Profile Toko diklik!');
         Navigator.of(context, rootNavigator: true).push(
@@ -46,7 +46,7 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       title: 'Profil Toko',
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun administrator.',
-      route: AppRoutes.profile,
+      route: AppRoutes.userProfile,
       onTap: () {
         logger.i('Menu Profile Toko diklik!');
         Navigator.of(context, rootNavigator: true).push(

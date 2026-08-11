@@ -30,8 +30,8 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       title: 'Profile / Profil',
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun penjual.',
-      route: AppRoutes.profile,
-      onTap: () => context.go(AppRoutes.profile),
+      route: AppRoutes.userProfile,
+      onTap: () => context.go(AppRoutes.userProfile),
     ),
     EndDrawerItemData(
       title: 'Payment Methods / Metode Pembayaran',
