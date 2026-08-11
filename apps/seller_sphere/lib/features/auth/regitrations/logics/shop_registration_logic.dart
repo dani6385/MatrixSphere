@@ -56,10 +56,15 @@ class ShopRegistrationLogic {
 
         // Ambil shopId yang sudah dibuat di langkah sebelumnya
         final sellerData = await _authService.getSellerData(user.uid);
-        final shopId = sellerData?['shopId'] as String?;
+        if (sellerData == null) {
+          throw Exception("Data penjual tidak ditemukan. Silakan mulai registrasi dari awal.");
+        }
+
+        final shopId = sellerData['shopId'] as String?;
 
         if (shopId == null) {
-          throw Exception("ID Toko tidak ditemukan. Silakan mulai registrasi dari awal.");
+          // Pesan error ini lebih spesifik, mengindikasikan masalah pada alur registrasi.
+          throw Exception("ID Toko belum terdaftar. Pastikan Anda telah menyelesaikan tahap registrasi awal sebelum memilih lokasi.");
         }
 
         await _authService.updateShopDetails(

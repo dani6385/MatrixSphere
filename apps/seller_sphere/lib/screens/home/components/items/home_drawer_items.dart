@@ -33,10 +33,10 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Home / Beranda',
       icon: Icons.home,
       label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
-      route: AppRoutes.home,
+      route: '/home',
       onTap: () {
         logger.i('Menu Home / Beranda diklik!');
-        context.go(AppRoutes.home);
+        context.go('/home');
       },
     ),
     DrawerItemData(
@@ -47,21 +47,17 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       route: '',
       onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const SimulationScreen()),
-        );
+        Navigator.of(context, rootNavigator: true).push('/simulasi' as Route<Object?>);
       },
     ),
     DrawerItemData(
       title: 'Status Toko',
       icon: Icons.info_outline,
       label: 'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
-      route: AppRoutes.status, // Placeholder untuk rute yang akan datang
+      route: '/status', // Placeholder untuk rute yang akan datang
       onTap: () {
         logger.i('Menu Status Toko diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const StatusScreen()),
-        );
+        Navigator.of(context, rootNavigator: true).push('/status' as Route<Object?>);
       },
     ),
     DrawerItemData(
@@ -72,11 +68,7 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       route: '',
       onTap: () {
         logger.i('Menu Products diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-            builder: (context) => const ProductScreen(),
-          ),
-        );
+        Navigator.of(context, rootNavigator: true).push('/product' as Route<Object?>);
       },
     ),
     DrawerItemData(
@@ -86,25 +78,19 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       route: '',
       onTap: () {
         logger.i('Menu Orders diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-            builder: (context) => const OrderScreen(),
-          ),
-        );
+        Navigator.of(context, rootNavigator: true).push('/order' as Route<Object?>);
       },
     ),
     DrawerItemData(
       title: 'Stok Barang / Inventaris',
       icon: Icons.inventory,
       label: 'Memantau ketersediaan stok barang secara mendetail.',
-      route: AppRoutes.inventory, // Ganti dengan route yang sesuai
+      route: '/inventory', // Ganti dengan route yang sesuai
       onTap: () {
         logger.i('Menu Stok Barang diklik!');
         // Pastikan Anda sudah mendaftarkan AppRoutes.inventory di GoRouter
         // Contoh: context.go(AppRoutes.inventory);
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const InventoryScreen()),
-        );
+        Navigator.of(context, rootNavigator: true).push('/inventory' as Route<Object?>);
       },
     ),
     DrawerItemData(
