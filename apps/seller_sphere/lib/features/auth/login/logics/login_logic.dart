@@ -34,23 +34,30 @@ class LoginLogic {
     setLoading(true);
 
     try {
-      await _authService.login(email, password);
+      // Panggil AuthService untuk login
+      await _authService.login(email, password); // Menggunakan metode login dari AuthService
+
+      // Jika login berhasil, kelola kredensial berdasarkan pilihan 'Remember Me'
+      if (rememberMe) {
+        await LocalAuthStorage.saveCredentials(email, password);
+      } else {
+        await LocalAuthStorage.clearCredentials();
+      }
 
       if (kDebugMode) {
         print('Login successful! Firebase user authenticated.');
       }
-      if (!context.mounted) return;
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login successful!')),
-      );
-      context.go(AppRoutes.home);
+      // Navigasi tidak lagi ditangani di sini.
+      // GoRouter's redirect akan menanganinya secara otomatis.
     } on Exception catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed: ${e.toString().replaceAll("Exception: ", "")}')),
       );
-    } finally {
+    }
+    // Set loading ke false di sini agar dieksekusi baik saat sukses maupun gagal,
+    // kecuali jika navigasi terjadi (yang akan membongkar widget ini).
+    if (context.mounted) {
       setLoading(false);
     }
   }

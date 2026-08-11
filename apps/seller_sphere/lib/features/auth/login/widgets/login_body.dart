@@ -50,6 +50,19 @@ class LoginBody extends StatelessWidget {
                   onPressed: onLogin, // Use the onLogin callback
                   child: const Text('Login'),
                 ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.center,
+                  child: TextButton(
+                    onPressed: () {
+                      if (kDebugMode) {
+                        print('Navigating to Register screen!');
+                      }
+                      context.go(AppRoutes.register);
+                    },
+                    child: const Text('Don\'t have an account? Register'),
+                  ),
+                ),
               ],
             ),
           ),

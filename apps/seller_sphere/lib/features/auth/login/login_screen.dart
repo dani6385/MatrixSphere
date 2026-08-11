@@ -119,20 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 8), // Tambahkan sedikit spasi vertikal
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    if (kDebugMode) {
-                      print('Navigating to Register screen!');
-                    }
-                    // Asumsikan AppRoutes.register sudah didefinisikan di navigations/app_routes.dart
-                    context.go(AppRoutes.register);
-                  },
-                  child: const Text('Don\'t have an account? Register'),
-                ),
-              ),
             ],
           ),
         ),
