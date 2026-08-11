@@ -27,4 +27,6 @@ jobs:
       - name: Run Signing Report
         run: |
           cd apps/seller_sphere
-          flutter build apk --debug
+          flutter pub get
+          cd android
+          ./gradlew signingReport
