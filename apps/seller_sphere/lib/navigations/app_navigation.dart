@@ -33,6 +33,11 @@ class AppNavigation {
     context.go(AppRoutes.shopRegister); // Menggunakan go karena ini adalah alur utama setelah login jika belum ada toko
   }
 
+  /// Navigates to the Waiting for Approval screen.
+  static void goToWaitingForApproval(BuildContext context) {
+    context.go(AppRoutes.waitingForApproval);
+  }
+
   static void pushTosetting(BuildContext context) {
     context.push(AppRoutes.settings);
   }

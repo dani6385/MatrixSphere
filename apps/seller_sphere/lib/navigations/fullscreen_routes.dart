@@ -19,5 +19,10 @@ List<RouteBase> buildFullscreenRoutes(
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ShopRegistrationScreen(),
     ),
+    GoRoute(
+      path: AppRoutes.waitingForApproval,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const WaitingForApprovalScreen(),
+    ),
   ];
 }

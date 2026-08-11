@@ -1,7 +1,7 @@
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_sphere/navigations/app_extractor.dart';
+//import 'package:seller_sphere/features/auth/waiting_for_approval_screen.dart';
+import 'package:seller_sphere/navigations/app_navigation.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -18,7 +18,6 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
   final _authService = AuthService();
   final _rtdbService = FirebaseRtdbService();
 
-
   @override
   void dispose() {
     _shopNameController.dispose();
@@ -30,11 +29,10 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
       return;
     }
 
-
     final currentUser = _authService.currentUser;
     if (currentUser == null) {
       _showError("Sesi Anda telah berakhir. Silakan login kembali.");
-      LoginScreen;
+      AppNavigation.goToLogin(context);
       return;
     }
 
@@ -52,19 +50,16 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
     // Menggunakan FirebaseRtdbService untuk menulis data
     final success = await _rtdbService.writeData('approval/$uid', approvalData);
 
-
     if (success && mounted) {
       showInfoDialog(
-        context: context,
-        title: 'Pendaftaran Terkirim',
-        message:
-            'Pendaftaran toko "$shopName" telah berhasil dikirim. Mohon tunggu persetujuan dari admin.',
-        buttonText: 'Mengerti',
-        onPressed: () {
-          // Arahkan ke halaman login atau halaman tunggu
-          LoginScreen;
-        },
-      );
+          context: context,
+          title: 'Pendaftaran Terkirim',
+          message:
+              'Pendaftaran toko "$shopName" telah berhasil dikirim. Mohon tunggu persetujuan dari admin.',
+          buttonText: 'OK',
+          onPressed: () {
+            AppNavigation.goToWaitingForApproval(context);
+          });
     } else {
       _showError("Gagal mengirim pendaftaran toko. Silakan coba lagi.");
     }
@@ -114,50 +109,6 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Widget yang menampilkan pesan "Menunggu Persetujuan"
-class WaitingForApprovalScreen extends StatelessWidget {
-  const WaitingForApprovalScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Status Pendaftaran")),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.hourglass_top_rounded, size: 60, color: Colors.blue),
-              const SizedBox(height: 20),
-              Text(
-                'Menunggu Persetujuan',
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Pendaftaran toko Anda sedang kami tinjau. Anda akan dapat mengakses dashboard setelah disetujui oleh admin.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () async {
-                  await AuthService().logout();
-                  if (context.mounted) {
-                    LoginScreen;
-                  }
-                },
-                child: const Text('Logout'),
-              )
-            ],
           ),
         ),
       ),

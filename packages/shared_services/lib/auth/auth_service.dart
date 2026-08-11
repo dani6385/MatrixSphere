@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+/// Enum untuk merepresentasikan status toko pengguna.
+enum ShopStatus { none, pending, approved }
+
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
@@ -105,6 +108,33 @@ class AuthService {
     } catch (e) {
       throw Exception('Gagal mengambil shopId: $e');
     }
+  }
+
+  /// Memeriksa status toko pengguna (approved, pending, atau tidak ada).
+  Future<ShopStatus> getUserShopStatus() async {
+    final user = currentUser;
+    if (user == null) {
+      return ShopStatus.none;
+    }
+    final uid = user.uid;
+
+    try {
+      // 1. Cek apakah toko sudah disetujui dan ada di 'sellers'
+      final sellerSnapshot = await _dbRef.child('sellers/$uid').get();
+      if (sellerSnapshot.exists) {
+        return ShopStatus.approved;
+      }
+
+      // 2. Jika tidak, cek apakah pendaftaran sedang dalam proses 'approval'
+      final approvalSnapshot = await _dbRef.child('approval/$uid').get();
+      if (approvalSnapshot.exists) {
+        return ShopStatus.pending;
+      }
+    } catch (e) {
+      // Abaikan error dan anggap tidak ada toko jika gagal fetch
+    }
+    // 3. Jika tidak ada di keduanya, berarti pengguna belum mendaftarkan toko
+    return ShopStatus.none;
   }
 
   // Fungsi Kirim Email Reset Password

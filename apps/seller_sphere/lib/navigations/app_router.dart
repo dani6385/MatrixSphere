@@ -15,7 +15,7 @@ final _authNotifier = AuthRedirectNotifier();
 
 /// Logika pengalihan (redirect) untuk GoRouter.
 /// Fungsi ini akan dieksekusi setiap kali ada navigasi atau saat `refreshListenable` memberitahu.
-String? _authRedirect(BuildContext context, GoRouterState state) {
+Future<String?> _authRedirect(BuildContext context, GoRouterState state) async {
   final authService = AuthService();
   final isLoggedIn = authService.isLoggedIn();
   final location = state.matchedLocation;
@@ -25,17 +25,37 @@ String? _authRedirect(BuildContext context, GoRouterState state) {
     AppRoutes.login,
     AppRoutes.register,
     AppRoutes.forgotPassword,
+    AppRoutes.shopRegister, // Halaman registrasi toko juga harus publik setelah login
+    AppRoutes.waitingForApproval, // Halaman tunggu juga harus bisa diakses
   ];
 
   // Jika pengguna belum login dan mencoba mengakses rute yang dilindungi
   if (!isLoggedIn && !publicRoutes.contains(location)) {
     return AppRoutes.login; // Alihkan ke halaman login
   }
+  
+  // Jika pengguna sudah login, periksa status tokonya
+  if (isLoggedIn) {
+    final shopStatus = await authService.getUserShopStatus();
 
-  // Jika pengguna sudah login dan mencoba mengakses halaman login
-  if (isLoggedIn && location == AppRoutes.login) {
-    return AppRoutes.home; // Alihkan ke halaman utama
+    // Jika pengguna mencoba mengakses halaman login/register, alihkan mereka
+    if (location == AppRoutes.login || location == AppRoutes.register) {
+      switch (shopStatus) {
+        case ShopStatus.approved:
+          return AppRoutes.home; // Punya toko, ke home
+        case ShopStatus.pending:
+          return AppRoutes.waitingForApproval; // Menunggu persetujuan
+        case ShopStatus.none:
+          return AppRoutes.shopRegister; // Belum punya toko
+      }
+    }
+
+    // Jika pengguna belum disetujui tapi mencoba akses halaman utama
+    if (shopStatus != ShopStatus.approved && location == AppRoutes.home) {
+      return shopStatus == ShopStatus.pending ? AppRoutes.waitingForApproval : AppRoutes.shopRegister;
+    }
   }
+  
 
   // Jika tidak ada kondisi di atas, izinkan navigasi (jangan alihkan)
   return null;

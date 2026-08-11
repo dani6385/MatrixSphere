@@ -13,6 +13,8 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String status = '/status'; // Contoh rute tambahan
   static const String inventory = '/inventory'; // Contoh rute tambahan
+  static const String waitingForApproval = '/waiting-for-approval'; // Rute untuk WaitingForApprovalScreen
+  
   // Tambahkan rute lain di sini sesuai kebutuhan aplikasi Anda
 
   // Anda bisa menambahkan metode untuk mendapatkan rute berdasarkan nama jika diperlukan
