@@ -1,5 +1,6 @@
 // lib/features/auth/login/login_screen.dart
 import 'package:flutter/material.dart';
+import 'package:seller_sphere/widgets/logo.dart';
 import 'package:shared_services/shared_services.dart';
 import 'states/login_state.dart';
 import 'logics/login_logic.dart';
@@ -94,6 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const LoginHeader(),
+              const Logo(),
               LoginBody(
                 onLogin: _handleLoginPressed,
                 formFields: LoginFormFields(
