@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
@@ -24,25 +23,31 @@ final GoRouter appRouter = GoRouter(
     final String currentPath = state.matchedLocation;
 
     // Izinkan akses bebas untuk halaman Login, Register, dan Forgot Password
-    final bool isAuthRoute = currentPath == AppRoutes.login || 
-                             currentPath == AppRoutes.register || 
-                             currentPath == AppRoutes.forgotPassword;
+    final bool isAuthRoute = currentPath == AppRoutes.login ||
+        currentPath == AppRoutes.register ||
+        currentPath == AppRoutes.forgotPassword;
     // Jika belum login dan tidak sedang di halaman auth, lempar ke login
     if (!isLoggedIn && !isAuthRoute) {
       return AppRoutes.login;
     }
     // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
-    if (isLoggedIn && isAuthRoute) {
-        return '/';
-    }
-    final shopId = await authService.getCurrentShopId();
-    final bool hasShop = shopId != null && shopId.isNotEmpty && shopId != 'toko_percobaan';
-    final bool isRegisteringShop = currentPath == AppRoutes.shopRegistration;
+    if (isLoggedIn) {
+      if (currentPath == AppRoutes.login || currentPath == AppRoutes.register) {
+        return null; // Atau biarkan sistem mengecek toko di bawah
+      }
+      final shopId = await authService.getCurrentShopId();
+      final bool hasShop =
+          shopId != null && shopId.isNotEmpty && shopId != 'toko_percobaan';
+      final bool isRegisteringShop = currentPath == AppRoutes.shopRegistration;
 
-    if (!hasShop && !isRegisteringShop) {
-      return AppRoutes.shopRegistration;
+      if (!hasShop && !isRegisteringShop) {
+        return AppRoutes.shopRegistration;
+      }
+      if (hasShop && isRegisteringShop) {
+        return '/';
+      }
     }
-    return null; 
+    return null;
   },
   routes: <RouteBase>[
     buildAppShellRoute(),
