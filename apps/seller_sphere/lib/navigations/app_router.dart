@@ -37,16 +37,18 @@ Future<String?> _authRedirect(BuildContext context, GoRouterState state) async {
   // Jika pengguna sudah login, periksa status tokonya
   if (isLoggedIn) {
     final shopStatus = await authService.getUserShopStatus();
+    final isAtAuthScreen = location == AppRoutes.login || location == AppRoutes.register;
 
-    // Jika pengguna mencoba mengakses halaman login/register, alihkan mereka
-    if (location == AppRoutes.login || location == AppRoutes.register) {
+    // Jika pengguna berada di halaman awal ('/') atau halaman otentikasi,
+    // alihkan mereka berdasarkan status toko.
+    if (location == '/' || isAtAuthScreen) {
       switch (shopStatus) {
         case ShopStatus.approved:
           return AppRoutes.home; // Punya toko, ke home
         case ShopStatus.pending:
           return AppRoutes.waitingForApproval; // Menunggu persetujuan
         case ShopStatus.none:
-          return AppRoutes.shopRegister; // Belum punya toko
+        return AppRoutes.shopRegister; // Belum punya toko
       }
     }
 
