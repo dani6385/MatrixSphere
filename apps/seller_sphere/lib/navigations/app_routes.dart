@@ -35,7 +35,7 @@ class AppRoutes {
 
   static const String settings = '/settings';
   static const String scanQr = '/scan-qr';
-  static const String simulation = '/scan-qr';
+  static const String simulation = '/simulasi';
 //static const String profile = '/profile';
   static const String shopRegister = '/register/shop';
 }

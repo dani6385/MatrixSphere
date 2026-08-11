@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'app_routes.dart';
+//import 'app_routes.dart';
 import 'app_extractor.dart';
 // Impor layar-layar terkait (pastikan jalurnya sesuai project-mu)
 
@@ -60,7 +60,7 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) => const ProductFormScreen(),
     ),
     GoRoute(
-      path: AppRoutes.scanQr,
+      path: '/scan-qr',
       builder: (context, state) => const ScannerScreen(),
     ),
     GoRoute(
