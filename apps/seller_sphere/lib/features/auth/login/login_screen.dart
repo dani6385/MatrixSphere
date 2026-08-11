@@ -2,6 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_services/shared_services.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
 import 'states/login_state.dart';
 import 'logics/login_logic.dart';
@@ -35,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
       formKey: GlobalKey<FormState>(),
     );
 
-    _initSession();
+    _loadSavedCredentialsAndInitSession();
   }
 
   @override
@@ -45,13 +46,28 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _initSession() {
+  // Fungsi baru untuk memuat kredensial sebelum inisialisasi sesi
+  void _loadSavedCredentialsAndInitSession() async {
+    final credentials = await LocalAuthStorage.getCredentials();
+    final savedEmail = credentials['email'];
+    final savedPassword = credentials['password'];
+
+    if (savedEmail != null && savedPassword != null) {
+      if (mounted) {
+        setState(() {
+          _loginState.emailController.text = savedEmail;
+          _loginState.passwordController.text = savedPassword;
+          _loginState.rememberMe = true;
+        });
+      }
+    }
+
     _loginLogic.initSession(
       setLoading: (loading) => setState(() => _loginState.isLoading = loading),
       onLoggedIn: () {
         if (!mounted) return;
         // Navigasi ditangani otomatis oleh app_router atau go_router
-      },
+      }, // Pastikan initSession tidak lagi memuat kredensial
     );
   }
 
@@ -60,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _loginLogic.login(
         email: _loginState.emailController.text.trim(),
         password: _loginState.passwordController.text,
+        rememberMe: _loginState.rememberMe, // Kirim status rememberMe ke logic
         context: context,
         setLoading: (loading) => setState(() => _loginState.isLoading = loading),
       );
@@ -80,19 +97,6 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const LoginHeader(),
-              // Memindahkan "Forgot Password?" ke sini, di atas tombol Login
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    if (kDebugMode) {
-                      print('Lupa Password!');
-                    }
-                    context.go(AppRoutes.forgotPassword);
-                  },
-                  child: const Text('Forgot Password?'),
-                ),
-              ),
               LoginBody(
                 onLogin: _handleLoginPressed,
                 formFields: LoginFormFields(

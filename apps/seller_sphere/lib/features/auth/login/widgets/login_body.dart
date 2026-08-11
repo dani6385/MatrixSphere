@@ -1,5 +1,8 @@
 // lib/screens/login/widgets/login_body.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:seller_sphere/navigations/app_routes.dart';
 //import 'login_header.dart';
 import 'login_form_fields.dart';
 
@@ -29,9 +32,21 @@ class LoginBody extends StatelessWidget {
                 const SizedBox(height: 40),
                 formFields, // Use the passed formFields widget directly
                 const SizedBox(height: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      if (kDebugMode) {
+                        print('Lupa Password!');
+                      }
+                      context.go(AppRoutes.forgotPassword);
+                    },
+                    child: const Text('Forgot Password?'),
                   ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(),
                   onPressed: onLogin, // Use the onLogin callback
                   child: const Text('Login'),
                 ),

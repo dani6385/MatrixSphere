@@ -29,7 +29,7 @@ class LoginLogic {
     required String email,
     required String password,
     required BuildContext context,
-    required void Function(bool isLoading) setLoading,
+    required void Function(bool isLoading) setLoading, required bool rememberMe,
   }) async {
     setLoading(true);
 
