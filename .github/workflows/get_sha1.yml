@@ -2,11 +2,15 @@ name: Get Android SHA1
 
 on:
   push:
-    branches: [ main, master ] # Atau sesuaikan dengan nama branch utama Anda
+    branches: [ main, master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/seller_sphere
 
     steps:
       - name: Checkout Repository
@@ -21,14 +25,16 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.x' # Sesuaikan dengan versi Flutter Anda
+          flutter-version: '3.x'
           cache: true
 
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Generate Gradle Wrapper & Build Debug
+        run: flutter build apk --debug
+
       - name: Run Signing Report
         run: |
           cd android
-          chmod +x gradlew
           ./gradlew signingReport
