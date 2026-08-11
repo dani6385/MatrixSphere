@@ -24,6 +24,12 @@ final GoRouter appRouter = GoRouter(
   routes: <RouteBase>[
     buildAppShellRoute(),
     ...buildFullscreenRoutes(_rootNavigatorKey),
+GoRoute(
+      path: '/home',
+      builder: (BuildContext context, GoRouterState state) {
+        return const HomeScreen(); // Sesuaikan dengan widget halaman home Anda
+      },
+    ),
   ],
   redirect: (BuildContext context, GoRouterState state) async {
     const String loginLocation = AppRoutes.login;
