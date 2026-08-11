@@ -2,27 +2,29 @@
 import 'package:flutter/material.dart';
 
 class LoginFormFields extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final bool isLoading;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final bool isPasswordVisible;
   final bool rememberMe;
+  final VoidCallback onLoginPressed;
   final VoidCallback onTogglePasswordVisibility;
   final ValueChanged<bool?> onRememberMeChanged;
-  final VoidCallback onLoginPressed;
-  final GlobalKey<FormState> formKey; // <--- Add this line
 
   const LoginFormFields({
     super.key,
+    required this.formKey,
+    required this.isLoading,
     required this.emailController,
     required this.passwordController,
     required this.isPasswordVisible,
     required this.rememberMe,
+    required this.onLoginPressed,
     required this.onTogglePasswordVisibility,
     required this.onRememberMeChanged,
-    required this.onLoginPressed,
-    required bool isLoading,
-    required this.formKey, // <--- Update this line to use 'this.'
   });
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +71,9 @@ class LoginFormFields extends StatelessWidget {
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Mohon masukkan password Anda';
+            }
+            if (value.length < 8) {
+              return 'Password harus memiliki minimal 8 karakter';
             }
             return null;
           },
