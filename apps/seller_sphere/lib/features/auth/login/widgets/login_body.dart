@@ -18,54 +18,46 @@ class LoginBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: AutofillGroup(
-          child: Form(
-            key: formFields.formKey, // Access formKey from formFields
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                //const LoginHeader(),
-                const SizedBox(height: 40),
-                formFields, // Use the passed formFields widget directly
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      if (kDebugMode) {
-                        print('Lupa Password!');
-                      }
-                      context.go(AppRoutes.forgotPassword);
-                    },
-                    child: const Text('Forgot Password?'),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(),
-                  onPressed: onLogin, // Use the onLogin callback
-                  child: const Text('Login'),
-                ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    onPressed: () {
-                      if (kDebugMode) {
-                        print('Navigating to Register screen!');
-                      }
-                      context.go(AppRoutes.register);
-                    },
-                    child: const Text('Don\'t have an account? Register'),
-                  ),
-                ),
-              ],
+    return AutofillGroup(
+      child: Form(
+        key: formFields.formKey, // Access formKey from formFields
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            formFields, // Use the passed formFields widget directly
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  if (kDebugMode) {
+                    print('Lupa Password!');
+                  }
+                  context.go(AppRoutes.forgotPassword);
+                },
+                child: const Text('Forgot Password?'),
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              onPressed: onLogin, // Use the onLogin callback
+              child: const Text('Login'),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                if (kDebugMode) {
+                  print('Navigating to Register screen!');
+                }
+                context.go(AppRoutes.register);
+              },
+              child: const Text('Don\'t have an account? Register'),
+            ),
+          ],
         ),
       ),
     );

@@ -4,7 +4,6 @@ import 'package:shared_services/shared_services.dart';
 import 'shell_route_config.dart';
 import 'fullscreen_routes.dart';
 import 'app_routes.dart';
-import 'app_extractor.dart';
 
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -25,12 +24,6 @@ final GoRouter appRouter = GoRouter(
   routes: <RouteBase>[
     buildAppShellRoute(),
     ...buildFullscreenRoutes(_rootNavigatorKey),
-GoRoute(
-      path: '/home',
-      builder: (BuildContext context, GoRouterState state) {
-        return const HomeScreen(); // Sesuaikan dengan widget halaman home Anda
-      },
-    ),
   ],
   redirect: (BuildContext context, GoRouterState state) async {
     const String loginLocation = AppRoutes.login;

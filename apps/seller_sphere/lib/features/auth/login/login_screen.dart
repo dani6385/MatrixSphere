@@ -1,9 +1,6 @@
 // lib/features/auth/login/login_screen.dart
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shared_services/shared_services.dart';
-import 'package:seller_sphere/navigations/app_routes.dart';
 import 'states/login_state.dart';
 import 'logics/login_logic.dart';
 import 'widgets/login_body.dart';
