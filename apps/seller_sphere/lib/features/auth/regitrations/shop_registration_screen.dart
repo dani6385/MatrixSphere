@@ -12,7 +12,7 @@ class ShopRegistrationScreen extends StatefulWidget {
 
 class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
   final ShopRegistrationLogic _logic = ShopRegistrationLogic();
-  
+
   late final ShopRegistrationState _shopState = ShopRegistrationState(
     formKey: GlobalKey<FormState>(),
     shopNameController: TextEditingController(),
@@ -23,7 +23,7 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
   void initState() {
     super.initState();
     _logic.getCurrentLocation(
-      state: _shopState, 
+      state: _shopState,
       onUpdate: () => setState(() {}),
     );
   }
@@ -50,6 +50,14 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
+                'Selamat datang! Mari daftarkan toko pertamamu untuk mulai berjualan di Seller Sphere.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey, // Warna teks penjelas yang lebih lembut
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
                 'Langkah 2: Lengkapi Detail Toko',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -57,16 +65,18 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
               TextFormField(
                 controller: _shopState.shopNameController,
                 decoration: const InputDecoration(labelText: 'Nama Toko'),
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? 'Nama toko tidak boleh kosong' : null,
+                validator: (value) => (value == null || value.isEmpty)
+                    ? 'Nama toko tidak boleh kosong'
+                    : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _shopState.fullAddressController,
                 decoration: const InputDecoration(labelText: 'Alamat Lengkap'),
                 maxLines: 3,
-                validator: (value) =>
-                    (value == null || value.isEmpty) ? 'Alamat tidak boleh kosong' : null,
+                validator: (value) => (value == null || value.isEmpty)
+                    ? 'Alamat tidak boleh kosong'
+                    : null,
               ),
               const SizedBox(height: 24),
               const Text(
@@ -79,8 +89,10 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: GoogleMap(
-                    initialCameraPosition: ShopRegistrationState.initialCameraPosition,
-                    onMapCreated: (controller) => _shopState.mapController = controller,
+                    initialCameraPosition:
+                        ShopRegistrationState.initialCameraPosition,
+                    onMapCreated: (controller) =>
+                        _shopState.mapController = controller,
                     onTap: (location) => _logic.onMapTapped(
                       location: location,
                       state: _shopState,
@@ -99,8 +111,9 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
                       onPressed: () => _logic.handleRegisterShop(
                         context: context,
                         state: _shopState,
-                        setLoading: (val) => setState(() => _shopState.isLoading = val),
-                      ), 
+                        setLoading: (val) =>
+                            setState(() => _shopState.isLoading = val),
+                      ),
                       child: const Text('Daftarkan Toko'),
                     ),
             ],

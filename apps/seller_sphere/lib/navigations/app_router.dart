@@ -35,6 +35,13 @@ final GoRouter appRouter = GoRouter(
     if (isLoggedIn && isAuthRoute) {
         return '/';
     }
+    final shopId = await authService.getCurrentShopId();
+    final bool hasShop = shopId != null && shopId.isNotEmpty && shopId != 'toko_percobaan';
+    final bool isRegisteringShop = currentPath == AppRoutes.shopRegistration;
+
+    if (!hasShop && !isRegisteringShop) {
+      return AppRoutes.shopRegistration;
+    }
     return null; 
   },
   routes: <RouteBase>[
