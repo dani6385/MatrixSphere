@@ -41,7 +41,7 @@ export 'package:seller_sphere/features/notifs/orders/order_screen.dart';
 */
 export 'package:seller_sphere/features/auth/forgot_password_screen.dart';
 export 'package:seller_sphere/features/auth/registration_screen.dart';
-export 'package:seller_sphere/features/auth/shop_registration_screen.dart';
+export 'package:seller_sphere/features/auth/regitrations/shop_registration_screen.dart';
 export 'package:seller_sphere/features/auth/logins/login_screen.dart';
 export 'package:seller_sphere/features/auth/waiting_for_approval_screen.dart';
 

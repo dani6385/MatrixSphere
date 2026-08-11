@@ -48,7 +48,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       // Langkah 2: Daftarkan detail toko di Realtime Database
-      await _authService.registerShop(user: user, shopName: event.name);
+      await _authService.registerShop(
+          user: user, shopName: event.name, fullAddress: '', coordinates: {});
       emit(const AuthSuccess('Registrasi berhasil! Silakan login.'));
     } catch (e) {
       emit(AuthFailure(e.toString()));

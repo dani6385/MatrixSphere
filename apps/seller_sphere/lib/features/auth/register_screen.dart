@@ -74,6 +74,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await _authService.registerShop(
           user: _createdUser!,
           shopName: _shopNameController.text.trim(),
+          fullAddress: '', // Alamat lengkap akan diisi di ShopRegistrationScreen
+          coordinates: {}, // Koordinat akan diisi di ShopRegistrationScreen
         );
 
         if (mounted) {

@@ -55,6 +55,7 @@ dependencies:
   flutter_image_compress: ^2.5.1
   uuid: ^4.6.0
   flutter_riverpod: ^2.6.1
+  google_maps_flutter: ^2.18.0
   
   
 

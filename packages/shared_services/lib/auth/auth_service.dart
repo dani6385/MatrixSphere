@@ -18,7 +18,8 @@ class AuthService {
   Future<UserCredential> login(String email, String password) async {
     try {
       // Menggunakan Firebase Auth untuk login
-      return await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
     } on FirebaseAuthException catch (e) {
       // Menangani error spesifik dari Firebase Auth
       throw Exception('Login gagal: ${e.message}');
@@ -29,10 +30,11 @@ class AuthService {
   }
 
   /// Fungsi Register - Hanya membuat akun pengguna di Firebase Authentication.
-  Future<UserCredential> createUserAccount(String email, String password) async {
+  Future<UserCredential> createUserAccount(
+      String email, String password) async {
     try {
-      final userCredential =
-          await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      final userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception('Registrasi gagal: ${e.message}');
@@ -43,7 +45,10 @@ class AuthService {
 
   /// Mendaftarkan detail toko ke Realtime Database setelah pengguna dibuat.
   Future<void> registerShop(
-      {required User user, required String shopName}) async {
+      {required User user,
+      required String shopName,
+      required String fullAddress,
+      required Map<String, double> coordinates}) async {
     try {
       // 1. Buat entri baru di node 'shops' untuk mendapatkan shopId unik
       final newShopRef = _dbRef.child('shops').push();
@@ -59,12 +64,17 @@ class AuthService {
         'shopName': shopName,
         'email': user.email,
         'createdAt': ServerValue.timestamp,
+        'pickupAddress': fullAddress, // Alamat lengkap untuk penjemputan
+        'pickupCoordinates': coordinates, // Koordinat (lat, lng)
       };
 
       // 3. Lakukan multi-path update untuk konsistensi data
       await _dbRef.update({
         'shops/$shopId': shopData, // Buat data toko baru
-        'sellers/${user.uid}': {...shopData, 'shopId': shopId}, // Simpan referensi shopId di data seller
+        'sellers/${user.uid}': {
+          ...shopData,
+          'shopId': shopId
+        }, // Simpan referensi shopId di data seller
       });
     } catch (e) {
       // Jika pendaftaran toko gagal, hapus pengguna yang baru dibuat untuk konsistensi
@@ -153,7 +163,7 @@ class AuthService {
   Future<void> logout() async {
     await _auth.signOut();
   }
-  
+
   bool isLoggedIn() {
     return _auth.currentUser != null;
   }
