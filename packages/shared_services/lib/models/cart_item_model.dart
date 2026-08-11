@@ -6,10 +6,12 @@ import 'package:shared_services/src/models/product_model.dart';
 class CartItem {
   final Product product;
   int quantity;
-  
 
   CartItem({
     required this.product,
     required this.quantity,
+    required String productId,
+    required String productName,
+    required double sellingPrice,
   });
 }

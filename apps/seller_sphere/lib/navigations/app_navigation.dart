@@ -13,31 +13,16 @@ class AppNavigation {
     context.go(AppRoutes.financial);
   }
 
-  /// Navigates to the Login screen.
-  static void goToLogin(BuildContext context) {
-    context.go(AppRoutes.login);
-  }
-
-  /// Navigates to the Forgot Password screen.
-  static void goToForgotPassword(BuildContext context) {
-    context.push(AppRoutes.forgotPassword); // Menggunakan push karena ini adalah alur terpisah dari login
-  }
-
   
-  static void goToRegister(BuildContext context) {
-    context.push(AppRoutes.register); // Menggunakan push untuk menambahkan ke stack navigasi
-  }
+  //static void goToLogin(BuildContext context) {
+    //context.go(AppRoutes.login);
+  //}
 
-  /// Navigates to the Shop Registration screen.
-  static void goToShopRegister(BuildContext context) {
-    context.go(AppRoutes.shopRegister); // Menggunakan go karena ini adalah alur utama setelah login jika belum ada toko
-  }
-
-  /// Navigates to the Waiting for Approval screen.
-  static void goToWaitingForApproval(BuildContext context) {
-    context.go(AppRoutes.waitingForApproval);
-  }
-
+  /// Navigates to the Profile screen.
+  /// This uses `push` to stack the screen on top of the current one.
+  /*static void pushToProfile(BuildContext context) {
+    context.push(AppRoutes.profile);
+  }*/
   static void pushTosetting(BuildContext context) {
     context.push(AppRoutes.settings);
   }
@@ -72,5 +57,13 @@ class AppNavigation {
     if (context.canPop()) {
       context.pop();
     }
+  }
+
+  static void goToShopRegister(BuildContext context) {
+    context.go(AppRoutes.shopRegister);
+  }
+
+  static void goToLogin(BuildContext context) {
+    context.go(AppRoutes.login);
   }
 }

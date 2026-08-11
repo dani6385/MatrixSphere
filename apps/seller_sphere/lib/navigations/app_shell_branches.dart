@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
-//import 'custom_transition_page.dart';
+import 'custom_transition_page.dart';
 import 'app_extractor.dart';
 //import 'app_common_routes.dart'; // Mengimpor rute umum
 
@@ -23,7 +23,7 @@ final List<StatefulShellBranch> appShellBranches = [
         _shellNavigatorHomeKey, // Gunakan navigator key untuk branch ini
     routes: [
       GoRoute(
-        path: AppRoutes.home,
+        path: '/',
         name: AppRoutes.home,
         builder: (context, state) => const HomeScreen(),
         /*routes: [
@@ -52,7 +52,7 @@ final List<StatefulShellBranch> appShellBranches = [
   ),
 
   // Branch untuk Tab Stream
-  /*StatefulShellBranch(
+  StatefulShellBranch(
     routes: [
       GoRoute(
         path: AppRoutes.financial,
@@ -70,7 +70,7 @@ final List<StatefulShellBranch> appShellBranches = [
         path: AppRoutes.management,
         pageBuilder: (context, state) =>
             FadeTransitionPage(child: const ManagementScreen()),
-        routes: [
+        /*routes: [
           // Sub-rute dari Home
           GoRoute(
             path: 'products', // Path relatif: /products
@@ -90,7 +90,7 @@ final List<StatefulShellBranch> appShellBranches = [
               ),
             ],
           ),
-        ],
+        ],*/
       ),
     ],
   ),
@@ -105,15 +105,16 @@ final List<StatefulShellBranch> appShellBranches = [
         //routes: commonDetailRoutes,
       ),
     ],
-  ),*/
+  ),
 
   // Branch untuk Tab Attendance
   StatefulShellBranch(
     routes: [
       GoRoute(
-        path: AppRoutes.profile,
+        path: AppRoutes.attendance,
         pageBuilder: (context, state) =>
-            const NoTransitionPage(child: UserProfileScreen()),
+            FadeTransitionPage(child: const AttendanceScreen()),
+        routes: const [],
       ),
     ],
   ),

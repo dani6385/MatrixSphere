@@ -43,42 +43,52 @@ class AuthService {
     }
   }
 
-  /// Mendaftarkan detail toko ke Realtime Database setelah pengguna dibuat.
-  Future<void> registerShop(
-      {required User user,
-      required String shopName,
-      required String fullAddress,
-      required Map<String, double> coordinates}) async {
+  /// Mendaftarkan entri awal toko hanya dengan nama toko.
+  /// Ini akan membuat shopId dan menempatkan toko dalam status 'none' atau 'pending_details'.
+  Future<void> createInitialShopEntry(
+      {required User user, required String shopName}) async {
     try {
-      // 1. Buat entri baru di node 'shops' untuk mendapatkan shopId unik
       final newShopRef = _dbRef.child('shops').push();
       final shopId = newShopRef.key;
+      if (shopId == null) throw Exception("Gagal membuat ID toko unik.");
 
-      if (shopId == null) {
-        throw Exception("Gagal membuat ID toko unik.");
-      }
-
-      // 2. Siapkan data untuk ditulis ke database
-      final Map<String, dynamic> shopData = {
+      final initialShopData = {
         'ownerUid': user.uid,
         'shopName': shopName,
         'email': user.email,
         'createdAt': ServerValue.timestamp,
-        'pickupAddress': fullAddress, // Alamat lengkap untuk penjemputan
-        'pickupCoordinates': coordinates, // Koordinat (lat, lng)
+        // Alamat dan koordinat akan ditambahkan nanti
       };
 
-      // 3. Lakukan multi-path update untuk konsistensi data
       await _dbRef.update({
-        'shops/$shopId': shopData, // Buat data toko baru
-        'seeller_sphere/${user.uid}': {
-          ...shopData,
-          'shopId': shopId
-        }, // Simpan referensi shopId di data seller
+        'shops/$shopId': initialShopData,
+        'seeller_sphere/${user.uid}': {'shopId': shopId, ...initialShopData},
+      });
+    } catch (e) {
+      await user.delete(); // Rollback: hapus user jika pembuatan toko gagal
+      throw Exception('Gagal membuat entri toko awal: $e');
+    }
+  }
+
+  /// Memperbarui detail toko dengan alamat dan koordinat.
+  Future<void> updateShopDetails(
+      {required String uid,
+      required String shopId,
+      required String fullAddress,
+      required Map<String, double> coordinates}) async {
+    try {
+      final Map<String, dynamic> detailsData = {
+        'pickupAddress': fullAddress,
+        'pickupCoordinates': coordinates,
+      };
+
+      // Lakukan multi-path update untuk konsistensi data
+      await _dbRef.update({
+        'shops/$shopId/': detailsData,
+        'seeller_sphere/$uid/': detailsData,
       });
     } catch (e) {
       // Jika pendaftaran toko gagal, hapus pengguna yang baru dibuat untuk konsistensi
-      await user.delete();
       throw Exception('Gagal mendaftarkan toko: $e');
     }
   }
@@ -110,7 +120,8 @@ class AuthService {
     }
 
     try {
-      final snapshot = await _dbRef.child('seeller_sphere/${user.uid}/shopId').get();
+      final snapshot =
+          await _dbRef.child('seeller_sphere/${user.uid}/shopId').get();
       if (snapshot.exists) {
         return snapshot.value as String?;
       }
@@ -167,4 +178,10 @@ class AuthService {
   bool isLoggedIn() {
     return _auth.currentUser != null;
   }
+
+  Future<void> registerShop(
+      {required User user,
+      required String shopName,
+      required String fullAddress,
+      required Map<dynamic, dynamic> coordinates}) async {}
 }

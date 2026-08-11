@@ -1,10 +1,11 @@
+
 // lib/navigation/widgets/app_drawer_items.dart
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
-//import 'package:seller_sphere/navigations/app_extractor.dart';
+import 'package:seller_sphere/navigations/app_extractor.dart';
 
 final Logger logger = Logger();
 
@@ -29,15 +30,15 @@ class DrawerItemData {
 List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
   return [
     DrawerItemData(
-      title: 'Profile',
-      icon: Icons.person,
+      title: 'Home / Beranda',
+      icon: Icons.home,
       label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
-      route: AppRoutes.profile,
+      route: AppRoutes.home,
       onTap: () {
-        logger.i('Masuk ke Halaman Profile!');
-        context.go(AppRoutes.profile);
+        logger.i('Menu Home / Beranda diklik!');
+        context.go(AppRoutes.home);
       },
-    ),/*
+    ),
     DrawerItemData(
       title: 'Simulasi',
       icon: Icons.dashboard,
@@ -161,6 +162,6 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
           ),
         );
       },
-    ),*/
+    ),
   ];
 }

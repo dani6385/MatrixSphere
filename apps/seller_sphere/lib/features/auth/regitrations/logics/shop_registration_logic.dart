@@ -54,9 +54,17 @@ class ShopRegistrationLogic {
           throw Exception("Silakan pilih lokasi penjemputan di peta.");
         }
 
-        await _authService.registerShop(
-          user: user,
-          shopName: state.shopNameController.text.trim(),
+        // Ambil shopId yang sudah dibuat di langkah sebelumnya
+        final sellerData = await _authService.getSellerData(user.uid);
+        final shopId = sellerData?['shopId'] as String?;
+
+        if (shopId == null) {
+          throw Exception("ID Toko tidak ditemukan. Silakan mulai registrasi dari awal.");
+        }
+
+        await _authService.updateShopDetails(
+          uid: user.uid,
+          shopId: shopId,
           fullAddress: state.fullAddressController.text.trim(),
           coordinates: {
             'latitude': state.selectedCoordinates!.latitude,
