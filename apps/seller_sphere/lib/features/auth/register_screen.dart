@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:seller_sphere/navigations/app_extractor.dart';
+import 'package:seller_sphere/navigations/app_navigation.dart';
 //import 'package:seller_sphere/navigation/app_routes.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
@@ -84,10 +84,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             title: 'Registrasi Berhasil',
             message:
                 'Akun dan toko Anda telah berhasil dibuat. Silakan login untuk melanjutkan.',
-            buttonText: 'Login', onPressed: () {  },
+            buttonText: 'Login',
+            onPressed: () {
+              // Arahkan ke halaman login setelah dialog ditutup
+              AppNavigation.goToLogin(context);
+            },
           );
-          // Arahkan ke halaman login setelah dialog ditutup
-          const LoginScreen();
         }
       } catch (e) {
         _showError(e.toString());

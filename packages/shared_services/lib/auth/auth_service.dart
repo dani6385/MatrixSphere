@@ -71,7 +71,7 @@ class AuthService {
       // 3. Lakukan multi-path update untuk konsistensi data
       await _dbRef.update({
         'shops/$shopId': shopData, // Buat data toko baru
-        'sellers/${user.uid}': {
+        'seeller_sphere/${user.uid}': {
           ...shopData,
           'shopId': shopId
         }, // Simpan referensi shopId di data seller
@@ -86,7 +86,7 @@ class AuthService {
   /// Mengambil data lengkap seller dari node 'sellers'.
   Future<Map<String, dynamic>?> getSellerData(String uid) async {
     try {
-      final snapshot = await _dbRef.child('sellers/$uid').get();
+      final snapshot = await _dbRef.child('seeller_sphere/$uid').get();
       if (snapshot.exists && snapshot.value != null) {
         // Firebase mengembalikan data sebagai Map<Object?, Object?>
         // jadi kita perlu mengonversinya ke Map<String, dynamic>
@@ -110,7 +110,7 @@ class AuthService {
     }
 
     try {
-      final snapshot = await _dbRef.child('sellers/${user.uid}/shopId').get();
+      final snapshot = await _dbRef.child('seeller_sphere/${user.uid}/shopId').get();
       if (snapshot.exists) {
         return snapshot.value as String?;
       }
@@ -130,7 +130,7 @@ class AuthService {
 
     try {
       // 1. Cek apakah toko sudah disetujui dan ada di 'sellers'
-      final sellerSnapshot = await _dbRef.child('sellers/$uid').get();
+      final sellerSnapshot = await _dbRef.child('seeller_sphere/$uid').get();
       if (sellerSnapshot.exists) {
         return ShopStatus.approved;
       }
