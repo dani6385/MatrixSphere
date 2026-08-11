@@ -4,7 +4,14 @@ import 'package:seller_sphere/navigations/app_routes.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 class RegisterShopBanner extends StatelessWidget {
-  const RegisterShopBanner({super.key});
+  
+
+final VoidCallback onDismiss;
+
+  const RegisterShopBanner({
+    super.key,
+    required this.onDismiss,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +28,30 @@ class RegisterShopBanner extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.store, color: Colors.white, size: 20),
-              const SizedBox(width: 12),
-              const Text(
-                'Toko Anda belum terdaftar.',
-                style: TextStyle(color: Colors.white),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Toko Anda belum terdaftar.',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Text(
+                      'Klik di sini untuk mendaftar!',
+                      style: TextStyle(
+                        color: Colors.yellow,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 8),
-              Text(
-                'Klik di sini untuk mendaftar!',
-                style: TextStyle(
-                  color: Colors.yellow.shade300,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.yellow.shade300,
-                ),
+              IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 20),
+                onPressed: onDismiss,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
               ),
             ],
           ),
