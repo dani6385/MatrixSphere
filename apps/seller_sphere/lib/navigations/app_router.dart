@@ -26,27 +26,27 @@ final GoRouter appRouter = GoRouter(
     ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
   redirect: (BuildContext context, GoRouterState state) async {
-    const String loginLocation = AppRoutes.login;
-    const String registerLocation = AppRoutes.register;
-    const String forgotPasswordLocation = AppRoutes.forgotPassword;
-    const String homeLocation = AppRoutes.home;
-
-    final bool isLoggingIn = state.matchedLocation == loginLocation;
-    final bool isRegistering = state.matchedLocation == registerLocation;
-    final bool isForgotPassword = state.matchedLocation == forgotPasswordLocation;
-
     final bool loggedIn = _authService.isLoggedIn();
 
-    // Jika pengguna belum login
-    if (!loggedIn) {
-      // Izinkan akses ke halaman login, register, dan forgot password
-      return (isLoggingIn || isRegistering || isForgotPassword) ? null : loginLocation;
+    // Daftar rute yang tidak memerlukan otentikasi
+    final unauthenticatedRoutes = [
+      AppRoutes.login,
+      AppRoutes.register,
+      AppRoutes.forgotPassword,
+    ];
+
+    final isGoingToUnauthenticatedRoute = unauthenticatedRoutes.contains(state.matchedLocation);
+
+    // Jika pengguna sudah login dan mencoba mengakses halaman login/register,
+    // alihkan ke halaman utama.
+    if (loggedIn && isGoingToUnauthenticatedRoute) {
+      return AppRoutes.home;
     }
 
-    // Jika pengguna sudah login
-    // Jika pengguna sudah login dan mencoba mengakses halaman login, register, atau forgot password
-    if (isLoggingIn || isRegistering || isForgotPassword) {
-      return homeLocation; // Arahkan ke home
+    // Jika pengguna belum login dan mencoba mengakses halaman yang dilindungi,
+    // alihkan ke halaman login.
+    if (!loggedIn && !isGoingToUnauthenticatedRoute) {
+      return AppRoutes.login;
     }
 
     // Jika tidak ada kondisi pengalihan, biarkan navigasi berlanjut
