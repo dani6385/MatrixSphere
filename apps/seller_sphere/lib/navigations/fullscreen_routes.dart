@@ -24,6 +24,10 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
+      path: '/shop-registration',
+      builder: (context, state) => const ShopRegistrationScreen(),
+    ),
+    GoRoute(
       path: '/map',
       builder: (context, state) => const WindowsMapView(),
     ),
