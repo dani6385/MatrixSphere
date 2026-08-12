@@ -6,6 +6,7 @@ class ShopRegistrationState {
   final GlobalKey<FormState> formKey;
   final TextEditingController shopNameController;
   final TextEditingController fullAddressController;
+  String? shopStatus;
   
   GoogleMapController? mapController;
   LatLng? selectedCoordinates;
@@ -22,6 +23,7 @@ class ShopRegistrationState {
     required this.formKey,
     required this.shopNameController,
     required this.fullAddressController,
+    this.shopStatus,
     this.mapController,
     this.selectedCoordinates,
     this.isLoading = false,

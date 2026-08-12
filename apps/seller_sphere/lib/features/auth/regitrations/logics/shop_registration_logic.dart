@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -37,7 +38,27 @@ class ShopRegistrationLogic {
       // Gagal mendapatkan lokasi, abaikan
     }
   }
+Future<void> getShopStatus({
+    required ShopRegistrationState state, 
+    required VoidCallback onUpdate
+  }) async {
+    try {
+      // 1. Tampilkan loading sementara
+      state.isLoading = true;
+      onUpdate();
+      state.shopStatus = 'none'; 
 
+    } catch (e) {
+      if (kDebugMode) {
+        print("Gagal mengambil status toko: $e");
+      }
+      state.shopStatus = 'none'; // Default jika error
+    } finally {
+      // 4. Matikan loading dan update UI
+      state.isLoading = false;
+      onUpdate();
+    }
+  }
   /// Menangani proses pendaftaran toko
   Future<void> handleRegisterShop({
     required BuildContext context,
