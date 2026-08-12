@@ -87,20 +87,25 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
               SizedBox(
                 height: 300,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: GoogleMap(
-                    initialCameraPosition:
-                        ShopRegistrationState.initialCameraPosition,
-                    onMapCreated: (controller) =>
-                        _shopState.mapController = controller,
-                    onTap: (location) => _logic.onMapTapped(
-                      location: location,
-                      state: _shopState,
-                      onUpdate: () => setState(() {}),
-                    ),
-                    markers: _shopState.markers,
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
+                  borderRadius: BorderRadius.circular(12), // Tetap di sini untuk estetika
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      GoogleMap(
+                        initialCameraPosition:
+                            ShopRegistrationState.initialCameraPosition,
+                        onMapCreated: (controller) =>
+                            _shopState.mapController = controller,
+                        // Ganti onTap dengan onCameraMove
+                        onCameraMove: (position) => _logic.onCameraMove(
+                          position: position,
+                          state: _shopState,
+                        ),
+                        myLocationEnabled: true,
+                        myLocationButtonEnabled: true,
+                      ),
+                      const Icon(Icons.location_pin, color: Colors.red, size: 50),
+                    ],
                   ),
                 ),
               ),

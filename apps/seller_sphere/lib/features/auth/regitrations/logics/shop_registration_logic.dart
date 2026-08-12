@@ -89,20 +89,13 @@ class ShopRegistrationLogic {
     }
   }
 
-  /// Menangani aksi ketika peta ditekan untuk memilih titik koordinat
-  void onMapTapped({
-    required LatLng location,
+  /// Menangani aksi ketika kamera peta bergerak.
+  /// Pin berada di tengah, jadi kita hanya perlu menyimpan koordinat tengah peta.
+  void onCameraMove({
+    required CameraPosition position,
     required ShopRegistrationState state,
-    required VoidCallback onUpdate,
   }) {
-    state.selectedCoordinates = location;
-    state.markers.clear();
-    state.markers.add(
-      Marker(
-        markerId: const MarkerId('pickupLocation'),
-        position: location,
-      ),
-    );
-    onUpdate();
+    // Setiap kali peta digeser, perbarui koordinat yang dipilih ke posisi tengah kamera.
+    state.selectedCoordinates = position.target;
   }
 }
