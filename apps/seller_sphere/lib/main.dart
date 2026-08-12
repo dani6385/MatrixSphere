@@ -3,9 +3,11 @@ import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import 'package:seller_sphere/providers/app_provider.dart';
 import 'package:seller_sphere/core/api_constants.class.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:provider/provider.dart';
 import 'package:seller_sphere/navigations/app_router.dart';
 //import 'package:go_router/go_router.dart';
 import 'package:shared_services/shared_services.dart';
@@ -52,38 +54,46 @@ class SellerSphere extends StatefulWidget {
 }
 
 class _SellerSphereState extends State<SellerSphere> {
-  ThemeMode? get currentThemeMode => null;
+  late final AuthBloc _authBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = AuthBloc(authService: AuthService());
+  }
 
   @override
   Widget build(BuildContext context) {
     // MultiProvider dan BlocProvider dapat ditambahkan kembali di sini jika ada state lain yang perlu dikelola secara global.
     // Untuk routing saja, ini tidak lagi diperlukan.
-    /*return MultiProvider(
+    return MultiProvider(
       providers: [
         BlocProvider.value(value: _authBloc),
-        //ChangeNotifierProvider(create: (context) => AppProvider()),
+        ChangeNotifierProvider(create: (context) => AppProvider()),
       ],
       // BlocListener tidak lagi diperlukan di sini karena GoRouter
       // akan menangani redirect secara otomatis berdasarkan perubahan state.
       child: Builder(
-        builder: (context) {*/
-    return MaterialApp.router(
-      title: 'Seller Sphere',
-      debugShowCheckedModeBanner: false,
-      // --- KONFIGURASI TEMA ---
-      // Tema yang digunakan saat sistem dalam mode terang (light mode)
-      theme: AppTheme.lightTheme,
+        builder: (context) {
+          final appProvider = context.watch<AppProvider>();
+          return MaterialApp.router(
+            title: 'Seller Sphere',
+            debugShowCheckedModeBanner: false,
+            // --- KONFIGURASI TEMA ---
+            // Tema yang digunakan saat sistem dalam mode terang (light mode)
+            theme: AppTheme.lightTheme,
 
-      // Tema yang digunakan saat sistem dalam mode gelap (dark mode)
-      darkTheme: AppTheme.darkTheme,
+            // Tema yang digunakan saat sistem dalam mode gelap (dark mode)
+            darkTheme: AppTheme.darkTheme,
 
-      // Ini adalah kuncinya: aplikasi akan mengikuti pengaturan sistem
-      themeMode: currentThemeMode,
+            // Ini adalah kuncinya: aplikasi akan mengikuti pengaturan sistem
+            themeMode: appProvider.themeMode,
 
-      // Konfigurasi router dari GoRouter
-      routerConfig: appRouter, // Menggunakan variabel appRouter langsung
+            // Konfigurasi router dari GoRouter
+            routerConfig: appRouter, // Menggunakan variabel appRouter langsung
+          );
+        },
+      ),
     );
-    /*},
-      ),*/
   }
 }
