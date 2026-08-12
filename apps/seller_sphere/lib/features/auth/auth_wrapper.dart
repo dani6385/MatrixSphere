@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-//import 'package:seller_sphere/navigation/app_routes.dart';
+import 'package:go_router/go_router.dart';
+import 'package:seller_sphere/navigations/app_routes.dart';
 import 'package:shared_services/shared_services.dart';
 import 'logins/login_screen.dart';
 
@@ -12,11 +13,16 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  final AuthService _authService = AuthService(); 
+  final AuthService _authService = AuthService();
+  final ShopService _shopService = ShopService();
 
   /// Memeriksa status toko pengguna (approved, pending, atau tidak ada).
-  // Menggunakan fungsi yang sudah ada dan terpusat di AuthService
-  Future<ShopStatus> _getUserShopStatus() => _authService.getUserShopStatus();
+  /// Fungsi ini sekarang memanggil implementasi terpusat dari ShopService.
+  Future<ShopStatus> _getUserShopStatus() async {
+    // Memanggil metode dari ShopService yang seharusnya berisi logika untuk
+    // mengambil data dari database dan memeriksa field status.
+    return _shopService.getUserShopStatus(_authService.currentUser);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,31 +31,35 @@ class _AuthWrapperState extends State<AuthWrapper> {
       builder: (context, snapshot) {
         // Selama koneksi, tampilkan loading indicator
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
         }
 
         // Jika ada data pengguna (sudah login)
         if (snapshot.hasData) {
-          // final userId = snapshot.data!; // Variabel ini tidak digunakan.
           // Cek status toko pengguna dan arahkan ke halaman yang sesuai
           return FutureBuilder<ShopStatus>(
             future: _getUserShopStatus(),
             builder: (context, shopSnapshot) {
               if (shopSnapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(body: Center(child: CircularProgressIndicator()));
+                return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()));
               }
 
               final status = shopSnapshot.data ?? ShopStatus.none;
               // Arahkan berdasarkan status
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (status == ShopStatus.approved) {
-                  //context.go(AppRoutes.home); // Ke dashboard utama
+                  // Jika toko disetujui, arahkan ke halaman utama.
+                  context.go(AppRoutes.home);
                 } else {
                   // Jika belum punya toko atau masih pending, arahkan ke halaman pendaftaran/tunggu
-                  //context.go(AppRoutes.shopRegistration);
+                  context.go(AppRoutes.shopRegistration);
                 }
               });
-              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+              // Tampilkan loading indicator selagi navigasi diproses di frame berikutnya.
+              return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()));
             },
           );
         }
@@ -60,3 +70,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
     );
   }
 }
+
+/// PENTING:
+/// File `AuthWrapper.dart` ini kemungkinan besar sudah tidak diperlukan (redundant).
+/// File `d:\matrixsphere\apps\seller_sphere\lib\navigations\app_router.dart`
+/// sudah menangani semua logika pengalihan (redirect) dengan lebih baik
+/// menggunakan `refreshListenable` dan blok `redirect`.
+///
+/// Sebaiknya hapus `AuthWrapper` dari pohon widget Anda dan jadikan `GoRouter`
+/// sebagai root widget di `MaterialApp.router`.

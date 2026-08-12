@@ -27,7 +27,8 @@ class _ManagementBodyState extends State<ManagementBody>
 
   Future<void> _fetchShopId() async {
     final authService = AuthService();
-    final id = await authService.getCurrentShopId();
+    final ShopService shopService = ShopService();
+    final id = await shopService.getCurrentShopId(authService.currentUser);
     if (mounted) {
       setState(() {
         _shopId = id;

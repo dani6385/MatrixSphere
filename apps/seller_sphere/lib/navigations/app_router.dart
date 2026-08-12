@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
-import 'package:shared_services/auth/auth_service.dart';
+import 'package:shared_services/shared_services.dart';
 import 'shell_route_config.dart';
 import 'fullscreen_routes.dart';
 
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+// Buat instance AuthService yang akan didengarkan oleh GoRouter
+final AuthService _authService = AuthService();
+final ShopService shopService = ShopService();
+
 final GoRouter appRouter = GoRouter(
   // Kita mulai dari rute awal di salah satu branch, yaitu Home ('/')
   initialLocation: '/',
   navigatorKey: _rootNavigatorKey,
+  // Daftarkan AuthService sebagai listener. GoRouter akan re-route saat ada notifikasi.
+  refreshListenable: _authService,
   errorBuilder: (context, state) => Scaffold(
     body: Center(
       child: Text('Halaman tidak ditemukan: ${state.error}'),
     ),
   ),
   redirect: (BuildContext context, GoRouterState state) async {
-    final AuthService authService = AuthService();
-    final bool isLoggedIn = authService.isLoggedIn();
+    final bool isLoggedIn = _authService.isLoggedIn();
     final String currentPath = state.matchedLocation;
 
     // Izinkan akses bebas untuk halaman Login, Register, dan Forgot Password
@@ -37,7 +42,7 @@ final GoRouter appRouter = GoRouter(
         return AppRoutes.home;
       }
       // Cek status toko pengguna
-      final shopStatus = await authService.getUserShopStatus();
+      final shopStatus = await shopService.getUserShopStatus(_authService.currentUser);
       final bool hasApprovedShop = shopStatus == ShopStatus.approved;
       final bool isAtShopRegistration =
           state.matchedLocation == AppRoutes.shopRegistration;

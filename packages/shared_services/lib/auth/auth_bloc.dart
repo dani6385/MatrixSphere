@@ -3,14 +3,14 @@ import 'dart:core';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import 'package:shared_services/auth/auth_service.dart';
+import 'package:shared_services/shared_services.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;
-
+final ShopService shopService = ShopService();
   AuthBloc({required AuthService authService})
       : _authService = authService,
         super(AuthInitial()) {
@@ -49,7 +49,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // Langkah 2: Buat entri toko awal di Realtime Database.
       // Ini akan menempatkan toko dalam status awal sebelum melengkapi detail.
-      await _authService.createInitialShopEntry(
+      await shopService.createInitialShopEntry(
           user: user, shopName: event.name);
       emit(const AuthSuccess('Registrasi berhasil! Silakan login.'));
     } catch (e) {
