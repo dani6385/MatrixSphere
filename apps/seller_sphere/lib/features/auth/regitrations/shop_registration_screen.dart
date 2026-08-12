@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
+import 'package:shared_ui/shared_ui.dart';
 import 'states/shop_registration_state.dart';
 import 'logics/shop_registration_logic.dart';
 
@@ -18,6 +21,7 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
     shopNameController: TextEditingController(),
     fullAddressController: TextEditingController(),
   );
+  final String _googleApiKey = "AIzaSyAq8WGfVe6W0dRnubmOtFFJkT25ndKgo48";
 
   @override
   void initState() {
@@ -70,13 +74,27 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
                     : null,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _shopState.fullAddressController,
-                decoration: const InputDecoration(labelText: 'Alamat Lengkap'),
-                maxLines: 3,
-                validator: (value) => (value == null || value.isEmpty)
-                    ? 'Alamat tidak boleh kosong'
-                    : null,
+              
+              // IMPLEMENTASI AUTOCOMPLETE DI SINI
+              const Text("Alamat Lengkap"),
+              const SizedBox(height: 8),
+              GooglePlaceAutoCompleteTextField(
+                textEditingController: _shopState.fullAddressController,
+                googleAPIKey: _googleApiKey,
+                inputDecoration: const InputDecoration(hintText: "Cari alamat lengkap..."),
+                debounceTime: 800,
+                isLatLngRequired: false, 
+                itemClick: (Prediction prediction) {
+                  _shopState.fullAddressController.text = prediction.description ?? "";
+                  // Opsional: Anda bisa memicu logika update peta di sini 
+                  // berdasarkan prediction.placeId jika diperlukan
+                },
+                itemBuilder: (context, index, Prediction prediction) {
+                  return Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(prediction.description ?? ""),
+                  );
+                },
               ),
               const SizedBox(height: 24),
               const Text(
@@ -87,7 +105,8 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
               SizedBox(
                 height: 300,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12), // Tetap di sini untuk estetika
+                  borderRadius:
+                      BorderRadius.circular(12), // Tetap di sini untuk estetika
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -104,7 +123,8 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
                         myLocationEnabled: true,
                         myLocationButtonEnabled: true,
                       ),
-                      const Icon(Icons.location_pin, color: Colors.red, size: 50),
+                      const Icon(Icons.location_pin,
+                          color: kAlertRed, size: 50),
                     ],
                   ),
                 ),
