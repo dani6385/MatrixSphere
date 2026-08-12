@@ -179,9 +179,31 @@ class AuthService {
     return _auth.currentUser != null;
   }
 
+  /// Mendaftarkan toko baru dan menempatkannya dalam status 'pending approval'.
+  /// Fungsi ini menggantikan `createInitialShopEntry` dan `registerShop` yang kosong.
   Future<void> registerShop(
       {required User user,
       required String shopName,
       required String fullAddress,
-      required Map<dynamic, dynamic> coordinates}) async {}
+      required Map<String, double> coordinates}) async {
+    try {
+      final shopData = {
+        'ownerUid': user.uid,
+        'shopName': shopName,
+        'email': user.email,
+        'pickupAddress': fullAddress,
+        'pickupCoordinates': coordinates,
+        'createdAt': ServerValue.timestamp,
+        'status': 'pending', // Status awal
+      };
+
+      // Simpan data pendaftaran ke node 'shops_pending_approval'
+      // Admin akan memproses data dari node ini.
+      await _dbRef.child('shops_pending_approval/${user.uid}').set(shopData);
+    } catch (e) {
+      // Jika gagal menyimpan data toko, hapus akun yang baru dibuat (rollback).
+      await user.delete();
+      throw Exception('Gagal mendaftarkan toko: $e');
+    }
+  }
 }

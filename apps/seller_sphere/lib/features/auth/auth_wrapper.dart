@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
 import 'logins/login_screen.dart';
 
-/// Enum untuk merepresentasikan status toko pengguna.
-enum ShopStatus { none, pending, approved }
-
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
@@ -15,26 +12,11 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class _AuthWrapperState extends State<AuthWrapper> {
-  final AuthService _authService = AuthService();
-  final FirebaseRtdbService _rtdbService = FirebaseRtdbService();
+  final AuthService _authService = AuthService(); 
 
   /// Memeriksa status toko pengguna (approved, pending, atau tidak ada).
-  Future<ShopStatus> _getUserShopStatus(String uid) async {
-    // 1. Cek apakah toko sudah disetujui dan ada di 'sellers'
-    final sellerSnapshot = await _rtdbService.readData('sellers/$uid');
-    if (sellerSnapshot != null && sellerSnapshot.exists) {
-      return ShopStatus.approved;
-    }
-
-    // 2. Jika tidak, cek apakah pendaftaran sedang dalam proses 'approval'
-    final approvalSnapshot = await _rtdbService.readData('approval/$uid');
-    if (approvalSnapshot != null && approvalSnapshot.exists) {
-      return ShopStatus.pending;
-    }
-
-    // 3. Jika tidak ada di keduanya, berarti pengguna belum mendaftarkan toko
-    return ShopStatus.none;
-  }
+  // Menggunakan fungsi yang sudah ada dan terpusat di AuthService
+  Future<ShopStatus> _getUserShopStatus() => _authService.getUserShopStatus();
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +30,10 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
         // Jika ada data pengguna (sudah login)
         if (snapshot.hasData) {
-          final user = snapshot.data!;
+          // final userId = snapshot.data!; // Variabel ini tidak digunakan.
           // Cek status toko pengguna dan arahkan ke halaman yang sesuai
           return FutureBuilder<ShopStatus>(
-            future: _getUserShopStatus(user.uid),
+            future: _getUserShopStatus(),
             builder: (context, shopSnapshot) {
               if (shopSnapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(body: Center(child: CircularProgressIndicator()));
