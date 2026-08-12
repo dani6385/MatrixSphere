@@ -20,33 +20,42 @@ class ShopService extends ChangeNotifier {
         'email': user.email,
         'createdAt': ServerValue.timestamp,
       };
-
+  
+      // Menggunakan multi-path update untuk memastikan operasi atomik
       await _dbRef.update({
         'shops/$shopId': initialShopData,
-        'seller_sphere/${user.uid}': {'shopId': shopId, ...initialShopData},
+        'seller_sphere/${user.uid}': {
+          'shopId': shopId,
+          'shopName': shopName,
+          'email': user.email,
+          'createdAt': ServerValue.timestamp,
+        },
       });
-      notifyListeners();
+      notifyListeners(); // Memberi notifikasi jika ada listener yang memantau perubahan
     } catch (e) {
       await user.delete();
       throw Exception('Gagal membuat entri toko awal: $e');
     }
   }
 
-  /// Memperbarui detail toko dengan alamat dan koordinat.[cite: 4]
+  /// Memperbarui detail toko dengan alamat dan koordinat.
   Future<void> updateShopDetails(
-      {required String uid,
+      {required String userId,
       required String shopId,
       required String fullAddress,
       required Map<String, double> coordinates}) async {
     try {
       final Map<String, dynamic> detailsData = {
-        'pickupAddress': fullAddress,
-        'pickupCoordinates': coordinates,
+        'pickupAddress': fullAddress, // Path: /pickupAddress
+        'pickupCoordinates': coordinates, // Path: /pickupCoordinates
       };
-
+  
+      // Menggunakan multi-path update untuk konsistensi
       await _dbRef.update({
-        'shops/$shopId/': detailsData,
-        'seller_sphere/$uid/': detailsData,
+        'shops/$shopId/pickupAddress': detailsData['pickupAddress'],
+        'shops/$shopId/pickupCoordinates': detailsData['pickupCoordinates'],
+        'seller_sphere/$userId/pickupAddress': detailsData['pickupAddress'],
+        'seller_sphere/$userId/pickupCoordinates': detailsData['pickupCoordinates'],
       });
       notifyListeners();
     } catch (e) {

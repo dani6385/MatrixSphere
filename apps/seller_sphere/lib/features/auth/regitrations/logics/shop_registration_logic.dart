@@ -65,12 +65,13 @@ class ShopRegistrationLogic {
 
         // Panggil ShopService untuk memperbarui detail toko, bukan AuthService
         await shopService.updateShopDetails(
+          userId: userId,
           shopId: shopId,
           fullAddress: state.fullAddressController.text.trim(),
           coordinates: {
             'latitude': state.selectedCoordinates!.latitude,
             'longitude': state.selectedCoordinates!.longitude,
-          }, uid: '',
+          },
         );
       } catch (e) {
         if (context.mounted) {
