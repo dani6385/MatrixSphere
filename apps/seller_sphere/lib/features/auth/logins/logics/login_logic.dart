@@ -49,7 +49,10 @@ class LoginLogic {
         print('Login successful! Firebase user authenticated.');
       }
       if (context.mounted) {
-       //context.go(AppRoutes.shopRegistration);
+        // Navigasi tidak diperlukan di sini.
+        // AuthService akan memberi notifikasi ke GoRouter,
+        // dan GoRouter akan secara otomatis mengarahkan pengguna
+        // berdasarkan logika redirect di app_router.dart.
       }
     } on Exception catch (e) {
       if (!context.mounted) return;

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
 import 'package:shared_services/shared_services.dart';
 import 'shell_route_config.dart';
+import 'auth_redirect_notifier.dart';
 import 'fullscreen_routes.dart';
 
 // Kunci global untuk navigator utama (root)
@@ -10,14 +11,13 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 // Buat instance AuthService yang akan didengarkan oleh GoRouter
 final AuthService _authService = AuthService();
-final ShopService shopService = ShopService();
 
 final GoRouter appRouter = GoRouter(
   // Kita mulai dari rute awal di salah satu branch, yaitu Home ('/')
   initialLocation: '/',
   navigatorKey: _rootNavigatorKey,
   // Daftarkan AuthService sebagai listener. GoRouter akan re-route saat ada notifikasi.
-  refreshListenable: _authService,
+  refreshListenable: AuthRedirectNotifier(),
   errorBuilder: (context, state) => Scaffold(
     body: Center(
       child: Text('Halaman tidak ditemukan: ${state.error}'),
@@ -41,21 +41,6 @@ final GoRouter appRouter = GoRouter(
       if (currentPath == AppRoutes.login || currentPath == AppRoutes.register) {
         return AppRoutes.home;
       }
-      // Cek status toko pengguna
-      /*final shopStatus = await shopService.getUserShopStatus(_authService.currentUser);
-      final bool hasApprovedShop = shopStatus == ShopStatus.approved;
-      final bool isAtShopRegistration =
-          state.matchedLocation == AppRoutes.shopRegistration;
-
-      // Jika toko belum disetujui (status 'none' atau 'pending') dan tidak sedang di halaman registrasi,
-      // paksa arahkan ke halaman registrasi/status.
-      if (!hasApprovedShop && !isAtShopRegistration) {
-        return AppRoutes.shopRegistration;
-      }
-      // Jika toko sudah disetujui tapi mencoba akses halaman registrasi, kembalikan ke home.
-      if (hasApprovedShop && isAtShopRegistration) {
-        return AppRoutes.home;
-    }*/
     }
     return null;
   },
