@@ -3,7 +3,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
-  static const String shopRegistration = '/shop-registration';
+  //static const String shopRegistration = '/shop-registration';
   static const String map = '/map';
   static const String productDetailEdit = '/products/:productId/edit';
   //bottom nav bar

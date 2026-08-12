@@ -42,7 +42,7 @@ final GoRouter appRouter = GoRouter(
         return AppRoutes.home;
       }
       // Cek status toko pengguna
-      final shopStatus = await shopService.getUserShopStatus(_authService.currentUser);
+      /*final shopStatus = await shopService.getUserShopStatus(_authService.currentUser);
       final bool hasApprovedShop = shopStatus == ShopStatus.approved;
       final bool isAtShopRegistration =
           state.matchedLocation == AppRoutes.shopRegistration;
@@ -55,7 +55,7 @@ final GoRouter appRouter = GoRouter(
       // Jika toko sudah disetujui tapi mencoba akses halaman registrasi, kembalikan ke home.
       if (hasApprovedShop && isAtShopRegistration) {
         return AppRoutes.home;
-      }
+    }*/
     }
     return null;
   },
