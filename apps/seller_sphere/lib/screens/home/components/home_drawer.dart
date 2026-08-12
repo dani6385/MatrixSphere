@@ -53,6 +53,7 @@ class HomeDrawer extends StatelessWidget {
         return SideMenuItem(
           title: item.title,
           icon: item.icon,
+          label: item.label,
           route: '',
           onTap: item.onTap ?? () {},
         );
