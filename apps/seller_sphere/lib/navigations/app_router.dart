@@ -31,7 +31,7 @@ final GoRouter appRouter = GoRouter(
 
     // Izinkan akses bebas untuk halaman Login, Register, dan Forgot Password
     final bool isAuthRoute = currentPath == AppRoutes.login ||
-        currentPath == AppRoutes.register ||
+        currentPath == AppRoutes.userRegistration ||
         currentPath == AppRoutes.forgotPassword;
     // Jika belum login dan tidak sedang di halaman auth, lempar ke login
     if (!isLoggedIn && !isAuthRoute) {
@@ -40,7 +40,7 @@ final GoRouter appRouter = GoRouter(
     // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
     if (isLoggedIn) {
       // Jika sudah login dan mencoba akses halaman login/register, lempar ke home.
-      if (currentPath == AppRoutes.login || currentPath == AppRoutes.register) {
+      if (currentPath == AppRoutes.login || currentPath == AppRoutes.userRegistration) {
         return AppRoutes.home;
       }
       // Cek status toko pengguna
@@ -51,12 +51,12 @@ final GoRouter appRouter = GoRouter(
           : null;
       final bool hasApprovedShop = shopStatusEnum == ShopStatus.approved;
       final bool isAtShopRegistration =
-          state.matchedLocation == AppRoutes.shopRegister;
+          state.matchedLocation == AppRoutes.shopRegistration;
 
       // Jika toko belum disetujui (status 'none' atau 'pending') dan tidak sedang di halaman registrasi,
       // paksa arahkan ke halaman registrasi/status.
       if (!hasApprovedShop && !isAtShopRegistration) {
-        return AppRoutes.shopRegister;
+        return AppRoutes.shopRegistration;
       }
       // Jika toko sudah disetujui tapi mencoba akses halaman registrasi, kembalikan ke home.
       if (hasApprovedShop && isAtShopRegistration) {

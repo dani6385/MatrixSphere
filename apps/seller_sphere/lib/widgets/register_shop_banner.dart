@@ -20,7 +20,7 @@ final VoidCallback onDismiss;
       child: InkWell(
         onTap: () {
           // Navigasi ke halaman pendaftaran toko saat di-klik
-          context.go(AppRoutes.shopRegister);
+          context.go(AppRoutes.shopRegistration);
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),

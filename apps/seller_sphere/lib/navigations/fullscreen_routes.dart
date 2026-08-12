@@ -15,6 +15,10 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
+      path: '/user-registration',
+      builder: (context, state) => const UserRegistrationScreen(),
+    ),
+    GoRoute(
       path: '/forgot-password',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ForgotPasswordScreen(),

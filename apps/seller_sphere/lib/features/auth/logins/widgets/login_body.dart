@@ -53,7 +53,7 @@ class LoginBody extends StatelessWidget {
                 if (kDebugMode) {
                   print('Navigating to Register screen!');
                 }
-                context.go(AppRoutes.register);
+                context.go(AppRoutes.userRegistration);
               },
               child: const Text('Don\'t have an account? Register'),
             ),

@@ -60,7 +60,7 @@ class AppNavigation {
   }
 
   static void goToShopRegister(BuildContext context) {
-    context.go(AppRoutes.shopRegister);
+    context.go(AppRoutes.shopRegistration);
   }
 
   static void goToLogin(BuildContext context) {
