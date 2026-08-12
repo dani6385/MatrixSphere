@@ -130,6 +130,13 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           APK_PATH=$(find ${{ steps.vars.outputs.dir }} -name "app-release.apk" | head -n 1)
+
+          if [ -z "$APK_PATH" ]; then
+            echo "Error: File APK tidak ditemukan!"
+            exit 1
+          fi
+          echo "File APK ditemukan di: $APK_PATH"
+
           npx firebase-tools appdistribution:distribute "$APK_PATH" \
             --app "${{ steps.vars.outputs.app_id }}" \
             --groups "sphere" \
