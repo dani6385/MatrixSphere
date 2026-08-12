@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
-import 'package:google_places_flutter/model/prediction.dart';
+//import 'package:google_places_flutter/model/prediction.dart';
 import 'package:shared_ui/shared_ui.dart';
 import '../states/shop_registration_state.dart';
 import '../logics/shop_registration_logic.dart';

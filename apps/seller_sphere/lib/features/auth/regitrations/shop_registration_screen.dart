@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'states/shop_registration_state.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'logics/shop_registration_logic.dart';
 import 'components/shop_registration_body.dart'; // Import widget body yang baru
 
@@ -19,8 +20,8 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
     fullAddressController: TextEditingController(),
   );
   
-  // API Key dipindahkan atau tetap di sini sebagai variabel kontrol
-  final String _googleApiKey = "AIzaSyCG_oXq8jpOoJeZ9uJ1gfeQ4kDVlTRHK4Q";
+  // Ambil API Key dari environment variables
+  final String _googleApiKey = dotenv.env['GOOGLE_API_KEY'] ?? 'KUNCI_TIDAK_DITEMUKAN';
 
   @override
   void initState() {

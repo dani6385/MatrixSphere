@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:seller_sphere/providers/app_provider.dart';
 import 'package:seller_sphere/core/api_constants.class.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:seller_sphere/navigations/app_router.dart';
 //import 'package:go_router/go_router.dart';
@@ -16,7 +17,7 @@ import 'package:shared_ui/shared_ui.dart';
 void main() async {
   // 1. Pastikan binding diinisialisasi terlebih dahulu
   WidgetsFlutterBinding.ensureInitialized();
-
+  await dotenv.load(fileName: ".env");
   try {
     // 2. Coba inisialisasi Firebase
     await Firebase.initializeApp(
@@ -97,4 +98,3 @@ class _SellerSphereState extends State<SellerSphere> {
     );
   }
 }
-

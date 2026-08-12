@@ -27,6 +27,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   open_file_plus: ^3.4.1+1
   csv: ^8.0.0
+  flutter_dotenv: ^5.1.0
   pdf: ^3.13.0
 
 dev_dependencies:
