@@ -71,7 +71,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
 
   // Fungsi untuk memuat data toko dari database
   Future<void> _loadShopData(String shopId) async {
-    // TODO: Implementasi logika untuk mengambil data toko dari database
+    // Implementasi logika untuk mengambil data toko dari database
     // Gunakan shopId yang didapat dari _initializeShopProfile
     // Contoh placeholder:
     await Future.delayed(const Duration(seconds: 1)); // Simulasi loading data
@@ -94,7 +94,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
     }
 
     if (_formKey.currentState!.validate()) {
-      // TODO: Implementasikan logika untuk menyimpan data ke database.
+      // Implementasikan logika untuk menyimpan data ke database.
       // Ambil nilai dari controller:
       // final newShopName = _shopNameController.text;
       // final newDescription = _descriptionController.text;

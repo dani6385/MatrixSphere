@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:seller_sphere/features/presentations/products/public_product_screen.dart';
 //import 'app_routes.dart';
 import 'app_extractor.dart';
 // Impor layar-layar terkait (pastikan jalurnya sesuai project-mu)
@@ -9,30 +10,6 @@ import 'app_extractor.dart';
 List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
-    GoRoute(
-      path: '/login',
-      builder: (context, state) {
-        return const LoginScreen();
-      },
-    ),
-    GoRoute(
-      path: '/register',
-      builder: (context, state) {
-        return const UserRegistrationScreen();
-      },
-    ),
-    GoRoute(
-      path: '/forgot-password',
-      builder: (context, state) {
-        return const ForgotPasswordScreen();
-      },
-    ),
-    GoRoute(
-      path: '/shop-registration',
-      builder: (context, state) {
-        return const ShopRegistrationScreen();
-      },
-    ),
     GoRoute(
       path: '/map',
       builder: (context, state) => const WindowsMapView(),
@@ -55,9 +32,9 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) => const OrderScreen(),
     ),
     GoRoute(
-      path: '/products/add',
+      path: '/products',
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const ProductFormScreen(),
+      builder: (context, state) => const PublicProductScreen(),
     ),
     GoRoute(
       path: '/scan-qr',
@@ -68,23 +45,20 @@ List<RouteBase> buildFullscreenRoutes(
       builder: (context, state) => const SimulationScreen(),
     ),
     GoRoute(
-      path: '/products/:productId', // Menggunakan parameter dinamis ID
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) {
-        final id = state.pathParameters['productId']!;
-        return ProductDetailScreen(
-          productId: id,
-          shopId: '',
-        );
-      },
+      path: '/about',
+      builder: (context, state) => const AboutScreen(),
     ),
     GoRoute(
-      path: '/products/edit', // Menggunakan parameter dinamis ID untuk edit
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) {
-        final id = state.pathParameters['productId']!;
-        return ProductFormScreen(productId: id);
-      },
+      path: '/help',
+      builder: (context, state) => const HelpScreen(),
+    ),
+    GoRoute(
+      path: '/chat',
+      builder: (context, state) => const ChatScreen(),
+    ),
+    GoRoute(
+      path: '/stream',
+      builder: (context, state) => const StreamingScreen(streamId: '',),
     ),
   ];
 }
