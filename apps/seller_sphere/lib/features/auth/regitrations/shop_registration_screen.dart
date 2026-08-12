@@ -20,7 +20,7 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
   );
   
   // API Key dipindahkan atau tetap di sini sebagai variabel kontrol
-  final String _googleApiKey = "AIzaSyAq8WGfVe6W0dRnubmOtFFJkT25ndKgo48";
+  final String _googleApiKey = "AIzaSyCG_oXq8jpOoJeZ9uJ1gfeQ4kDVlTRHK4Q";
 
   @override
   void initState() {
