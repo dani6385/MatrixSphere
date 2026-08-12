@@ -11,6 +11,25 @@ List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/registration',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ShopRegistrationScreen(),
+    ),
+    GoRoute(
+      path: '/shop-registration',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ShopRegistrationScreen(),
+    ),
+    GoRoute(
       path: '/map',
       builder: (context, state) => const WindowsMapView(),
     ),
