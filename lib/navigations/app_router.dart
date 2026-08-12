@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:matrix_sphere/navigations/app_routes.dart';
+import 'package:shared_services/auth/shop_status.enum.dart' hide ShopService;
 import 'package:shared_services/shared_services.dart';
 import 'package:collection/collection.dart'; // Import untuk firstWhereOrNull
 import 'shell_route_config.dart';

@@ -8,7 +8,7 @@
 export 'auth/auth_bloc.dart';
 export 'auth/auth_service.dart';
 export 'auth/shop_service.dart';
-export 'auth/shop_status.enum.dart';
+
 export 'data/shop_realtime_screen.dart';
 export 'database/database_service.dart';
 export 'firebase/firebase_rtdb.dart';
