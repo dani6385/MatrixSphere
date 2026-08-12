@@ -34,7 +34,7 @@ final GoRouter appRouter = GoRouter(
     if (isLoggedIn) {
       if (currentPath == AppRoutes.login || currentPath == AppRoutes.register) {
         return null; // Atau biarkan sistem mengecek toko di bawah
-      }
+      }/*
       final shopId = await authService.getCurrentShopId();
       final bool hasShop =
           shopId != null && shopId.isNotEmpty && shopId != 'toko_percobaan';
@@ -45,7 +45,7 @@ final GoRouter appRouter = GoRouter(
       }
       if (hasShop && isRegisteringShop) {
         return '/';
-      }
+      }*/
     }
     return null;
   },
