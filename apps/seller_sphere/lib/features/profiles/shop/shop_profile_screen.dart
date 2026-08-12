@@ -124,7 +124,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
                       title: 'Alamat',
                       value: shopAddress,
                     ),
-                    // TODO: Tambahkan informasi lainnya di sini (misal: nomor telepon, deskripsi, dll)
+                    // Tambahkan informasi lainnya di sini (misal: nomor telepon, deskripsi, dll)
                   ],
                 ),
               );
@@ -134,7 +134,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Arahkan ke halaman edit profil toko
+          // Arahkan ke halaman edit profil toko
         },
         child: const Icon(Icons.edit),
       ),
