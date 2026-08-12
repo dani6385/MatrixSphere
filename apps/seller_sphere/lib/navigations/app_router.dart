@@ -32,20 +32,25 @@ final GoRouter appRouter = GoRouter(
     }
     // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
     if (isLoggedIn) {
+      // Jika sudah login dan mencoba akses halaman login/register, lempar ke home.
       if (currentPath == AppRoutes.login || currentPath == AppRoutes.register) {
-        return null; // Atau biarkan sistem mengecek toko di bawah
-      }/*
-      final shopId = await authService.getCurrentShopId();
-      final bool hasShop =
-          shopId != null && shopId.isNotEmpty && shopId != 'toko_percobaan';
-      final bool isRegisteringShop = currentPath == AppRoutes.shopRegistration;
+        return AppRoutes.home;
+      }
+      // Cek status toko pengguna
+      final shopStatus = await authService.getUserShopStatus();
+      final bool hasApprovedShop = shopStatus == ShopStatus.approved;
+      final bool isAtShopRegistration =
+          state.matchedLocation == AppRoutes.shopRegistration;
 
-      if (!hasShop && !isRegisteringShop) {
+      // Jika toko belum disetujui (status 'none' atau 'pending') dan tidak sedang di halaman registrasi,
+      // paksa arahkan ke halaman registrasi/status.
+      if (!hasApprovedShop && !isAtShopRegistration) {
         return AppRoutes.shopRegistration;
       }
-      if (hasShop && isRegisteringShop) {
-        return '/';
-      }*/
+      // Jika toko sudah disetujui tapi mencoba akses halaman registrasi, kembalikan ke home.
+      if (hasApprovedShop && isAtShopRegistration) {
+        return AppRoutes.home;
+      }
     }
     return null;
   },

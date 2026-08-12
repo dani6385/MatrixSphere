@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ShopProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ShopProfileAppBar({
     super.key,
-    this.title = 'Profil Toko',
+    this.title = 'Profil Toko', required bool centerTitle,
   });
 
   final String title;

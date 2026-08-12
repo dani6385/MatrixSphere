@@ -1,142 +1,166 @@
-// lib/screens/shop/shop_profile_screen.dart
 import 'package:flutter/material.dart';
-import 'package:shared_services/shared_services.dart';
-import 'package:seller_sphere/features/profiles/shop/widgets/shop_profile_appbar.dart';
-import 'package:seller_sphere/features/profiles/shop/widgets/shop_profile_form.dart';
-import 'widgets/shop_profile_body.dart';
+import 'package:shared_services/auth/auth_service.dart';
+import 'package:shared_services/database/database_service.dart';
+import 'package:shared_ui/shared_ui.dart';
 
+/// Layar untuk menampilkan dan mengelola profil toko.
+///
+/// Widget ini secara mandiri mengambil `shopId` dari AuthService,
+/// lalu menampilkan data profil toko yang sesuai.
 class ShopProfileScreen extends StatefulWidget {
-  // Konstruktor tidak lagi memerlukan shopId, karena akan diambil secara otomatis.
-  const ShopProfileScreen({super.key, required String shopId});
+  const ShopProfileScreen({super.key});
 
   @override
   State<ShopProfileScreen> createState() => _ShopProfileScreenState();
 }
 
 class _ShopProfileScreenState extends State<ShopProfileScreen> {
-  // Variabel untuk menampung shopId yang didapat dari AuthService
-  String? _shopId;
-
-  // Tambahkan variabel untuk menyimpan data toko yang dimuat
-  String? _currentShopName;
-  String? _currentDescription;
-  bool _isLoading = true;
-  bool _isTrialMode = false;
-
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _shopNameController;
-  late TextEditingController _descriptionController;
+  final AuthService _authService = AuthService();
+  late final Future<String?> _shopIdFuture;
 
   @override
   void initState() {
     super.initState();
-    _initializeShopProfile(); // Panggil fungsi inisialisasi
-  }
-
-  @override
-  void dispose() {
-    _shopNameController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-  
-  // Fungsi untuk inisialisasi: mengambil shopId lalu memuat data toko
-  Future<void> _initializeShopProfile() async {
-    // 1. Buat instance AuthService
-    final authService = AuthService();
-    // 2. Ambil shopId dari pengguna yang sedang login
-    final shopId = await authService.getCurrentShopId();
-
-    // Guard clause untuk memastikan widget masih ter-mount setelah await.
-    if (!mounted) return;
-
-    if (shopId != null) {
-      setState(() {
-        _isTrialMode = authService.currentUser == null; // Cek apakah dalam mode percobaan
-        _shopId = shopId;
-      });
-      // 3. Jika shopId ditemukan, lanjutkan memuat data toko
-      await _loadShopData(shopId);
-    } else {
-      // Handle jika shopId tidak ditemukan (misal: tampilkan error).
-      // Karena sudah ada pengecekan `mounted` di atas, aman untuk menggunakan context di sini.
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gagal memuat profil toko: ID Toko tidak ditemukan.')),
-      );
-    }
-  }
-
-  // Fungsi untuk memuat data toko dari database
-  Future<void> _loadShopData(String shopId) async {
-    // Implementasi logika untuk mengambil data toko dari database
-    // Gunakan shopId yang didapat dari _initializeShopProfile
-    // Contoh placeholder:
-    await Future.delayed(const Duration(seconds: 1)); // Simulasi loading data
-    setState(() {
-      _currentShopName = 'Toko Agan dari DB ($shopId)'; // Ganti dengan data asli
-      _currentDescription = 'Menjual berbagai macam kebutuhan sehari-hari dari DB.'; // Ganti dengan data asli
-      _shopNameController = TextEditingController(text: _currentShopName);
-      _descriptionController = TextEditingController(text: _currentDescription);
-      _isLoading = false;
-    });
-  }
-
-  void _saveProfile() {
-    // Jangan lakukan apa-apa jika dalam mode percobaan
-    if (_isTrialMode) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login untuk mengubah profil toko.')),
-      );
-      return;
-    }
-
-    if (_formKey.currentState!.validate()) {
-      // Implementasikan logika untuk menyimpan data ke database.
-      // Ambil nilai dari controller:
-      // final newShopName = _shopNameController.text;
-      // final newDescription = _descriptionController.text;
-      // Gunakan _shopId untuk mengupdate data toko yang benar.
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profil toko berhasil diperbarui!')),
-      );
-      // Setelah berhasil disimpan, mungkin perlu memperbarui state lokal
-      setState(() {
-        _currentShopName = _shopNameController.text;
-        _currentDescription = _descriptionController.text;
-      });
-
-    }
+    // Ambil shopId saat widget pertama kali dibuat
+    _shopIdFuture = _authService.getCurrentShopId();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const ShopProfileAppBar(),
-      body: ShopProfileBody(
-        // Tampilkan loading indicator jika data masih dimuat
-        isLoading: _isLoading,
-        // Hanya tampilkan form jika _shopId tidak null dan tidak sedang loading
-        child: !_isLoading && _shopId != null
-            ? ShopProfileForm(
-                formKey: _formKey,
-                shopId: _shopId!, // Gunakan _shopId dari state
-                shopNameController: _shopNameController,
-                descriptionController: _descriptionController,
-                onCopyShopId: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('ID Toko disalin!')));
-                },
-                onSaveProfile: _saveProfile, // Fungsi simpan tetap sama
-                // Tambahkan parameter untuk menonaktifkan tombol jika dalam mode percobaan
-                isSaveDisabled: _isTrialMode,
-              )
-            // Tampilkan widget kosong atau pesan error jika _shopId null
-            : const SizedBox.shrink(),
+      appBar: AppBar(
+        title: const Text('Profil Toko'),
+        centerTitle: true,
+      ),
+      body: FutureBuilder<String?>(
+        future: _shopIdFuture,
+        builder: (context, snapshot) {
+          // 1. Tampilkan loading indicator saat data sedang diambil
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // 2. Tampilkan pesan error jika terjadi masalah
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+
+          // 3. Ambil shopId dari hasil future
+          final shopId = snapshot.data;
+
+          // 4. Jika tidak ada shopId, tampilkan pesan bahwa toko tidak ditemukan
+          if (shopId == null || shopId.isEmpty) {
+            return Center(
+              child: Text(
+                'Profil toko tidak ditemukan.',
+                style: AppStyles.bodyLarge,
+              ),
+            );
+          }
+
+          // 5. Jika shopId ada, tampilkan konten profil toko
+          // Kita gunakan StreamBuilder untuk mendengarkan perubahan data toko secara real-time.
+          return StreamBuilder(
+            stream: DatabaseService().getShopStream(shopId),
+            builder: (context, shopSnapshot) {
+              if (shopSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (shopSnapshot.hasError) {
+                return Center(child: Text('Error: ${shopSnapshot.error}'));
+              }
+              if (!shopSnapshot.hasData || shopSnapshot.data == null) {
+                return const Center(child: Text('Data toko tidak ditemukan.'));
+              }
+
+              // Ambil data toko dari snapshot
+              final shopData = shopSnapshot.data!;
+              final shopName = shopData['shopName'] as String? ?? 'Nama Toko';
+              final shopAddress =
+                  shopData['shopAddress'] as String? ?? 'Alamat belum diatur';
+              final profileImageUrl = shopData['profileImageUrl'] as String?;
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.grey.shade200,
+                        backgroundImage: (profileImageUrl != null &&
+                                profileImageUrl.isNotEmpty)
+                            ? NetworkImage(profileImageUrl)
+                            : null,
+                        child: (profileImageUrl == null ||
+                                profileImageUrl.isEmpty)
+                            ? const Icon(Icons.store,
+                                size: 50, color: Colors.grey)
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Center(
+                      child: Text(
+                        shopName,
+                        style: AppStyles.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    const Divider(),
+                    const SizedBox(height: AppSpacing.md),
+                    _buildProfileInfoRow(
+                      icon: Icons.storefront,
+                      title: 'ID Toko',
+                      value: shopId,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _buildProfileInfoRow(
+                      icon: Icons.location_on_outlined,
+                      title: 'Alamat',
+                      value: shopAddress,
+                    ),
+                    // TODO: Tambahkan informasi lainnya di sini (misal: nomor telepon, deskripsi, dll)
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // TODO: Arahkan ke halaman edit profil toko
+        },
+        child: const Icon(Icons.edit),
       ),
     );
   }
+
+  /// Helper widget untuk menampilkan baris informasi profil.
+  Widget _buildProfileInfoRow(
+      {required IconData icon, required String title, required String value}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.grey.shade600, size: 20),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: AppStyles.labelLarge),
+              const SizedBox(height: 2),
+              Text(value, style: AppStyles.bodyLarge),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
+            

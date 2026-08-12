@@ -152,6 +152,9 @@ class AppStyles {
           borderRadius: BorderRadius.circular(8),
         ),
       );
+
+  static TextStyle? get labelLarge => const TextStyle(fontSize: 14, color: kDarkTextPrimary);
+  
       
 
 }

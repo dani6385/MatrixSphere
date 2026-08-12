@@ -50,7 +50,7 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       onTap: () {
         logger.i('Menu Profile Toko diklik!');
         Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const ShopProfileScreen(shopId: '',)),
+          MaterialPageRoute(builder: (context) => const ShopProfileScreen()),
         );
       },
     ),

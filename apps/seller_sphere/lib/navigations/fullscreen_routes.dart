@@ -22,9 +22,7 @@ List<RouteBase> buildFullscreenRoutes(
     GoRoute(
       path: '/shop-profile',
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const ShopProfileScreen(
-        shopId: '',
-      ),
+      builder: (context, state) => const ShopProfileScreen(),
     ),
     GoRoute(
       path: '/order',
