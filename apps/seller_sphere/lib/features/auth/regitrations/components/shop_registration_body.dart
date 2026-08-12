@@ -29,7 +29,7 @@ class ShopRegistrationBody extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.hourglass_top_rounded, size: 60, color: Colors.orange),
+            Icon(Icons.hourglass_top_rounded, size: 60, color: kWarmOrange),
             SizedBox(height: 16),
             Text(
               'Pendaftaran Toko Anda Sedang Ditinjau',
@@ -74,18 +74,25 @@ class ShopRegistrationBody extends StatelessWidget {
         const Text("Alamat Lengkap"),
         const SizedBox(height: 8),
         GooglePlaceAutoCompleteTextField(
-          textEditingController: shopState.fullAddressController,
-          googleAPIKey: googleApiKey,
-          inputDecoration: const InputDecoration(hintText: "Cari alamat lengkap..."),
-          debounceTime: 800,
-          isLatLngRequired: false,
-          itemClick: (Prediction prediction) {
+          textEditingController: shopState.fullAddressController, // Controller untuk input
+          googleAPIKey: googleApiKey, // Kunci API Google Anda
+          inputDecoration: const InputDecoration(hintText: "Cari alamat lengkap..."), // Dekorasi input
+          debounceTime: 800, // Jeda waktu sebelum request API
+          isLatLngRequired: false, // Tidak memerlukan LatLng saat item diklik
+          // Gunakan LayerLink untuk memastikan posisi dropdown benar
+          getPlaceDetailWithLatLng: (prediction) {
+            // Fungsi ini dipanggil saat item dipilih
             shopState.fullAddressController.text = prediction.description ?? "";
+            // Tutup keyboard secara manual setelah memilih
+            FocusScope.of(context).unfocus();
           },
-          itemBuilder: (context, index, Prediction prediction) {
-            return Container(
-              padding: const EdgeInsets.all(10),
-              child: Text(prediction.description ?? ""),
+          itemClick: (prediction) {
+            // Fungsi ini juga dipanggil, kita bisa kosongkan jika sudah ditangani di atas
+          },
+          // Builder untuk setiap item dalam daftar saran
+          itemBuilder: (context, index, prediction) {
+            return ListTile(
+              title: Text(prediction.description ?? "Alamat tidak ditemukan"),
             );
           },
         ),
