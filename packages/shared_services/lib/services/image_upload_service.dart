@@ -2,14 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import 'package:shared_services/constants/api_constants.dart';
 
 /// Service untuk mengunggah gambar ke ImgBB.
 class ImageUploadService {
-  // API key ImgBB Anda akan ditempatkan di sini.
   static const String _imgbbUploadUrl = 'https://api.imgbb.com/1/upload';
-
-  // Nama variabel environment untuk API key ImgBB.
-  static const String _imgbbApiKeyEnvName = 'IMGBB_API_KEY';
 
   /// Mengunggah file gambar ke ImgBB dan mengembalikan URL gambar yang diunggah.
   ///
@@ -17,11 +14,11 @@ class ImageUploadService {
   /// Mengembalikan URL gambar jika berhasil, atau `null` jika gagal.
   Future<String?> uploadImageToImgBB(File imageFile) async {
     try {
-      // 1. Ambil API key dari environment variable.
-      const apiKey = String.fromEnvironment(_imgbbApiKeyEnvName);
+      // 1. Ambil API key dari konstanta terpusat.
+      const apiKey = ApiConstants.imgbbApiKey;
       if (apiKey.isEmpty) {
         throw Exception(
-            '$_imgbbApiKeyEnvName tidak ditemukan. Pastikan Anda menjalankan build dengan --dart-define=$_imgbbApiKeyEnvName=YOUR_KEY');
+            'IMGBB_API_KEY tidak ditemukan. Pastikan Anda menjalankan build dengan --dart-define=IMGBB_API_KEY=YOUR_KEY');
       }
 
       // 2. Konversi gambar ke Base64 untuk dikirim

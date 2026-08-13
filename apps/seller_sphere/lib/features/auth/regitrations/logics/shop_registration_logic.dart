@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_services/shared_services.dart';
@@ -10,6 +10,8 @@ import '../states/shop_registration_state.dart';
 class ShopRegistrationLogic {
   final AuthService _authService = AuthService();
   final ShopService shopService = ShopService();
+  // 1. Tambahkan LocationService agar bisa digunakan.
+  final LocationService _locationService = LocationService();
 
   /// Mendapatkan lokasi GPS pengguna saat ini
   Future<void> getCurrentLocation({
@@ -17,25 +19,23 @@ class ShopRegistrationLogic {
     required VoidCallback onUpdate,
   }) async {
     try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) return;
-      }
-
-      if (permission == LocationPermission.deniedForever) return;
-
-      final position = await Geolocator.getCurrentPosition();
+      // 2. Gunakan LocationService yang sudah ada.
+      // Metode ini sudah menangani izin dan error secara internal.
+      final position = await _locationService.getCurrentLocation();
       state.mapController?.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(position.latitude, position.longitude),
-            zoom: 15.0,
+            zoom: 17.0, // Zoom lebih dekat untuk akurasi pin point
           ),
         ),
       );
     } catch (e) {
-      // Gagal mendapatkan lokasi, abaikan
+      // Gagal mendapatkan lokasi, bisa tampilkan pesan error jika perlu.
+      // Contoh: showErrorDialog(context: context, message: e.toString());
+      if (kDebugMode) {
+        print('Gagal mendapatkan lokasi: $e');
+      }
     }
   }
 Future<void> getShopStatus({

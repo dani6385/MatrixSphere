@@ -192,7 +192,9 @@ jobs:
           echo "Building with defines: $DART_DEFINES"
 
           if [ "${{ matrix.platform }}" = "android" ]; then
-            flutter build apk --release $DART_DEFINES
+            # Untuk Android, teruskan key ke Gradle menggunakan properti -P
+            # dan juga ke Dart menggunakan --dart-define
+            flutter build apk --release $DART_DEFINES -Ptarget="lib/main.dart" -Pgoogle-maps-api-key="${API_KEY}"
           else
             flutter build ${{ matrix.platform }} --release $DART_DEFINES
           fi

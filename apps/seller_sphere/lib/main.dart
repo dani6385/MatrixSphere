@@ -16,6 +16,11 @@ import 'package:shared_ui/shared_ui.dart';
 void main() async {
   // 1. Pastikan binding diinisialisasi terlebih dahulu
   WidgetsFlutterBinding.ensureInitialized();
+
+  // KHUSUS UNTUK WEB: Inisialisasi plugin Google Maps untuk web dengan API key.
+  // Untuk Android dan iOS, API key diatur di level native.
+  
+
   await dotenv.load(fileName: ".env");
   try {
     // 2. Coba inisialisasi Firebase
