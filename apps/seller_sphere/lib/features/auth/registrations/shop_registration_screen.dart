@@ -1,7 +1,7 @@
-// TODO Implement this library.
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
+import 'components/shop_registration_appbar.dart';
 import 'states/shop_registration_state.dart';
 import 'logics/shop_registration_logic.dart';
 
@@ -33,8 +33,9 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
         context.go(AppRoutes.login);
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Registrasi Toko Baru'),
+        appBar: const PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: ShopRegistrationAppBar(title: Text('Registrasi Toko Baru')),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -79,7 +80,6 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
                             state: _state,
                             onUpdate: () => setState(() {
                               _state.isLoading = !_state.isLoading;
-                              
                             }),
                           ),
                   child: _state.isLoading
