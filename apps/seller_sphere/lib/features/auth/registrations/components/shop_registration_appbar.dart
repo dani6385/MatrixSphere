@@ -1,20 +1,37 @@
+
+// lib/features/ShopRegistration/presentation/widgets/ShopRegistration_app_bar.dart
+
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
-class ShopRegistrationAppBar extends StatefulWidget {
-  const ShopRegistrationAppBar({super.key, required Text title});
 
-  @override
-  State<ShopRegistrationAppBar> createState() => _ShopRegistrationAppBarState();
-}
+import 'package:shared_ui/shared_ui.dart';
 
-class _ShopRegistrationAppBarState extends State<ShopRegistrationAppBar> {
+final logger = Logger();
+
+class ShopRegistrationAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const ShopRegistrationAppBar({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registrasi Toko Baru'),
+
+    return AppBar(
+      // Latar belakang transparan agar gradient dari body terlihat.[cite: 10]
+      backgroundColor: kTransparent,
+      elevation: 0,
+
+      // Judul AppBar.[cite: 10]
+      title: Text(
+        'ShopRegistration',
+        style: TextStyle(
+          color: context.onSurface,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      body: const Center(child: Text('Isi form registrasi toko di sini')),
+      centerTitle: true,
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
