@@ -1,18 +1,31 @@
+// lib/features/auth/shop_registration/states/shop_registration_state.dart
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ShopRegistrationState {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final TextEditingController shopNameController = TextEditingController();
-  final TextEditingController shopAddressController = TextEditingController();
-  final TextEditingController shopPhoneController = TextEditingController();
-  final TextEditingController shopDescriptionController = TextEditingController();
+  final GlobalKey<FormState> formKey;
+  final TextEditingController shopNameController;
+  final TextEditingController fullAddressController;
+  String? shopStatus;
   
-  bool isLoading = false;
+  GoogleMapController? mapController;
+  LatLng? selectedCoordinates;
+  final Set<Marker> markers = {};
+  
+  static const CameraPosition initialCameraPosition = CameraPosition(
+    target: LatLng(-6.2088, 106.8456),
+    zoom: 11.0,
+  );
 
-  void dispose() {
-    shopNameController.dispose();
-    shopAddressController.dispose();
-    shopPhoneController.dispose();
-    shopDescriptionController.dispose();
-  }
+  bool isLoading;
+
+  ShopRegistrationState({
+    required this.formKey,
+    required this.shopNameController,
+    required this.fullAddressController,
+    this.shopStatus,
+    this.mapController,
+    this.selectedCoordinates,
+    this.isLoading = false,
+  });
 }

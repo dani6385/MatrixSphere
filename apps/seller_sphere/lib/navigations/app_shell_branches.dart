@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
-//import 'custom_transition_page.dart';
+import 'custom_transition_page.dart';
 import 'app_extractor.dart';
 //import 'app_common_routes.dart'; // Mengimpor rute umum
 
@@ -26,11 +26,88 @@ final List<StatefulShellBranch> appShellBranches = [
         path: '/',
         name: AppRoutes.home,
         builder: (context, state) => const HomeScreen(),
+        /*routes: [
+          // Sub-rute dari Home
+          GoRoute(
+            path: 'products', // Path relatif: /products
+            name: AppRoutes.publicProduct,
+            builder: (context, state) => const PublicProductScreen(),
+            routes: [
+              // Rute ini sekarang akan menggunakan navigator dari branch Home
+              GoRoute(
+                path: 'add', // Path relatif: /products/add
+                name: AppRoutes.addProduct,
+                builder: (context, state) => const AddProductScreen(),
+              ),
+              GoRoute(
+                path: 'edit', // Path relatif: /products/edit
+                name: AppRoutes.editProduct,
+                builder: (context, state) => const AddProductScreen(),
+              ),
+            ],
+          ),
+        ],*/
+      ),
+    ],
+  ),
+
+  // Branch untuk Tab Stream
+  StatefulShellBranch(
+    routes: [
+      GoRoute(
+        path: AppRoutes.financial,
+        pageBuilder: (context, state) => FadeTransitionPage(
+            child: const FinancialScreen()),
         routes: const [],
       ),
     ],
   ),
-  /*// Branch untuk Tab Attendance
+
+  // Branch untuk Tab Management
+  StatefulShellBranch(
+    routes: [
+      GoRoute(
+        path: AppRoutes.management,
+        pageBuilder: (context, state) =>
+            FadeTransitionPage(child: const ManagementScreen()),
+        /*routes: [
+          // Sub-rute dari Home
+          GoRoute(
+            path: 'products', // Path relatif: /products
+            name: AppRoutes.publicProduct,
+            builder: (context, state) => const PublicProductScreen(),
+            routes: [
+              // Rute ini sekarang akan menggunakan navigator dari branch Home
+              GoRoute(
+                path: 'add', // Path relatif: /products/add
+                name: AppRoutes.addProduct,
+                builder: (context, state) => const AddProductScreen(),
+              ),
+              GoRoute(
+                path: 'edit', // Path relatif: /products/edit
+                name: AppRoutes.editProduct,
+                builder: (context, state) => const AddProductScreen(),
+              ),
+            ],
+          ),
+        ],*/
+      ),
+    ],
+  ),
+
+  // Branch untuk Tab Sellers (Products)
+  StatefulShellBranch(
+    routes: [
+      GoRoute(
+        path: AppRoutes.sellers,
+        pageBuilder: (context, state) =>
+            FadeTransitionPage(child: const SellerScreen()),
+        //routes: commonDetailRoutes,
+      ),
+    ],
+  ),
+
+  // Branch untuk Tab Attendance
   StatefulShellBranch(
     routes: [
       GoRoute(
@@ -40,5 +117,5 @@ final List<StatefulShellBranch> appShellBranches = [
         routes: const [],
       ),
     ],
-  ),*/
+  ),
 ];

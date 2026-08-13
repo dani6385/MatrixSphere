@@ -35,7 +35,8 @@ class LoginLogic {
 
     try {
       // Panggil AuthService untuk login
-      await _authService.login(email, password);
+      await _authService.login(
+          email, password); // Menggunakan metode login dari AuthService
 
       // Jika login berhasil, kelola kredensial berdasarkan pilihan 'Remember Me'
       if (rememberMe) {
@@ -47,30 +48,14 @@ class LoginLogic {
       if (kDebugMode) {
         print('Login successful! Firebase user authenticated.');
       }
+      if (context.mounted) {
+        // Navigasi tidak diperlukan di sini.
+        // AuthService akan memberi notifikasi ke GoRouter,
+        // dan GoRouter akan secara otomatis mengarahkan pengguna
+        // berdasarkan logika redirect di app_router.dart.
+      }
     } on Exception catch (e) {
       if (!context.mounted) return;
-
-      final errorStr = e.toString().toLowerCase();
-
-      // Deteksi apakah akun belum terdaftar (user-not-found)
-      if (errorStr.contains('user-not-found') || errorStr.contains('akun tidak ditemukan')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Akun belum terdaftar. Silakan lakukan pendaftaran terlebih dahulu.'),
-          ),
-        );
-
-        // Arahkan pengguna ke halaman registrasi (Sesuaikan rute GoRouter kamu)
-        // Contoh menggunakan GoRouter:
-        // context.go('/register');
-        // Atau menggunakan Named Route standar:
-        // Navigator.pushNamed(context, '/register');
-        
-        setLoading(false);
-        return; // Hentikan eksekusi agar pesan standar tidak muncul
-      }
-
-      // Tampilkan error umum lainnya
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
@@ -78,6 +63,8 @@ class LoginLogic {
       );
     }
 
+    // Set loading ke false di sini agar dieksekusi baik saat sukses maupun gagal,
+    // kecuali jika navigasi terjadi (yang akan membongkar widget ini).
     if (context.mounted) {
       setLoading(false);
     }

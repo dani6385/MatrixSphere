@@ -5,7 +5,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-//import 'package:seller_sphere/providers/app_provider.dart';
+import 'package:seller_sphere/providers/app_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:seller_sphere/navigations/app_router.dart';
@@ -73,13 +73,13 @@ class _SellerSphereState extends State<SellerSphere> {
     return MultiProvider(
       providers: [
         BlocProvider.value(value: _authBloc),
-        //ChangeNotifierProvider(create: (context) => AppProvider()),
+        ChangeNotifierProvider(create: (context) => AppProvider()),
       ],
       // BlocListener tidak lagi diperlukan di sini karena GoRouter
       // akan menangani redirect secara otomatis berdasarkan perubahan state.
       child: Builder(
         builder: (context) {
-          //final appProvider = context.watch<AppProvider>();
+          final appProvider = context.watch<AppProvider>();
           return MaterialApp.router(
             title: 'Seller Sphere',
             debugShowCheckedModeBanner: false,
@@ -91,7 +91,7 @@ class _SellerSphereState extends State<SellerSphere> {
             darkTheme: AppTheme.darkTheme,
 
             // Ini adalah kuncinya: aplikasi akan mengikuti pengaturan sistem
-            //themeMode: appProvider.themeMode,
+            themeMode: appProvider.themeMode,
 
             // Konfigurasi router dari GoRouter
             routerConfig: appRouter, // Menggunakan variabel appRouter langsung

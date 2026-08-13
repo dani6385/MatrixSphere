@@ -1,14 +1,13 @@
 // lib/features/auth/login/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:seller_sphere/widgets/logo.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_services/shared_services.dart';
 import 'states/login_state.dart';
 import 'logics/login_logic.dart';
 import 'widgets/login_body.dart';
 import 'widgets/login_form_fields.dart';
 import 'widgets/login_header.dart';
 import 'widgets/login_loading_body.dart';
-import 'widgets/login_social_buttons.dart'; // <-- Import widget sosial media baru
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,10 +18,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final LoginLogic _loginLogic = LoginLogic();
-  late final LoginState _loginState;
 
-  // Inisialisasi penyimpanan secure storage
-  final _secureStorage = const FlutterSecureStorage();
+  // Inisialisasi state login
+  late final LoginState _loginState;
 
   @override
   void initState() {
@@ -46,36 +44,29 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // Fungsi baru untuk memuat kredensial sebelum inisialisasi sesi
   void _loadSavedCredentialsAndInitSession() async {
-    try {
-      // Membaca kredensial dari penyimpanan lokal yang aman
-      String? email = await _secureStorage.read(key: 'saved_email');
-      String? password = await _secureStorage.read(key: 'saved_password');
+    final credentials = await LocalAuthStorage.getCredentials();
+    final savedEmail = credentials['email'];
+    final savedPassword = credentials['password'];
 
-      // Jika data ditemukan, masukkan kembali ke form controller
-      if (email != null && password != null) {
-        if (mounted) {
-          setState(() {
-            _loginState.emailController.text = email;
-            _loginState.passwordController.text = password;
-            _loginState.rememberMe = true;
-          });
-        }
+    if (savedEmail != null && savedPassword != null) {
+      if (mounted) {
+        setState(() {
+          _loginState.emailController.text = savedEmail;
+          _loginState.passwordController.text = savedPassword;
+          _loginState.rememberMe = true;
+        });
       }
-
-      // Melanjutkan inisialisasi sesi login
-      await _loginLogic.initSession(
-        setLoading: (loading) => setState(() => _loginState.isLoading = loading),
-        onLoggedIn: () {
-          if (!mounted) return;
-        },
-      );
-    } catch (e, stackTrace) {
-      debugPrint('Error during session initialization: $e');
-      debugPrint('Stack trace: $stackTrace');
-      // Jika terjadi error, pastikan loading dihentikan agar UI bisa tampil
-      if (mounted) setState(() => _loginState.isLoading = false);
     }
+
+    _loginLogic.initSession(
+      setLoading: (loading) => setState(() => _loginState.isLoading = loading),
+      onLoggedIn: () {
+        if (!mounted) return;
+        // Navigasi ditangani otomatis oleh app_router atau go_router
+      }, // Pastikan initSession tidak lagi memuat kredensial
+    );
   }
 
   void _handleLoginPressed() {
@@ -83,10 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
       _loginLogic.login(
         email: _loginState.emailController.text.trim(),
         password: _loginState.passwordController.text,
-        rememberMe: _loginState.rememberMe,
+        rememberMe: _loginState.rememberMe, // Kirim status rememberMe ke logic
         context: context,
-        setLoading: (loading) =>
-            setState(() => _loginState.isLoading = loading),
+        setLoading: (loading) => setState(() => _loginState.isLoading = loading),
       );
     }
   }
@@ -118,8 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onLoginPressed: _handleLoginPressed,
                   onTogglePasswordVisibility: () {
                     setState(() {
-                      _loginState.isPasswordVisible =
-                          !_loginState.isPasswordVisible;
+                      _loginState.isPasswordVisible = !_loginState.isPasswordVisible;
                     });
                   },
                   onRememberMeChanged: (bool? value) {
@@ -129,8 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 24),
-              const LoginSocialButtons(), // <-- Menggunakan widget terpisah di sini
             ],
           ),
         ),
