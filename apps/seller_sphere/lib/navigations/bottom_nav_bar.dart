@@ -25,7 +25,7 @@ class BottomNavBar extends StatelessWidget {
       AppRoutes.home: (
         icon: Icons.home_outlined,
         activeIcon: Icons.home),
-      AppRoutes.financial: (
+      /*AppRoutes.financial: (
         icon: Icons.analytics,
         activeIcon: Icons.analytics),
       AppRoutes.management: (
@@ -39,14 +39,14 @@ class BottomNavBar extends StatelessWidget {
       AppRoutes.attendance: (
         icon: Icons.fingerprint_outlined,
         activeIcon: Icons.fingerprint
-      ),
+      ),*/
     };
 
     return SharedBottomNavBar(
       currentIndex: currentIndex,
       onTap: (index) {
         // Ambil rute berdasarkan indeks cabang yang ditekan
-        final routePath = (appShellBranches[index].routes.first as dynamic).path;
+        /*final routePath = (appShellBranches[index].routes.first as dynamic).path;
         if (routePath == AppRoutes.financial) {
           logger.i('Mengakses Halaman Reports / Laporan untuk memantau grafik penjualan pendapatan toko secara real-time.'); // Log aktivitas
         }
@@ -59,7 +59,7 @@ class BottomNavBar extends StatelessWidget {
         }
         if (routePath == AppRoutes.financial) {
           logger.i('Mengakses fitur pencatatan presensi, jam kerja, atau shift karyawan.'); // Log aktivitas
-        }
+        }*/
         // Jalankan fungsi onTap bawaan
         onTap(index);
       },

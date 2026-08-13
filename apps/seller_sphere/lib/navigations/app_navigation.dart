@@ -10,7 +10,7 @@ class AppNavigation {
   /// Navigates to the Streaming screen.
   /// This uses `go` which is suitable for top-level navigation.
   static void goToStream(BuildContext context) {
-    context.go(AppRoutes.financial);
+    //context.go(AppRoutes.financial);
   }
 
   
@@ -24,7 +24,7 @@ class AppNavigation {
     context.push(AppRoutes.profile);
   }*/
   static void pushTosetting(BuildContext context) {
-    context.push(AppRoutes.settings);
+    //context.push(AppRoutes.settings);
   }
 
   /// Navigates to the Edit Profile screen from the Profile screen.
@@ -38,10 +38,10 @@ class AppNavigation {
     // Ensure the route is a valid main tab route
     final validTabs = [
       AppRoutes.home,
-      AppRoutes.management,
+      /*AppRoutes.management,
       AppRoutes.sellers,
       AppRoutes.financial,
-      AppRoutes.attendance
+      AppRoutes.attendance*/
     ];
     if (validTabs.contains(route)) {
       GoRouter.of(context).go(route);
