@@ -47,28 +47,35 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loadSavedCredentialsAndInitSession() async {
-    // Membaca kredensial dari penyimpanan lokal yang aman
-    String? email = await _secureStorage.read(key: 'saved_email');
-    String? password = await _secureStorage.read(key: 'saved_password');
+    try {
+      // Membaca kredensial dari penyimpanan lokal yang aman
+      String? email = await _secureStorage.read(key: 'saved_email');
+      String? password = await _secureStorage.read(key: 'saved_password');
 
-    // Jika data ditemukan, masukkan kembali ke form controller
-    if (email != null && password != null) {
-      if (mounted) {
-        setState(() {
-          _loginState.emailController.text = email;
-          _loginState.passwordController.text = password;
-          _loginState.rememberMe = true;
-        });
+      // Jika data ditemukan, masukkan kembali ke form controller
+      if (email != null && password != null) {
+        if (mounted) {
+          setState(() {
+            _loginState.emailController.text = email;
+            _loginState.passwordController.text = password;
+            _loginState.rememberMe = true;
+          });
+        }
       }
-    }
 
-    // Melanjutkan inisialisasi sesi login
-    _loginLogic.initSession(
-      setLoading: (loading) => setState(() => _loginState.isLoading = loading),
-      onLoggedIn: () {
-        if (!mounted) return;
-      },
-    );
+      // Melanjutkan inisialisasi sesi login
+      await _loginLogic.initSession(
+        setLoading: (loading) => setState(() => _loginState.isLoading = loading),
+        onLoggedIn: () {
+          if (!mounted) return;
+        },
+      );
+    } catch (e, stackTrace) {
+      debugPrint('Error during session initialization: $e');
+      debugPrint('Stack trace: $stackTrace');
+      // Jika terjadi error, pastikan loading dihentikan agar UI bisa tampil
+      if (mounted) setState(() => _loginState.isLoading = false);
+    }
   }
 
   void _handleLoginPressed() {
