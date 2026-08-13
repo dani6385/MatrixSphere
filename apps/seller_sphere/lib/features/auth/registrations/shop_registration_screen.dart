@@ -1,7 +1,9 @@
-
+// TODO Implement this library.
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
+import 'states/shop_registration_state.dart';
+import 'logics/shop_registration_logic.dart';
 
 class ShopRegistrationScreen extends StatefulWidget {
   const ShopRegistrationScreen({super.key});
@@ -9,6 +11,7 @@ class ShopRegistrationScreen extends StatefulWidget {
   @override
   State<ShopRegistrationScreen> createState() => _ShopRegistrationScreenState();
 }
+
 class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
   final ShopRegistrationLogic _logic = ShopRegistrationLogic();
   final ShopRegistrationState _state = ShopRegistrationState();
@@ -67,21 +70,6 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _state.phoneNumberController,
-                  decoration: const InputDecoration(labelText: 'Nomor Telepon Toko'),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Nomor telepon tidak boleh kosong';
-                    }
-                    if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                      return 'Masukkan nomor telepon yang valid';
-                    }
-                    return null;
-                  },
-                ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _state.isLoading
@@ -91,11 +79,12 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
                             state: _state,
                             onUpdate: () => setState(() {
                               _state.isLoading = !_state.isLoading;
+                              
                             }),
                           ),
                   child: _state.isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Daftarkan Toko'),
+                      : const Text('Daftar Toko'),
                 ),
                 const SizedBox(height: 12),
                 TextButton(
@@ -122,60 +111,5 @@ class _ShopRegistrationScreenState extends State<ShopRegistrationScreen> {
         ),
       ),
     );
-  }
-}
-
-class ShopRegistrationLogic {
-  Future<void> registerShop({
-    required BuildContext context,
-    required ShopRegistrationState state,
-    required VoidCallback onUpdate,
-  }) async {
-    if (state.formKey.currentState!.validate()) {
-      onUpdate(); // Set isLoading to true
-
-      try {
-        // Simulate API call for shop registration
-        await Future.delayed(const Duration(seconds: 2));
-
-        // In a real application, you would send data to your backend here
-        // final response = await _apiService.registerShop(
-        //   shopName: state.shopNameController.text,
-        //   shopAddress: state.shopAddressController.text,
-        //   phoneNumber: state.phoneNumberController.text,
-        // );
-
-        // For demonstration, assume success
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Registrasi toko berhasil! Silakan login.')),
-          );
-          context.go(AppRoutes.login);
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registrasi toko gagal: $e')),
-          );
-        }
-      } finally {
-        onUpdate(); // Set isLoading back to false
-      }
-    }
-  }
-}
-
-class ShopRegistrationState {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final TextEditingController shopNameController = TextEditingController();
-  final TextEditingController shopAddressController = TextEditingController();
-  final TextEditingController phoneNumberController = TextEditingController();
-  bool isLoading = false;
-
-  void dispose() {
-    shopNameController.dispose();
-    shopAddressController.dispose();
-    phoneNumberController.dispose();
   }
 }
