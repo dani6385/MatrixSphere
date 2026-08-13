@@ -8,8 +8,8 @@ class ImageUploadService {
   // API key ImgBB Anda akan ditempatkan di sini.
   static const String _imgbbUploadUrl = 'https://api.imgbb.com/1/upload';
 
-  // PERBAIKAN: Gunakan nama variabel environment untuk API key.
-  static const String _imgbbApiKeyEnv = 'f601727fed32cf7a175833d01d8a10ff';
+  // Nama variabel environment untuk API key ImgBB.
+  static const String _imgbbApiKeyEnvName = 'IMGBB_API_KEY';
 
   /// Mengunggah file gambar ke ImgBB dan mengembalikan URL gambar yang diunggah.
   ///
@@ -18,10 +18,10 @@ class ImageUploadService {
   Future<String?> uploadImageToImgBB(File imageFile) async {
     try {
       // 1. Ambil API key dari environment variable.
-      const apiKey = String.fromEnvironment(_imgbbApiKeyEnv);
+      const apiKey = String.fromEnvironment(_imgbbApiKeyEnvName);
       if (apiKey.isEmpty) {
         throw Exception(
-            'IMGBB_API_KEY tidak ditemukan. Pastikan Anda menjalankannya dengan --dart-define');
+            '$_imgbbApiKeyEnvName tidak ditemukan. Pastikan Anda menjalankan build dengan --dart-define=$_imgbbApiKeyEnvName=YOUR_KEY');
       }
 
       // 2. Konversi gambar ke Base64 untuk dikirim
@@ -30,7 +30,7 @@ class ImageUploadService {
 
       // 3. Buat request ke API ImgBB
       final request = http.MultipartRequest('POST', Uri.parse(_imgbbUploadUrl));
-      request.fields['key'] = apiKey; // Gunakan API key yang aman
+      request.fields['key'] = apiKey;
       request.fields['image'] = base64Image;
 
       // 4. Kirim request

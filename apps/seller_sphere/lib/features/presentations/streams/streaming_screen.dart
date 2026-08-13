@@ -10,8 +10,6 @@ import 'components/streaming_product_overlay.dart';
 import 'services/streaming_controller.dart';
 //import 'models/product_model.dart';
 
-
-
 // --- Halaman Streaming ---
 class StreamingScreen extends StatefulWidget {
   // Asumsikan streamId adalah UID dari toko yang sedang live.
@@ -75,7 +73,6 @@ class _StreamingScreenState extends State<StreamingScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,8 +102,10 @@ class _StreamingScreenState extends State<StreamingScreen> {
             bottom: 100, // Memberikan ruang agar tidak tertutup input chat
             left: 0,
             right: 0,
-            height: 300, // Membatasi tinggi area chat agar tidak menutupi seluruh layar
-            child: StreamingChatView( // Pastikan streamId di sini juga benar
+            height:
+                300, // Membatasi tinggi area chat agar tidak menutupi seluruh layar
+            child: StreamingChatView(
+              // Pastikan streamId di sini juga benar
               streamId: _controller.streamId,
               currentUserId: _controller.currentUserId,
               scrollController: _chatScrollController,
@@ -126,7 +125,8 @@ class _StreamingScreenState extends State<StreamingScreen> {
             Positioned.fill(
               child: Container(
                 color: Colors.black.withValues(alpha: 0.3),
-                child: const Center(child: CircularProgressIndicator(color: AppColors.white)),
+                child: const Center(
+                    child: CircularProgressIndicator(color: AppColors.white)),
               ),
             ),
         ],
@@ -147,6 +147,8 @@ class _StreamingScreenState extends State<StreamingScreen> {
         ),
       );
     }
-    return Positioned.fill(child: ApiVideoCameraPreview(controller: _controller.service.controller));
+    return Positioned.fill(
+        child:
+            ApiVideoCameraPreview(controller: _controller.service.controller));
   }
 }

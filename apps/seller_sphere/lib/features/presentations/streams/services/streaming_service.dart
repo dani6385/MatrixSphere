@@ -67,4 +67,13 @@ class StreamingService {
       _controller.dispose();
     } catch (_) {}
   }
+
+  Future<void> stopStreaming() async {
+    await stopStream();
+    
+  }
+
+  Future<void> startStreaming(String rtmpUrl, String streamId) async {
+    await startStream(rtmpUrl, streamId);
+  }
 }
