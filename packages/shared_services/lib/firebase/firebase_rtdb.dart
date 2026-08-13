@@ -1,9 +1,9 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_services/data/shop_realtime_screen.dart';
-import 'package:shared_models/src/models/order_model.dart';
+import 'package:shared_models/shared_models.dart' hide Transaction;
 
-import 'package:shared_models/shared_models.dart';
+
 
 
 /// Sebuah service class untuk berinteraksi dengan Firebase Realtime Database.

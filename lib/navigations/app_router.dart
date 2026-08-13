@@ -5,7 +5,7 @@ import 'package:shared_services/auth/shop_status.enum.dart' hide ShopService;
 import 'package:shared_services/shared_services.dart';
 import 'package:collection/collection.dart'; // Import untuk firstWhereOrNull
 import 'shell_route_config.dart';
-import 'auth_redirect_notifier.dart';
+
 import 'fullscreen_routes.dart';
 
 // Kunci global untuk navigator utama (root)
@@ -19,7 +19,7 @@ final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   navigatorKey: _rootNavigatorKey,
   // Daftarkan AuthService sebagai listener. GoRouter akan re-route saat ada notifikasi.
-  refreshListenable: AuthRedirectNotifier(),
+  refreshListenable: AuthRedirectNotifier(_authService as SharedPreferencesService),
   errorBuilder: (context, state) => Scaffold(
     body: Center(
       child: Text('Halaman tidak ditemukan: ${state.error}'),

@@ -8,7 +8,7 @@
 export 'auth/auth_bloc.dart';
 export 'auth/auth_service.dart';
 export 'auth/shop_service.dart';
-
+export 'auth/auth_redirect_notifier.dart';
 export 'data/shop_realtime_screen.dart';
 //export 'database/database_service.dart';
 export 'firebase/firebase_rtdb.dart';
@@ -26,3 +26,4 @@ export 'src/product/product_dialog_helper.dart';
 export 'utils/image_compressor.dart';
 export 'constants/api_constants.dart';
 //export 'widgets/google_maps.dart';
+export 'package:shared_services/src/shared_prefs_service.dart'; // Import SharedPrefsService directly

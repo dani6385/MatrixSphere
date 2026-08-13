@@ -43,6 +43,9 @@ dependencies:
   flutter_dotenv: ^5.2.1
   shared_ui: ^0.0.1
   shared_services: ^0.0.1
+  shared_navigations: ^0.0.1
+  go_router: ^17.5.0
+  shared_contents: ^0.0.1
 
 dev_dependencies:
   flutter_test:

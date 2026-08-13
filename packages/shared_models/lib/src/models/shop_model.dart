@@ -1,57 +1,78 @@
-
 library shop_model;
-
-import 'package:shared_models/src/models/product_model.dart';
-import 'package:shared_models/src/models/order_model.dart';
-import 'package:json_annotation/json_annotation.dart';part 'shop_model.g.dart';
-
-@JsonSerializable()
-class Shop {
-  final String id;
-  final String name;
-  final String address;
-  final String description;
-  final String ownerUid;
-  final String imageUrl;
-  final Map<String, Product> products; // Map productId to Product object
-  final Map<String, Order> orders; // Map orderId to Order object
-
-  Shop({
-    required this.id,
-    required this.name,
-    required this.address,
-    required this.description,
-    required this.ownerUid,
-    this.imageUrl = '',
-    Map<String, Product>? products,
-    Map<String, Order>? orders,
-  })  : products = products ?? {},
-        orders = orders ?? {};
-
-  factory Shop.fromJson(String id, Map<String, dynamic> json) =>
-      _$ShopFromJson(json..['id'] = id);
-
-  Map<String, dynamic> toJson() => _$ShopToJson(this);
-
-  Shop copyWith({
-    String? id,
-    String? name,
-    String? address,
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'shop_model.freezed.dart';
+part 'shop_model.g.dart';
+@freezed
+class ShopModel with _$ShopModel {
+  const factory ShopModel({
+    required String id,
+    required String name,
     String? description,
-    String? ownerUid,
+  }) = _ShopModel;
+
+  factory ShopModel.fromJson(Map<String, dynamic> json) =>
+      _$ShopModelFromJson(json);
+}
+@freezed
+class ShopListModel with _$ShopListModel {
+  const factory ShopListModel({
+    required List<ShopModel> shops,
+  }) = _ShopListModel;
+
+  factory ShopListModel.fromJson(Map<String, dynamic> json) =>
+      _$ShopListModelFromJson(json);
+}
+@freezed
+class ShopDetailModel with _$ShopDetailModel {
+  const factory ShopDetailModel({
+    required String id,
+    required String name,
+    String? description,
+    String? address,
+    String? phone,
+    String? email,
+    String? website,
+    double? latitude,
+    double? longitude,
+    String? openingHours,
+    String? closingHours,
     String? imageUrl,
-    Map<String, Product>?products,
-    Map<String, Order>? orders,
-  }) {
-    return Shop(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      address: address ?? this.address,
-      description: description ?? this.description,
-      ownerUid: ownerUid ?? this.ownerUid,
-      imageUrl: imageUrl ?? this.imageUrl,
-      products: products ?? this.products,
-      orders: orders ?? this.orders,
-    );
-  }
+    double? rating,
+    int? totalReviews,
+  }) = _ShopDetailModel;
+
+  factory ShopDetailModel.fromJson(Map<String, dynamic> json) =>
+      _$ShopDetailModelFromJson(json);
+}
+
+@freezed
+class ShopDetailListModel with _$ShopDetailListModel {
+  const factory ShopDetailListModel({
+    required List<ShopDetailModel> shopDetails,
+  }) = _ShopDetailListModel;
+
+  factory ShopDetailListModel.fromJson(Map<String, dynamic> json) =>
+      _$ShopDetailListModelFromJson(json);
+}
+@freezed
+class ShopCategoryModel with _$ShopCategoryModel {
+  const factory ShopCategoryModel({
+    required String id,
+    required String name,
+    String? description,
+    String? imageUrl,
+  }) = _ShopCategoryModel;
+
+  factory ShopCategoryModel.fromJson(Map<String, dynamic> json) =>
+      _$ShopCategoryModelFromJson(json);
+}
+
+@freezed
+class ShopCategoryListModel with _$ShopCategoryListModel {
+  const factory ShopCategoryListModel({
+    required List<ShopCategoryModel> shopCategories,
+  }) = _ShopCategoryListModel;
+
+  factory ShopCategoryListModel.fromJson(Map<String, dynamic> json) =>
+      _$ShopCategoryListModelFromJson(json);
 }

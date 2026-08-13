@@ -1,4 +1,4 @@
-// TODO Implement this library.
+
 library user_model;
 
 import 'package:json_annotation/json_annotation.dart';
