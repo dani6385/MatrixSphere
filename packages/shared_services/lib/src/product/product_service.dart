@@ -1,8 +1,8 @@
 // lib/services/product_service.dart
-
+import 'package:shared_models/shared_models.dart';
 import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:shared_services/shared_services.dart';
+
 
 /// Layanan untuk mengelola operasi CRUD produk ke Firebase Realtime Database.
 class ProductService {
@@ -89,7 +89,7 @@ class ProductService {
   }
 
   /// Memperbarui stok produk berdasarkan item yang dibeli di keranjang
-  Future<bool> updateStockForOrder(List<CartItem> cartItems) async {
+  Future<bool> updateStockForOrder(List<ItemCart> cartItems) async {
     try {
       for (var cartItem in cartItems) {
         final productId = cartItem.product.id;

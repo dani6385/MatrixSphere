@@ -32,7 +32,7 @@ dependencies:
   qr_flutter: ^4.1.0
   mobile_scanner: ^7.4.0
   media_info:
-    path: ../seller_sphere/third_party/media_info
+    #path: ../seller_sphere/third_party/media_info
   cached_network_image: ^3.4.1
   image_picker: ^1.2.3
   path_provider: ^2.1.6
