@@ -59,6 +59,8 @@ dependencies:
   google_places_flutter: ^2.1.1
   flutter_dotenv: ^5.2.1
   google_maps_flutter_web: ^0.6.3
+  font_awesome_flutter: ^11.0.0
+  flutter_secure_storage: ^10.3.1
   
   
 
