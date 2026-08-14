@@ -5,8 +5,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:seller_sphere/navigations/app_router.dart';
+
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -14,10 +13,6 @@ void main() async {
   // 1. Pastikan binding diinisialisasi terlebih dahulu
   WidgetsFlutterBinding.ensureInitialized();
 
-  // KHUSUS UNTUK WEB: Inisialisasi plugin Google Maps untuk web dengan API key.
-  // Untuk Android dan iOS, API key diatur di level native.
-
-  //await dotenv.load(fileName: ".env");
   try {
     // 2. Coba inisialisasi Firebase
     await Firebase.initializeApp(
@@ -41,8 +36,8 @@ void main() async {
     debugPrint("Gagal menginisialisasi Firebase: $e");
     debugPrint(stack.toString());
   }
-  // Pengambilan API key sekarang dipusatkan di `ApiConstants`.
-  // Tidak perlu lagi memuat atau mencetaknya di sini.
+
+  // 4. Selalu panggil runApp di luar blok inisialisasi agar layar hitam terhindari
   runApp(const SellerSphere());
 }
 
@@ -64,8 +59,6 @@ class _SellerSphereState extends State<SellerSphere> {
 
   @override
   Widget build(BuildContext context) {
-    // MultiProvider dan BlocProvider dapat ditambahkan kembali di sini jika ada state lain yang perlu dikelola secara global.
-    // Untuk routing saja, ini tidak lagi diperlukan.
     return MultiProvider(
       providers: [
         BlocProvider.value(value: _authBloc),
@@ -75,7 +68,7 @@ class _SellerSphereState extends State<SellerSphere> {
       // akan menangani redirect secara otomatis berdasarkan perubahan state.
       child: Builder(
         builder: (context) {
-          //final appProvider = context.watch<AppProvider>();
+          // Add return statement here
           return MaterialApp.router(
             title: 'Seller Sphere',
             debugShowCheckedModeBanner: false,
@@ -87,10 +80,10 @@ class _SellerSphereState extends State<SellerSphere> {
             darkTheme: AppTheme.darkTheme,
 
             // Ini adalah kuncinya: aplikasi akan mengikuti pengaturan sistem
-            //themeMode: appProvider.themeMode,
+            themeMode: ThemeMode.system,
 
             // Konfigurasi router dari GoRouter
-            routerConfig: appRouter, // Menggunakan variabel appRouter langsung
+            //routerConfig: appRouter,
           );
         },
       ),
