@@ -1,4 +1,4 @@
-import 'dart:ui';
+//import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -6,8 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_services/services/firebase_options.dart'; // Corrected import path
-import 'navigations/app_router.dart';
+//import 'package:shared_services/services/firebase_options.dart'; // Corrected import path
+//import 'navigations/app_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -93,7 +93,7 @@ class _ShopSphereState extends State<ShopSphere> {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.system,
-            routerConfig: appRouter,
+            //routerConfig: appRouter,
           );
         },
       ),
