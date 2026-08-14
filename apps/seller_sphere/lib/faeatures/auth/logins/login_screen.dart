@@ -1,8 +1,16 @@
-import 'package:flutter/gestures.dart';
+// lib/features/auth/login/login_screen.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shared_navigations/shared_navigation.dart';
+//import 'package:seller_sphere/widgets/logo.dart';
+import 'package:shared_services/shared_services.dart';
+import 'package:shared_core/shared_core.dart';
 import 'package:shared_logics/shared_logics.dart';
+import 'package:shared_ui/shared_ui.dart';
+//import 'states/login_state.dart';
+//import 'logics/login_logic.dart';
+import 'widgets/login_body.dart';
+//import 'widgets/login_form_fields.dart';
+import 'widgets/login_header.dart';
+//import 'widgets/login_loading_body.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,95 +20,105 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _loginLogic = LoginLogic();
+  final LoginLogic _loginLogic = LoginLogic();
 
-  bool _isLoading = false;
-  bool _rememberMe = false;
+  // Inisialisasi state login
+  late final LoginState _loginState;
 
-  void _performLogin() {
-    if (_formKey.currentState?.validate() ?? false) {
+  @override
+  void initState() {
+    super.initState();
+    _loginState = LoginState(
+      isLoading: true,
+      isPasswordVisible: false,
+      rememberMe: false,
+      emailController: TextEditingController(),
+      passwordController: TextEditingController(),
+      formKey: GlobalKey<FormState>(),
+    );
+
+    _loadSavedCredentialsAndInitSession();
+  }
+
+  @override
+  void dispose() {
+    _loginState.emailController.dispose();
+    _loginState.passwordController.dispose();
+    super.dispose();
+  }
+
+  // Fungsi baru untuk memuat kredensial sebelum inisialisasi sesi
+  void _loadSavedCredentialsAndInitSession() async {
+    final credentials = await LocalAuthStorage.getCredentials();
+    final savedEmail = credentials['email'];
+    final savedPassword = credentials['password'];
+
+    if (savedEmail != null && savedPassword != null) {
+      if (mounted) {
+        setState(() {
+          _loginState.emailController.text = savedEmail;
+          _loginState.passwordController.text = savedPassword;
+          _loginState.rememberMe = true;
+        });
+      }
+    }
+
+    _loginLogic.initSession(
+      setLoading: (loading) => setState(() => _loginState.isLoading = loading),
+      onLoggedIn: () {
+        if (!mounted) return;
+        // Navigasi ditangani otomatis oleh app_router atau go_router
+      }, // Pastikan initSession tidak lagi memuat kredensial
+    );
+  }
+
+  void _handleLoginPressed() {
+    if (_loginState.formKey.currentState?.validate() ?? false) {
       _loginLogic.login(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
+        email: _loginState.emailController.text.trim(),
+        password: _loginState.passwordController.text,
+        rememberMe: _loginState.rememberMe, // Kirim status rememberMe ke logic
         context: context,
-        setLoading: (isLoading) {
-          if (mounted) {
-            setState(() => _isLoading = isLoading);
-          }
-        },
-        rememberMe: _rememberMe,
+        setLoading: (loading) => setState(() => _loginState.isLoading = loading),
       );
     }
   }
 
   @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    if (_loginState.isLoading) {
+      return const LoginLoadingBody();
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) => (value?.isEmpty ?? true) ? 'Email tidak boleh kosong' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) => (value?.isEmpty ?? true) ? 'Password tidak boleh kosong' : null,
-              ),
-              const SizedBox(height: 16),
-              CheckboxListTile(
-                title: const Text('Ingat saya'),
-                value: _rememberMe,
-                onChanged: (newValue) {
-                  setState(() => _rememberMe = newValue ?? false);
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsets.zero,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _isLoading ? null : _performLogin,
-                child: _isLoading ? const CircularProgressIndicator() : const Text('Login'),
-              ),
-              const SizedBox(height: 24),
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    text: 'Belum punya akun? ',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    children: [
-                      TextSpan(
-                        text: 'Daftar',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        recognizer: TapGestureRecognizer()..onTap = () => context.push(AppRoutes.userRegistration),
-                      ),
-                    ],
-                  ),
+              const LoginHeader(),
+              //const Logo(),
+              LoginBody(
+                onLogin: _handleLoginPressed,
+                formFields: LoginFormFields(
+                  formKey: _loginState.formKey,
+                  isLoading: _loginState.isLoading,
+                  emailController: _loginState.emailController,
+                  passwordController: _loginState.passwordController,
+                  isPasswordVisible: _loginState.isPasswordVisible,
+                  rememberMe: _loginState.rememberMe,
+                  onLoginPressed: _handleLoginPressed,
+                  onTogglePasswordVisibility: () {
+                    setState(() {
+                      _loginState.isPasswordVisible = !_loginState.isPasswordVisible;
+                    });
+                  },
+                  onRememberMeChanged: (bool? value) {
+                    setState(() {
+                      _loginState.rememberMe = value ?? false;
+                    });
+                  },
                 ),
               ),
             ],
