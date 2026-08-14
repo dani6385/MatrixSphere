@@ -47,6 +47,9 @@ dependencies:
   go_router: ^17.5.0
   shared_contents: ^0.0.1
   smooth_page_indicator: ^2.0.1
+  font_awesome_flutter: ^11.0.0
+  shared_logics: ^0.0.1
+  shared_core: ^0.0.1
 
 dev_dependencies:
   flutter_test:

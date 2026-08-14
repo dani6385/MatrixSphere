@@ -5,3 +5,5 @@ export 'src/mixins.dart';
 export 'src/enums.dart';
 export 'src/utils.dart';
 export 'src/exceptions.dart';
+export 'src/login_form_fields.dart';
+export 'src/login_logic.dart';
