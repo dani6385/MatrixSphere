@@ -18,9 +18,9 @@ class LoginLogic {
             'User is already logged in via Firebase. Navigating via GoRouter.');
       }
       onLoggedIn();
-    } else {
-      setLoading(false);
     }
+    // Selalu set loading ke false setelah pengecekan selesai
+    setLoading(false);
   }
 
   /// Memproses fungsi login menggunakan Firebase
