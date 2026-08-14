@@ -88,4 +88,32 @@ class ShopService {
       return null;
     }
   }
+
+  Future<String?> getCurrentShopId(User? currentUser) async {
+    if (currentUser == null) return null;
+
+    try {
+      // Cek dulu di 'shops_pending_approval'
+      final pendingSnapshot = await _dbRef.child('shops_pending_approval').child(currentUser.uid).get();
+      if (pendingSnapshot.exists) {
+        final data = pendingSnapshot.value as Map<dynamic, dynamic>?;
+        // Jika ada, statusnya pasti 'pending' atau sedang diproses
+        return data?['status'] as String? ?? ShopStatus.pending.name;
+      }
+
+      // Jika tidak ada di pending, cek di 'seller_sphere' untuk toko yang sudah disetujui
+      final sellerSnapshot = await _dbRef.child('seller_sphere').child(currentUser.uid).get();
+      if (sellerSnapshot.exists) {
+        // Jika ada data di seller_sphere, berarti tokonya sudah 'approved'.
+        return ShopStatus.approved.name;
+      }
+
+      // Jika tidak ditemukan di mana pun, berarti pengguna belum mendaftarkan toko.
+      return ShopStatus.none.name;
+
+    } catch (e) {
+      print('Error saat memeriksa shop ID/status: $e');
+      return null;
+    }
+  }
 }

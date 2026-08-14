@@ -19,7 +19,7 @@ final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   navigatorKey: _rootNavigatorKey,
   // Daftarkan AuthService sebagai listener. GoRouter akan re-route saat ada notifikasi.
-  refreshListenable: AuthRedirectNotifier(_authService as SharedPreferencesService),
+  refreshListenable: AuthRedirectNotifier(_authService),
   errorBuilder: (context, state) => Scaffold(
     body: Center(
       child: Text('Halaman tidak ditemukan: ${state.error}'),

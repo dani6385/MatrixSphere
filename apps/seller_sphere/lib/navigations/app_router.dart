@@ -1,49 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_contents/shared_contents.dart';
-import 'package:shared_services/shared_services.dart';
-import 'app_extractor.dart';
+import 'package:shared_navigations/shared_navigation.dart';
+import 'package:shared_services/auth/shop_status.enum.dart';
+import 'package:collection/collection.dart';
+import 'package:shared_services/shared_services.dart' hide ShopService;
+import 'fullscreen_routes.dart';
+import 'shell_route_config.dart';
+
 
 // Private navigator keys for each tab
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final AuthService _authService = AuthService();
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
-  debugLogDiagnostics: true,
-  routes: [
-    GoRoute(
-      path: '/',
-      redirect: (context, state) async {
-        final authStatus = context.read<AuthBloc>().state.status;
-        final bool hasSeenOnboarding =
-            SharedPrefsService.getBool(KeyConstants.hasSeenOnboarding) ??
-                false;
+  refreshListenable: AuthRedirectNotifier(
+      _authService), // Pastikan tipenya sesuai dengan konstruktor
+  redirect: (BuildContext context, GoRouterState state) async {
+    final String currentPath = state.matchedLocation;
 
-        if (!hasSeenOnboarding) {
-          return '/onboarding';
-        }
+    // 1. Cek Onboarding (Prioritas Utama)
+    final bool hasSeenOnboarding =
+        SharedPrefsService.getBool('hasSeenOnboarding') ?? false;
+    if (!hasSeenOnboarding && currentPath != AppRoutes.onboarding) {
+      return AppRoutes.onboarding as String;
+    }
 
-        if (authStatus == AuthStatus.unauthenticated) {
-          return '/login';
-        }
+    final bool isLoggedIn = _authService.isLoggedIn();
+    final bool isAuthRoute = currentPath == AppRoutes.login ||
+        currentPath == AppRoutes.userRegistration ||
+        currentPath == AppRoutes.forgotPassword;
 
-        // If authenticated and has seen onboarding, proceed to home
-        return '/home';
-      },
-    ),
-    GoRoute(
-      path: '/onboarding',
-      builder: (context, state) => const OnboardingScreen(),
-    ),
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginScreen(),
-    ),/*
-    GoRoute(
-      path: '/register',
-      builder: (context, state) => const RegisterPage(),
-    ),*/
+    // 2. Redirect jika belum login
+    if (!isLoggedIn) {
+      return isAuthRoute ? null : AppRoutes.login;
+    }
+
+    // 3. Jika sudah login dan mencoba ke halaman auth, lempar ke home
+    if (isAuthRoute) return AppRoutes.home;
+
+    // 4. Cek Status Toko (Hanya jika sudah login)
+    final ShopService shopService = ShopService();
+    final String? shopStatusString =
+        await shopService.getCurrentShopId(_authService.currentUser);
+    final ShopStatus? shopStatusEnum =
+        ShopStatus.values.firstWhereOrNull((e) => e.name == shopStatusString);
+
+    final bool hasApprovedShop = shopStatusEnum == ShopStatus.approved;
+    final bool isAtShopRegistration = currentPath == AppRoutes.shopRegistration;
+
+    if (!hasApprovedShop && !isAtShopRegistration) {
+      return AppRoutes.shopRegistration;
+    }
+    if (hasApprovedShop && isAtShopRegistration) {
+      return AppRoutes.home;
+    }
+
+    return null; // Tidak ada redirect
+  },
+  routes: <RouteBase>[
+    buildAppShellRoute(),
+    ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );

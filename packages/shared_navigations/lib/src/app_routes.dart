@@ -14,4 +14,17 @@ class AppRoutes {
   static const String help = '/help';
   static const String chat = '/chat';
   static const String stream = '/stream';
+
+  static Object get onboarding => '/onboarding';
+
+  static get home => '/home';
+
+  static get financial => null;
+
+  static get management => null;
+
+  static get sellers => null;
+
+  static get attendance => null;
 }
+
