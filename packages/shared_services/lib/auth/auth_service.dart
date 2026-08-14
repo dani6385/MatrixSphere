@@ -21,7 +21,7 @@ class AuthService extends ChangeNotifier {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      
+
       // Ambil dan simpan token ke SharedPreferences
       if (credential.user != null) {
         String? token = await credential.user!.getIdToken();
@@ -44,7 +44,7 @@ class AuthService extends ChangeNotifier {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      
+
       // Ambil dan simpan token untuk akun baru
       if (userCredential.user != null) {
         String? token = await userCredential.user!.getIdToken();
@@ -80,5 +80,26 @@ class AuthService extends ChangeNotifier {
 
     await _auth.signOut();
     notifyListeners();
+  }
+
+  Future<void> registerUser(
+      {required String name,
+      required String email,
+      required String password}) async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await userCredential.user?.updateDisplayName(name);
+      // Optionally, you might want to re-fetch the user or reload to get the updated display name
+      await userCredential.user?.reload();
+      notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      throw Exception('Registrasi gagal: ${e.message}');
+    } catch (e) {
+      throw Exception('Terjadi kesalahan saat registrasi.');
+    }
   }
 }

@@ -7,3 +7,4 @@ export 'src/utils.dart';
 export 'src/exceptions.dart';
 export 'src/login_form_fields.dart';
 export 'src/login_logic.dart';
+export 'src/registration_logic.dart';

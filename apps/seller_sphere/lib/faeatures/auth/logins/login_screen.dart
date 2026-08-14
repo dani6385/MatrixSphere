@@ -1,6 +1,7 @@
-//import 'package:flutter/gestures.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-//import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_navigations/shared_navigation.dart';
 import 'package:shared_logics/shared_logics.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -82,6 +83,25 @@ class _LoginScreenState extends State<LoginScreen> {
               ElevatedButton(
                 onPressed: _isLoading ? null : _performLogin,
                 child: _isLoading ? const CircularProgressIndicator() : const Text('Login'),
+              ),
+              const SizedBox(height: 24),
+              Center(
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Belum punya akun? ',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    children: [
+                      TextSpan(
+                        text: 'Daftar',
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()..onTap = () => context.push(AppRoutes.userRegistration),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
