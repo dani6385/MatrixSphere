@@ -50,6 +50,7 @@ dependencies:
   shared_core: ^0.0.1
   shared_models: ^0.0.1
   shared_contents: ^0.0.1
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:
