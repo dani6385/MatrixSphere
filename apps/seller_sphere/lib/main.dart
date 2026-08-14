@@ -2,9 +2,11 @@ import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+//import 'package:matrix_sphere/firebase_options.dart'; // Corrected import path
 import 'navigations/app_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
@@ -14,12 +16,31 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // 2. Coba inisialisasi Firebase
+    // 2. Pilih opsi Firebase yang benar untuk aplikasi ini
+    FirebaseOptions options;
+    if (kIsWeb) {
+      options = DefaultFirebaseOptions.web;
+    } else {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          options = DefaultFirebaseOptions.sellerSphereAndroid;
+          break;
+        case TargetPlatform.iOS:
+          options = DefaultFirebaseOptions.sellerSphereIos;
+          break;
+        default:
+          throw UnsupportedError(
+            'DefaultFirebaseOptions are not supported for this platform.',
+          );
+      }
+    }
+
+    // 3. Inisialisasi Firebase dengan opsi yang dipilih
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+      options: options,
     );
 
-    // 3. Set up Crashlytics hanya jika Firebase berhasil diinisialisasi
+    // 4. Set up Crashlytics hanya jika Firebase berhasil diinisialisasi
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
     };
@@ -29,7 +50,7 @@ void main() async {
       return true;
     };
 
-    debugPrint("Firebase & Crashlytics berhasil dikonfigurasi.");
+    debugPrint("Firebase & Crashlytics berhasil dikonfigurasi untuk Seller Sphere.");
   } catch (e, stack) {
     // Jika Firebase gagal, aplikasi TIDAK AKAN layar hitam, melainkan tetap berjalan
     // dan menampilkan pesan error ini di konsol debug Anda.
@@ -37,7 +58,7 @@ void main() async {
     debugPrint(stack.toString());
   }
 
-  // 4. Selalu panggil runApp di luar blok inisialisasi agar layar hitam terhindari
+  // 5. Selalu panggil runApp di luar blok inisialisasi agar layar hitam terhindari
   runApp(const SellerSphere());
 }
 
@@ -64,25 +85,14 @@ class _SellerSphereState extends State<SellerSphere> {
         BlocProvider.value(value: _authBloc),
         //ChangeNotifierProvider(create: (context) => AppProvider()),
       ],
-      // BlocListener tidak lagi diperlukan di sini karena GoRouter
-      // akan menangani redirect secara otomatis berdasarkan perubahan state.
       child: Builder(
         builder: (context) {
-          // Add return statement here
           return MaterialApp.router(
             title: 'Seller Sphere',
             debugShowCheckedModeBanner: false,
-            // --- KONFIGURASI TEMA ---
-            // Tema yang digunakan saat sistem dalam mode terang (light mode)
             theme: AppTheme.lightTheme,
-
-            // Tema yang digunakan saat sistem dalam mode gelap (dark mode)
             darkTheme: AppTheme.darkTheme,
-
-            // Ini adalah kuncinya: aplikasi akan mengikuti pengaturan sistem
             themeMode: ThemeMode.system,
-
-            // Konfigurasi router dari GoRouter
             routerConfig: appRouter,
           );
         },
