@@ -1,56 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_navigations/shared_navigation.dart';
-import 'package:shared_services/auth/shop_status.enum.dart' hide ShopService;
 import 'package:collection/collection.dart';
-import 'package:shared_services/shared_services.dart';
+import 'package:shared_services/auth/shop_status.enum.dart';
+import 'package:shared_services/shared_services.dart' hide ShopService;
 import 'app_extractor.dart';
 
 //import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:shared_services/shared_services.dart';
+//import 'package:seller_sphere/faeatures/auth/registrations/shop_registration_screen.dart'; // Contoh, sesuaikan path
+//import 'package:seller_sphere/faeatures/auth/registrations/user_registration_screen.dart'; // Contoh, sesuaikan path
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final AuthService _authService = AuthService();
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   navigatorKey: _rootNavigatorKey,
-  // ...
-    redirect: (BuildContext context, GoRouterState state) async {
-      final bool isLoggedIn = _authService.isLoggedIn();
-      final ShopService shopService = ShopService();
-      final String currentPath = state.matchedLocation;
-  
-      // ... (kode untuk pengguna yang belum login)
-  
-      // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
-      if (isLoggedIn) {
-        // INI BAGIAN PENTINGNYA:
-        // Jika pengguna sudah login dan saat ini berada di halaman login atau registrasi,
-        // maka secara otomatis "lempar" atau arahkan mereka ke halaman beranda (home).
-        if (currentPath == AppRoutes.login || currentPath == AppRoutes.userRegistration) {
-          return AppRoutes.home; // <-- PENGALIHAN TERJADI DI SINI
-        }
-  
-        // Setelah itu, ada logika tambahan untuk memeriksa status toko.
-        // Jika toko belum disetujui, pengguna akan dilempar ke halaman registrasi toko.
-        final String? shopStatusString = await shopService.getCurrentShopId(_authService.currentUser);
-        final ShopStatus? shopStatusEnum = shopStatusString != null
-            ? ShopStatus.values.firstWhereOrNull((e) => e.name == shopStatusString)
-            : null;
-        final bool hasApprovedShop = shopStatusEnum == ShopStatus.approved;
-        final bool isAtShopRegistration = state.matchedLocation == AppRoutes.shopRegistration;
+  // Daftarkan AuthService sebagai listener. GoRouter akan re-route saat ada notifikasi.
+  refreshListenable: _authService,
+  redirect: (BuildContext context, GoRouterState state) async {
+    final bool isLoggedIn = _authService.isLoggedIn();
+    final String currentPath = state.uri.path;
 
-        if (!hasApprovedShop && !isAtShopRegistration) {
-          return AppRoutes.shopRegistration; // <-- PENGALIHAN LAINNYA
-        }
-        if (hasApprovedShop && isAtShopRegistration) {
-          return AppRoutes.home;
-        }
+    final bool onAuthRoute = currentPath == AppRoutes.login ||
+        currentPath == AppRoutes.userRegistration;
+
+    // 1. Logika untuk pengguna yang belum login
+    if (!isLoggedIn) {
+      // Jika belum login dan mencoba mengakses halaman selain onboarding, login, atau registrasi,
+      // arahkan ke halaman login.
+      if (currentPath != '/' && !onAuthRoute) {
+        // Anda mungkin ingin mengizinkan beberapa halaman publik lainnya di sini.
+        return AppRoutes.login;
       }
-      return null; // Jika tidak ada kondisi yang terpenuhi, jangan alihkan.
-    },
-  // ...
-  
+      return null; // Izinkan akses ke '/', '/login', '/user-registration'
+    }
+
+    // 2. Logika untuk pengguna yang sudah login
+    // Jika sudah login dan mencoba mengakses halaman login/registrasi, arahkan ke home.
+    if (onAuthRoute) {
+      return AppRoutes.home;
+    }
+
+    // 3. Cek status toko untuk pengguna yang sudah login
+    final ShopService shopService = ShopService();
+    final String? shopStatusString =
+        await shopService.getCurrentShopId(_authService.currentUser);
+    final ShopStatus? shopStatus = shopStatusString != null
+        ? ShopStatus.values.firstWhereOrNull((e) => e.name == shopStatusString)
+        : null;
+
+    final bool hasApprovedShop = shopStatus == ShopStatus.approved;
+    final bool onShopRegistrationRoute = currentPath == AppRoutes.shopRegistration;
+
+    // Jika toko belum disetujui dan pengguna tidak sedang di halaman registrasi toko, arahkan ke sana.
+    if (!hasApprovedShop && !onShopRegistrationRoute) {
+      return AppRoutes.shopRegistration;
+    }
+
+    // Jika toko sudah disetujui dan pengguna masih di halaman registrasi toko, arahkan ke home.
+    if (hasApprovedShop && onShopRegistrationRoute) {
+      return AppRoutes.home;
+    }
+
+    return null; // Tidak ada pengalihan yang diperlukan
+  },
   routes: <RouteBase>[
     GoRoute(
       path: '/',
@@ -65,9 +78,23 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: AppRoutes.userRegistration, // Contoh: '/user-registration'
+      builder: (BuildContext context, GoRouterState state) {
+        // Ganti dengan widget layar registrasi pengguna Anda
+        return const Scaffold(body: Center(child: Text('User Registration')));
+      },
+    ),
+    GoRoute(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) {
         return const HomeScreen();
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.shopRegistration, // Contoh: '/shop-registration'
+      builder: (BuildContext context, GoRouterState state) {
+        // Ganti dengan widget layar registrasi toko Anda
+        return const Scaffold(body: Center(child: Text('Shop Registration')));
       },
     ),
     /*buildAppShellRoute(),
