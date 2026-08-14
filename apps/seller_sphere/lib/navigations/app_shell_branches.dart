@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_navigations/shared_navigation.dart';
+
 //import 'custom_transition_page.dart';
 import 'app_extractor.dart';
 //import 'app_common_routes.dart'; // Mengimpor rute umum
@@ -13,6 +14,14 @@ import 'app_extractor.dart';
 // tetap berada di dalam tab yang sama dan tidak menutupi bottom nav bar.
 final _shellNavigatorHomeKey =
     GlobalKey<NavigatorState>(debugLabel: 'ShellHome');
+final _shellNavigatorStreamKey =
+    GlobalKey<NavigatorState>(debugLabel: 'ShellStream');
+final _shellNavigatorManagementKey =
+    GlobalKey<NavigatorState>(debugLabel: 'ShellManagement');
+final _shellNavigatorSellersKey =
+    GlobalKey<NavigatorState>(debugLabel: 'ShellSellers');
+final _shellNavigatorAttendanceKey =
+    GlobalKey<NavigatorState>(debugLabel: 'ShellAttendance');
 
 /// Daftar cabang untuk [StatefulShellRoute].
 /// Setiap [StatefulShellBranch] mewakili satu tab pada bottom navigation bar.
@@ -52,12 +61,12 @@ final List<StatefulShellBranch> appShellBranches = [
   ),
 
   // Branch untuk Tab Stream
-  /*StatefulShellBranch(
+  StatefulShellBranch(
+    navigatorKey: _shellNavigatorStreamKey,
     routes: [
       GoRoute(
         path: AppRoutes.financial,
-        pageBuilder: (context, state) => FadeTransitionPage(
-            child: const FinancialScreen()),
+        builder: (context, state) => const FinancialScreen(),
         routes: const [],
       ),
     ],
@@ -65,11 +74,11 @@ final List<StatefulShellBranch> appShellBranches = [
 
   // Branch untuk Tab Management
   StatefulShellBranch(
+    navigatorKey: _shellNavigatorManagementKey,
     routes: [
       GoRoute(
         path: AppRoutes.management,
-        pageBuilder: (context, state) =>
-            FadeTransitionPage(child: const ManagementScreen()),
+        builder: (context, state) => const ManagementScreen(),
         /*routes: [
           // Sub-rute dari Home
           GoRoute(
@@ -97,11 +106,11 @@ final List<StatefulShellBranch> appShellBranches = [
 
   // Branch untuk Tab Sellers (Products)
   StatefulShellBranch(
+    navigatorKey: _shellNavigatorSellersKey,
     routes: [
       GoRoute(
         path: AppRoutes.sellers,
-        pageBuilder: (context, state) =>
-            FadeTransitionPage(child: const SellerScreen()),
+        builder: (context, state) => const SellerScreen(),
         //routes: commonDetailRoutes,
       ),
     ],
@@ -109,13 +118,13 @@ final List<StatefulShellBranch> appShellBranches = [
 
   // Branch untuk Tab Attendance
   StatefulShellBranch(
+    navigatorKey: _shellNavigatorAttendanceKey,
     routes: [
       GoRoute(
         path: AppRoutes.attendance,
-        pageBuilder: (context, state) =>
-            FadeTransitionPage(child: const AttendanceScreen()),
+        builder: (context, state) => const AttendanceScreen(),
         routes: const [],
       ),
     ],
-  ),*/
+  ),
 ];
