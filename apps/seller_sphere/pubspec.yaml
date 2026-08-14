@@ -45,6 +45,7 @@ dependencies:
   shared_navigations: ^0.0.1
   go_router: ^17.5.0
   smooth_page_indicator: ^2.0.1
+  shared_logics: ^0.0.1
 
 dev_dependencies:
   flutter_test:
