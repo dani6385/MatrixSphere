@@ -5,11 +5,8 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-//import 'package:seller_sphere/providers/app_provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-//import 'package:flutter_bloc/flutter_bloc.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:seller_sphere/navigations/app_router.dart';
-//import 'package:go_router/go_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -19,9 +16,8 @@ void main() async {
 
   // KHUSUS UNTUK WEB: Inisialisasi plugin Google Maps untuk web dengan API key.
   // Untuk Android dan iOS, API key diatur di level native.
-  
 
-  await dotenv.load(fileName: ".env");
+  //await dotenv.load(fileName: ".env");
   try {
     // 2. Coba inisialisasi Firebase
     await Firebase.initializeApp(
@@ -101,4 +97,3 @@ class _SellerSphereState extends State<SellerSphere> {
     );
   }
 }
-
