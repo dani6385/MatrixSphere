@@ -64,6 +64,12 @@ final GoRouter appRouter = GoRouter(
         return const LoginScreen();
       },
     ),
+    GoRoute(
+      path: '/home',
+      builder: (BuildContext context, GoRouterState state) {
+        return const HomeScreen();
+      },
+    ),
     /*buildAppShellRoute(),
     ...buildFullscreenRoutes(_rootNavigatorKey),*/
   ],
