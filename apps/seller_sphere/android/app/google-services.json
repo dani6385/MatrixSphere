@@ -13,7 +13,12 @@
           "package_name": "com.matrix.sphere"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "359008687014-4dopusuard517c1ale40cumspsg7eonm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAFAyd8hhswA_fsYlzhW6oCdu6irzs7yaA"
@@ -21,7 +26,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359008687014-4dopusuard517c1ale40cumspsg7eonm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "359008687014-11t32kp6ae9kdn9tidu8eso8ko03hjed.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.shop.sphere"
+              }
+            }
+          ]
         }
       }
     },
@@ -32,7 +49,12 @@
           "package_name": "com.seller.sphere"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "359008687014-4dopusuard517c1ale40cumspsg7eonm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAFAyd8hhswA_fsYlzhW6oCdu6irzs7yaA"
@@ -40,7 +62,55 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359008687014-4dopusuard517c1ale40cumspsg7eonm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "359008687014-11t32kp6ae9kdn9tidu8eso8ko03hjed.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.shop.sphere"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359008687014:android:ab7875871183ac3fa9f567",
+        "android_client_info": {
+          "package_name": "com.shop.sphere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "359008687014-4dopusuard517c1ale40cumspsg7eonm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFAyd8hhswA_fsYlzhW6oCdu6irzs7yaA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359008687014-4dopusuard517c1ale40cumspsg7eonm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "359008687014-11t32kp6ae9kdn9tidu8eso8ko03hjed.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.shop.sphere"
+              }
+            }
+          ]
         }
       }
     }
