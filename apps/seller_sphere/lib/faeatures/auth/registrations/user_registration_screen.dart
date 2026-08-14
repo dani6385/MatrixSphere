@@ -7,21 +7,21 @@ import 'package:shared_core/shared_core.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  const RegistrationScreen({super.key});
+class UserRegistrationScreen extends StatefulWidget {
+  const UserRegistrationScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  State<UserRegistrationScreen> createState() => _UserRegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
-  late RegistrationState _state;
+class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
+  late UserRegistrationState _state;
   late final RegistrationLogic _registrationLogic;
 
   @override
   void initState() {
     super.initState();
-    _state = RegistrationState.initial();
+    _state = UserRegistrationState.initial();
     _registrationLogic = RegistrationLogic();
   }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Kelas untuk menampung state pada halaman pendaftaran (Registration)
-class RegistrationState {
+/// Kelas untuk menampung state pada halaman pendaftaran (UserRegistration)
+class UserRegistrationState {
   final bool isLoading;
   final bool isPasswordVisible;
   final bool isConfirmPasswordVisible;
@@ -11,7 +11,7 @@ class RegistrationState {
   final TextEditingController confirmPasswordController;
   final GlobalKey<FormState> formKey;
 
-  RegistrationState({
+  UserRegistrationState({
     required this.isLoading,
     required this.isPasswordVisible,
     required this.isConfirmPasswordVisible,
@@ -23,8 +23,8 @@ class RegistrationState {
   });
 
   /// Fungsi factory untuk membuat inisialisasi awal state dengan nilai default
-  factory RegistrationState.initial() {
-    return RegistrationState(
+  factory UserRegistrationState.initial() {
+    return UserRegistrationState(
       isLoading: false,
       isPasswordVisible: false,
       isConfirmPasswordVisible: false,
@@ -37,12 +37,12 @@ class RegistrationState {
   }
 
   /// Fungsi pembantu untuk menyalin state saat terjadi perubahan (immutability helper)
-  RegistrationState copyWith({
+  UserRegistrationState copyWith({
     bool? isLoading,
     bool? isPasswordVisible,
     bool? isConfirmPasswordVisible,
   }) {
-    return RegistrationState(
+    return UserRegistrationState(
       isLoading: isLoading ?? this.isLoading,
       isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
       isConfirmPasswordVisible: isConfirmPasswordVisible ?? this.isConfirmPasswordVisible,
@@ -52,5 +52,52 @@ class RegistrationState {
       confirmPasswordController: confirmPasswordController,
       formKey: formKey,
     );
+  }
+}
+
+class ShopRegistrationState {
+  final bool isLoading;
+  final TextEditingController shopNameController;
+  final TextEditingController descriptionController;
+  final TextEditingController addressController;
+  final GlobalKey<FormState> formKey;
+
+  ShopRegistrationState({
+    required this.isLoading,
+    required this.shopNameController,
+    required this.descriptionController,
+    required this.addressController,
+    required this.formKey,
+  });
+
+  /// Factory untuk inisialisasi awal state
+  factory ShopRegistrationState.initial() {
+    return ShopRegistrationState(
+      isLoading: false,
+      shopNameController: TextEditingController(),
+      descriptionController: TextEditingController(),
+      addressController: TextEditingController(),
+      formKey: GlobalKey<FormState>(),
+    );
+  }
+
+  /// Fungsi copyWith untuk memperbarui state secara aman
+  ShopRegistrationState copyWith({
+    bool? isLoading,
+  }) {
+    return ShopRegistrationState(
+      isLoading: isLoading ?? this.isLoading,
+      shopNameController: shopNameController,
+      descriptionController: descriptionController,
+      addressController: addressController,
+      formKey: formKey,
+    );
+  }
+
+  /// Fungsi untuk membersihkan memori controller saat tidak lagi digunakan
+  void dispose() {
+    shopNameController.dispose();
+    descriptionController.dispose();
+    addressController.dispose();
   }
 }
