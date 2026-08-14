@@ -10,3 +10,4 @@ export 'src/duration_constants.dart';
 export 'src/size_constants.dart';
 export 'src/spacing_constants.dart';
 export 'src/key_constants.dart';
+export 'services/image_upload_service.dart';
