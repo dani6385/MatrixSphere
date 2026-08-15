@@ -1,35 +1,34 @@
+import 'dart:ui';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'navigations/app_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import 'package:seller_sphere/providers/app_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:seller_sphere/navigations/app_router.dart';
+//import 'package:go_router/go_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 void main() async {
+  // 1. Pastikan binding diinisialisasi terlebih dahulu
   WidgetsFlutterBinding.ensureInitialized();
 
+  // KHUSUS UNTUK WEB: Inisialisasi plugin Google Maps untuk web dengan API key.
+  // Untuk Android dan iOS, API key diatur di level native.
+  
+
+  await dotenv.load(fileName: ".env");
   try {
-    FirebaseOptions options;
-    if (kIsWeb) {
-      options = DefaultFirebaseOptions.web;
-    } else {
-      switch (defaultTargetPlatform) {
-        case TargetPlatform.android:
-          options = DefaultFirebaseOptions.sellerSphereAndroid;
-          break;
-        case TargetPlatform.iOS:
-          options = DefaultFirebaseOptions.sellerSphereIos;
-          break;
-        default:
-          throw UnsupportedError(
-            'DefaultFirebaseOptions are not supported for this platform.',
-          );
-      }
-    }
+    // 2. Coba inisialisasi Firebase
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
-    await Firebase.initializeApp(options: options);
-
+    // 3. Set up Crashlytics hanya jika Firebase berhasil diinisialisasi
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
     };
@@ -39,14 +38,15 @@ void main() async {
       return true;
     };
 
-    debugPrint(
-      "Firebase & Crashlytics berhasil dikonfigurasi untuk Seller Sphere.",
-    );
+    debugPrint("Firebase & Crashlytics berhasil dikonfigurasi.");
   } catch (e, stack) {
+    // Jika Firebase gagal, aplikasi TIDAK AKAN layar hitam, melainkan tetap berjalan
+    // dan menampilkan pesan error ini di konsol debug Anda.
     debugPrint("Gagal menginisialisasi Firebase: $e");
     debugPrint(stack.toString());
   }
-
+  // Pengambilan API key sekarang dipusatkan di `ApiConstants`.
+  // Tidak perlu lagi memuat atau mencetaknya di sini.
   runApp(const SellerSphere());
 }
 
@@ -58,19 +58,46 @@ class SellerSphere extends StatefulWidget {
 }
 
 class _SellerSphereState extends State<SellerSphere> {
+  late final AuthBloc _authBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc = AuthBloc(authService: AuthService());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        return MaterialApp.router(
-          title: 'Seller Sphere',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
-          routerConfig: appRouter,
-        );
-      },
+    // MultiProvider dan BlocProvider dapat ditambahkan kembali di sini jika ada state lain yang perlu dikelola secara global.
+    // Untuk routing saja, ini tidak lagi diperlukan.
+    return MultiProvider(
+      providers: [
+        BlocProvider.value(value: _authBloc),
+        ChangeNotifierProvider(create: (context) => AppProvider()),
+      ],
+      // BlocListener tidak lagi diperlukan di sini karena GoRouter
+      // akan menangani redirect secara otomatis berdasarkan perubahan state.
+      child: Builder(
+        builder: (context) {
+          final appProvider = context.watch<AppProvider>();
+          return MaterialApp.router(
+            title: 'Seller Sphere',
+            debugShowCheckedModeBanner: false,
+            // --- KONFIGURASI TEMA ---
+            // Tema yang digunakan saat sistem dalam mode terang (light mode)
+            theme: AppTheme.lightTheme,
+
+            // Tema yang digunakan saat sistem dalam mode gelap (dark mode)
+            darkTheme: AppTheme.darkTheme,
+
+            // Ini adalah kuncinya: aplikasi akan mengikuti pengaturan sistem
+            themeMode: appProvider.themeMode,
+
+            // Konfigurasi router dari GoRouter
+            routerConfig: appRouter, // Menggunakan variabel appRouter langsung
+          );
+        },
+      ),
     );
   }
 }
