@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 import 'package:shared_services/shared_services.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -49,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Login Gagal: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: context.error,
           ),
         );
       }
