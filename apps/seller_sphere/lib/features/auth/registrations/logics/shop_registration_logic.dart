@@ -1,39 +1,64 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:seller_sphere/navigations/app_routes.dart';
-import 'dart:math';
+import 'package:shared_services/shared_services.dart';
+
 import '../states/shop_registration_state.dart';
 
 class ShopRegistrationLogic {
+  final ShopService _shopService = ShopService();
+  final LocationService _locationService = LocationService();
+
   Future<void> registerShop({
     required BuildContext context,
     required ShopRegistrationState state,
     required VoidCallback onUpdate,
   }) async {
     if (state.formKey.currentState?.validate() ?? false) {
-      onUpdate(); // Set isLoading to true
+      state.setIsLoading(true);
+      onUpdate();
 
-      // Simulate network request
-      await Future.delayed(const Duration(seconds: 2));
+      try {
+        final User? user = FirebaseAuth.instance.currentUser;
+        if (user == null) {
+          throw Exception('Pengguna tidak login. Silakan login terlebih dahulu.');
+        }
 
-      // For demonstration, simulate registration success/failure
-      // In a real app, you would call an API here
-      bool registrationSuccess = Random().nextBool();
+        final position = await _locationService.getCurrentLocation();
+        final coordinates = {
+          'latitude': position.latitude,
+          'longitude': position.longitude,
+        };
 
-      if (registrationSuccess) {
+        await _shopService.registerShop(
+          user: user,
+          shopName: state.shopNameController.text,
+          fullAddress: state.addressController.text,
+          coordinates: coordinates,
+        );
+
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registrasi toko berhasil!')),
+          const SnackBar(
+            content: Text('Registrasi toko berhasil! Menunggu persetujuan admin.'),
+            backgroundColor: Colors.green,
+          ),
         );
-        context.go(AppRoutes.login); // Navigate to login after successful registration
-      } else {
+        context.go(AppRoutes.login);
+      } catch (e) {
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registrasi toko gagal. Silakan coba lagi.')),
+          SnackBar(
+            content: Text('Registrasi toko gagal: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
+      } finally {
+        state.setIsLoading(false);
+        onUpdate();
       }
-      onUpdate(); // Set isLoading to false
     }
   }
 }

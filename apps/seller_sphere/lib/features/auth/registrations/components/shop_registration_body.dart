@@ -43,7 +43,7 @@ class ShopRegistrationBody extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              controller: state.shopAddressController,
+              controller: state.addressController,
               decoration: const InputDecoration(labelText: 'Alamat Toko'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
