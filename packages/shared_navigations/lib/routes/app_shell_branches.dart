@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 List<StatefulShellBranch> buildSharedShellBranches({
-  required Widget homeScreen,
-  required Widget approvalsScreen,
-  required Widget analyticsScreen,
-  required Widget transactionsScreen,
-  required Widget attendanceScreen,
+  required Widget case0Screen, // Contoh: Home / Beranda
+  required Widget case1Screen, // Contoh: Approvals (Matrix) atau Financial (Seller)
+  required Widget case2Screen, // Contoh: Analytics (Matrix) atau Management (Seller)
+  required Widget case3Screen, // Contoh: Transactions (Matrix) atau Sellers (Seller)
+  required Widget case4Screen,
   GlobalKey<NavigatorState>? homeNavigatorKey,
+  
 }) {
   return [
     // Branch untuk Tab Home
@@ -17,47 +18,44 @@ List<StatefulShellBranch> buildSharedShellBranches({
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => homeScreen,
+          builder: (context, state) => case0Screen,
         ),
       ],
     ),
-
+    StatefulShellBranch(
+      navigatorKey: homeNavigatorKey,
+      routes: [
+        GoRoute(
+          path: '/case1',
+          builder: (context, state) => case1Screen,
+        ),
+      ],
+    ),
+    StatefulShellBranch(
+      navigatorKey: homeNavigatorKey,
+      routes: [
+        GoRoute(
+          path: '/case2',
+          builder: (context, state) => case2Screen,
+        ),
+      ],
+    ),
     // Branch untuk Tab Financial / Stream
     StatefulShellBranch(
+      navigatorKey: homeNavigatorKey,
       routes: [
         GoRoute(
-          path: '/financial',
-          builder: (context, state) => approvalsScreen,
+          path: '/case3',
+          builder: (context, state) => case3Screen,
         ),
       ],
     ),
-
-    // Branch untuk Tab Management
-    StatefulShellBranch(
-      routes: [
-        GoRoute(
-          path: '/management',
-          builder: (context, state) => analyticsScreen,
-        ),
-      ],
-    ),
-
-    // Branch untuk Tab Sellers
-    StatefulShellBranch(
-      routes: [
-        GoRoute(
-          path: '/sellers',
-          builder: (context, state) => attendanceScreen,
-        ),
-      ],
-    ),
-
     // Branch untuk Tab Attendance
     StatefulShellBranch(
       routes: [
         GoRoute(
-          path: '/attendance',
-          builder: (context, state) => attendanceScreen,
+          path: '/case',
+          builder: (context, state) => case4Screen,
         ),
       ],
     ),
