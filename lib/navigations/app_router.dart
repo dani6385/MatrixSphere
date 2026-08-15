@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_services/shared_services.dart';
-
 import 'auth_redirect_notifier.dart';
 import 'fullscreen_routes.dart';
 import 'shell_route_config.dart';

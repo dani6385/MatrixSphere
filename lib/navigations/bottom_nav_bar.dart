@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:logger/logger.dart';
-import 'app_routes.dart';
+import 'package:shared_navigations/shared_navigation.dart';
 import 'app_shell_branches.dart';
 import 'package:shared_ui/shared_ui.dart';
 

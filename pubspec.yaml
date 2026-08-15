@@ -53,7 +53,7 @@ workspace:
   #- packages/shared_contents
   #- packages/shared_logics
   - packages/shared_models
-  #- packages/shared_navigations
+  - packages/shared_navigations
   - packages/shared_services
   - packages/shared_ui
   #- apps/seller_sphere/third_party/media_info

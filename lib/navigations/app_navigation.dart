@@ -1,8 +1,9 @@
 // app_navigation.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_navigations/shared_navigation.dart';
 
-import 'app_routes.dart';
+
 
 /// A helper class for navigating between screens.
 /// This abstracts the GoRouter calls into more readable methods.

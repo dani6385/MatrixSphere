@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-class SharedBottomNavigationBar extends StatelessWidget {
+class SharedBottomNavBar extends StatelessWidget {
   final List<GButton> tabs;
   final int selectedIndex;
   final void Function(int) onItemTapped;
 
-  const SharedBottomNavigationBar({
+  const SharedBottomNavBar({
     super.key,
     required this.tabs,
     required this.selectedIndex,

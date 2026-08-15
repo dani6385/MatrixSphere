@@ -3,7 +3,7 @@
 //import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'app_routes.dart';
+import 'package:shared_navigations/shared_navigation.dart';
 import 'custom_transition_page.dart';
 import 'app_extractor.dart';
 //import 'app_common_routes.dart'; // Mengimpor rute umum
