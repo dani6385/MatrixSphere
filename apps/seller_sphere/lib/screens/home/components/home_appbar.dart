@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:seller_sphere/navigations/app_extractor.dart';
+
 
 import 'package:shared_ui/shared_ui.dart';
 
@@ -49,47 +49,21 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             Icons.notifications_outlined,
             color: context.onSurface,
           ),
-          onPressed: () {
-            logger.i('Ikon Pesan diklik!');
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Navigasi ke halaman Bahasa.')),
-            );
-            Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(
-                  builder: (context) => const NotificationScreen()),
-            );
-          },
+          onPressed: () {},
         ),
         IconButton(
           icon: Icon(
             Icons.message_outlined,
             color: context.onSurface,
           ),
-          onPressed: () {
-            logger.i('Ikon Pesan diklik!');
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Navigasi ke halaman Bahasa.')),
-            );
-            Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(builder: (context) => const ChatScreen()),
-            );
-          },
+          onPressed: () {},
         ),
         IconButton(
           icon: Icon(
             Icons.bar_chart_outlined,
             color: context.onSurface,
           ),
-          onPressed: () {
-            logger
-                .i('Ikon Chart diklik! Navigasi ke Halaman Manajemen (Kasir).');
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Membuka halaman kasir...')),
-            );
-            Navigator.of(context, rootNavigator: true).push(
-              MaterialPageRoute(builder: (context) => const ManagementScreen()),
-            );
-          },
+          onPressed: () {},
         ),
         IconButton(
           icon: Icon(

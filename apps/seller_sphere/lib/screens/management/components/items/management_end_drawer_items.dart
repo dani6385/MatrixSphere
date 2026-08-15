@@ -1,12 +1,9 @@
-
 // lib/navigations/widgets/app_end_drawer_items.dart
 
 import 'package:flutter/material.dart';
 //import 'package:go_router/go_router.dart';
 //import 'package:shared_ui/shared_ui.dart';
-import 'package:seller_sphere/navigations/app_routes.dart';
 import 'package:logger/logger.dart';
-import 'package:seller_sphere/navigations/app_extractor.dart';
 
 final Logger logger = Logger();
 
@@ -34,25 +31,15 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       title: 'Profil Pengguna',
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun administrator.',
-      route: AppRoutes.userProfile,
-      onTap: () {
-        logger.i('Menu Profile Toko diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const UserProfileScreen()),
-        );
-      },
+      route: '',
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Profil Toko',
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun administrator.',
-      route: AppRoutes.userProfile,
-      onTap: () {
-        logger.i('Menu Profile Toko diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const ShopProfileScreen()),
-        );
-      },
+      route: '',
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Account Management / Kelola Akun',
@@ -82,25 +69,14 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       label:
           'Mengatur preferensi pemberitahuan sistem dan peringatan operasional.',
       route: '',
-      onTap: () {
-        logger.i('Menu Notifications Settings diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-              builder: (context) => const NotificationSettingScreen()),
-        );
-      },
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Security / Keamanan',
       icon: Icons.security,
       label: 'Mengonfigurasi tingkat keamanan dan enkripsi data sistem.',
       route: '',
-      onTap: () {
-        logger.i('Menu Security / Keamanan diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const SecurityScreen()),
-        );
-      },
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Debug Info / Informasi Debug',
@@ -115,12 +91,7 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       icon: Icons.settings,
       label: 'Mengubah konfigurasi lanjutan dan preferensi aplikasi.',
       route: '',
-      onTap: () {
-        logger.i('Menu Security / Keamanan diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const SettingScreen()),
-        );
-      },
+      onTap: () {},
     ),
   ];
 }

@@ -77,7 +77,7 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       route: '/user-prfile',
       onTap: () {
         logger.i('Menu Profile diklik!');
-        context.go(AppRoutes.userProfile);
+        context.go('/user-prfile');
       },
     ),
   ];

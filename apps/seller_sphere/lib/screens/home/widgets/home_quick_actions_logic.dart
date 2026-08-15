@@ -2,10 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:seller_sphere/screens/management/widgets/scanner_screen.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 import 'package:logger/logger.dart';
-import 'package:seller_sphere/navigations/app_extractor.dart';
+
 
 final Logger _logger = Logger();
 

@@ -1,11 +1,6 @@
-
 // lib/navigations/widgets/app_end_drawer_items.dart
 
 import 'package:flutter/material.dart';
-
-
-import 'package:seller_sphere/navigations/app_extractor.dart';
-import 'package:seller_sphere/navigations/app_routes.dart';
 import 'package:logger/logger.dart';
 
 final Logger logger = Logger();
@@ -34,13 +29,8 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       title: 'Profile',
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun toko.',
-      route: AppRoutes.userProfile,
-      onTap: () {
-        logger.i('Menu Status Toko diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const UserProfileScreen()),
-        );
-      },
+      route: '/user-profile',
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Dark Mode',
@@ -56,66 +46,35 @@ List<EndDrawerItemData> getEndDrawerItems(BuildContext context) {
       icon: Icons.notifications_active,
       label: 'Mengatur pemberitahuan pesanan masuk dan pesan pembeli.',
       route: '',
-      onTap: () {
-        logger.i('Menu Notifikasi diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const NotificationScreen()),
-        );
-      },
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Settings',
       icon: Icons.settings,
       label: 'Mengatur preferensi dasar aplikasi secara keseluruhan.',
-      route: AppRoutes.settings,
-      onTap: () {
-        logger.i('Menu Settings diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const SettingScreen()),
-        );
-      },
+      route: '/setting',
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Security',
       icon: Icons.security,
       label: 'Mengatur kata sandi dan keamanan akun seller.',
       route: '',
-      onTap: () {
-        logger.i('Menu Keamanan diklik!');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Navigasi ke halaman Keamanan.')),
-        );
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const SecurityScreen()),
-        );
-      },
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Help',
       icon: Icons.help_outline,
       label: 'Membaca panduan penggunaan atau menghubungi pusat bantuan.',
       route: '',
-      onTap: () {
-        logger.i('Menu Keamanan diklik!');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Navigasi ke halaman Keamanan.')),
-        );
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const HelpScreen()),
-        );
-      },
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'About',
       icon: Icons.info_outline,
       label: 'Melihat informasi versi dan pengembang aplikasi.',
       route: '',
-      onTap: () {
-        logger.i('Menu Status Toko diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const AboutScreen()),
-        );
-      },
+      onTap: () {},
     ),
     EndDrawerItemData(
       title: 'Logout',

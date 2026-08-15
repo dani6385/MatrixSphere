@@ -1,11 +1,8 @@
-
 // lib/navigation/widgets/app_drawer_items.dart[cite: 7]
 
 import 'package:flutter/material.dart';
 //import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
-import 'package:seller_sphere/navigations/app_extractor.dart';
-import 'package:seller_sphere/navigations/app_routes.dart';
 
 final Logger logger = Logger();
 
@@ -33,16 +30,8 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Streams',
       icon: Icons.home,
       label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
-      route: AppRoutes.stream,
-      onTap: () {
-        logger.i('Menu Keamanan diklik!');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Navigasi ke halaman Keamanan.')),
-        );
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const StreamingScreen(streamId: '',)),
-        );
-      },
+      route: '/stream',
+      onTap: () {},
     ),
     DrawerItemData(
       title: 'Users / Pengguna',
@@ -60,54 +49,32 @@ List<DrawerItemData> getDrawerItems(BuildContext context, String currentRoute) {
       label:
           'Mengelola daftar produk, menambah barang baru, atau mengatur harga.',
       route: '',
-      onTap: () {
-        logger.i('Menu Products diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-            builder: (context) => const ProductScreen(),
-          ),
-        );
-      },
+      onTap: () {},
     ),
     DrawerItemData(
       title: 'Inventory / Stok Barang',
       icon: Icons.inventory,
       label: 'Mengelola ketersediaan dan rincian stok barang di gudang.',
       route: '',
-      onTap: () {
-        logger.i('Menuju ke halaman Inventory');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const InventoryScreen()),
-        );
-      },
+      onTap: () {},
     ),
     DrawerItemData(
       title: 'Rules / Aturan Hak Akses',
       icon: Icons.admin_panel_settings,
       label: 'Mengatur hak akses dan peran wewenang pengguna dalam sistem.',
-      route: '',// AppRoutes.managementRules, // Pastikan rute ini didaftarkan di app_routes.dart
-      onTap: () {
-        logger.i('Menuju ke halaman Rules / Aturan Hak Akses');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(builder: (context) => const PermissionsScreen()),
-        );
-      },
+      route:
+          '', // AppRoutes.managementRules, // Pastikan rute ini didaftarkan di app_routes.dart
+      onTap: () {},
     ),
 
-// 2. Menu Khusus untuk Daftar Karyawan / Staf (Members)
+    // 2. Menu Khusus untuk Daftar Karyawan / Staf (Members)
     DrawerItemData(
       title: 'Members / Daftar Karyawan',
       icon: Icons.people_alt,
       label: 'Melihat dan mengelola daftar staf atau karyawan yang terdaftar.',
-      route: '',// AppRoutes.managementMembers, // Pastikan rute ini didaftarkan di app_routes.dart
-      onTap: () {
-        logger.i('Menu Members / Karyawan diklik!');
-        Navigator.of(context, rootNavigator: true).push(
-          MaterialPageRoute(
-            builder: (context) => const MemberScreen(),
-          ),
-        );
-      },
+      route:
+          '', // AppRoutes.managementMembers, // Pastikan rute ini didaftarkan di app_routes.dart
+      onTap: () {},
     ),
     DrawerItemData(
       title: 'Vendors / Pemasok',

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:seller_sphere/navigations/app_routes.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 class RegisterShopBanner extends StatelessWidget {
@@ -18,10 +16,7 @@ final VoidCallback onDismiss;
     return Material(
       color: kNeonBlue,
       child: InkWell(
-        onTap: () {
-          // Navigasi ke halaman pendaftaran toko saat di-klik
-          context.go(AppRoutes.shopRegistration);
-        },
+        onTap: () {},
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Row(
