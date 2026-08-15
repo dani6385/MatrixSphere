@@ -1,6 +1,6 @@
 //export 'data/seller_sphere_models.dart';
 //export 'src/firebase_rtdb_service.dart';
-
+export 'auth/auth_service.dart';
 export 'data/shop_realtime_screen.dart';
 //export 'database/database_service.dart';
 export 'firebase/firebase_rtdb.dart';
