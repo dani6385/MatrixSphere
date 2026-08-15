@@ -29,6 +29,7 @@ dependencies:
   csv: ^8.0.0
   flutter_dotenv: ^5.1.0
   pdf: ^3.13.0
+  fluttertoast: ^10.0.0
 
 dev_dependencies:
   flutter_test:

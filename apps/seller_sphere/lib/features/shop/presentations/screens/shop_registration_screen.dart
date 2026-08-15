@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:seller_sphere/features/shop/bloc/shop_bloc.dart';
 import 'package:seller_sphere/features/shop/repositories/shop_repository.dart';
 import 'package:shared_services/shared_services.dart';
+import 'package:seller_sphere/features/shop/presentations/widgets/shop_form_field.dart';
 
 class ShopRegistrationScreen extends StatelessWidget {
   const ShopRegistrationScreen({super.key});
@@ -65,6 +66,39 @@ class _ShopRegistrationViewState extends State<ShopRegistrationView> {
     }
   }
 
+  void _listenToShopState(BuildContext context, ShopState state) {
+    if (state is ShopCreationSuccess) {
+      // PERBAIKAN 2: Mengganti FirebaseAnalyticsService yang error dengan analyticsService
+      analyticsService.logEvent(
+        'complete_shop_registration',
+        parameters: {
+          'event_category': 'engagement',
+          'event_label': 'success',
+        },
+      );
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Toko Anda berhasil dibuat!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+      context.go('/');
+    } else if (state is ShopCreationFailure) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text('Gagal membuat toko: ${state.error}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,38 +106,7 @@ class _ShopRegistrationViewState extends State<ShopRegistrationView> {
         title: const Text('Buat Toko Anda'),
       ),
       body: BlocListener<ShopBloc, ShopState>(
-        listener: (context, state) {
-          if (state is ShopCreationSuccess) {
-            // PERBAIKAN 2: Mengganti FirebaseAnalyticsService yang error dengan analyticsService
-            analyticsService.logEvent(
-              'complete_shop_registration',
-              parameters: {
-                'event_category': 'engagement',
-                'event_label': 'success',
-              },
-            );
-
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                const SnackBar(
-                  content: Text('Toko Anda berhasil dibuat!'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            
-            context.go('/'); 
-          } else if (state is ShopCreationFailure) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text('Gagal membuat toko: ${state.error}'),
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                ),
-              );
-          }
-        },
+        listener: _listenToShopState,
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
@@ -129,16 +132,11 @@ class _ShopRegistrationViewState extends State<ShopRegistrationView> {
                   ),
                   const SizedBox(height: 48),
 
-                  TextFormField(
+                  ShopFormField(
                     controller: _shopNameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama Toko',
-                      prefixIcon: Icon(Icons.storefront_outlined),
-                      border: OutlineInputBorder(),
-                      hintText: 'Contoh: Kopi Kenangan Jiwa',
-                    ),
-                    keyboardType: TextInputType.text,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    labelText: 'Nama Toko',
+                    hintText: 'Contoh: Kopi Kenangan Jiwa',
+                    prefixIcon: Icons.storefront_outlined,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Nama toko tidak boleh kosong';
@@ -148,17 +146,13 @@ class _ShopRegistrationViewState extends State<ShopRegistrationView> {
                   ),
                   const SizedBox(height: 16),
 
-                  TextFormField(
+                  ShopFormField(
                     controller: _shopDescriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'Deskripsi Singkat Toko',
-                      prefixIcon: Icon(Icons.description_outlined),
-                      border: OutlineInputBorder(),
-                      hintText: 'Contoh: Menjual aneka kopi dan makanan ringan',
-                    ),
+                    labelText: 'Deskripsi Singkat Toko',
+                    hintText: 'Contoh: Menjual aneka kopi dan makanan ringan',
+                    prefixIcon: Icons.description_outlined,
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Deskripsi tidak boleh kosong';
