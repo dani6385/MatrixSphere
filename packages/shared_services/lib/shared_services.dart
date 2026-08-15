@@ -7,7 +7,7 @@ export 'firebase/firebase_rtdb.dart';
 
 export 'services/firebase_options.dart';
 
-export 'services/local_auth_storage.dart';
+//export 'services/local_auth_storage.dart';
 export 'services/camera_service.dart';
 export 'services/location_service.dart';
 

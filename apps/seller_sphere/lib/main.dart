@@ -1,10 +1,7 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'navigations/app_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
@@ -31,9 +28,7 @@ void main() async {
       }
     }
 
-    await Firebase.initializeApp(
-      options: options,
-    );
+    await Firebase.initializeApp(options: options);
 
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
@@ -44,7 +39,9 @@ void main() async {
       return true;
     };
 
-    debugPrint("Firebase & Crashlytics berhasil dikonfigurasi untuk Seller Sphere.");
+    debugPrint(
+      "Firebase & Crashlytics berhasil dikonfigurasi untuk Seller Sphere.",
+    );
   } catch (e, stack) {
     debugPrint("Gagal menginisialisasi Firebase: $e");
     debugPrint(stack.toString());
@@ -61,38 +58,19 @@ class SellerSphere extends StatefulWidget {
 }
 
 class _SellerSphereState extends State<SellerSphere> {
-  late final AuthBloc _authBloc;
-  late final AuthService _authService;
-  late final ShopService _shopService;
-
-  @override
-  void initState() {
-    super.initState();
-    _authService = AuthService();
-    _shopService = ShopService();
-    _authBloc = AuthBloc(authService: _authService);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        BlocProvider.value(value: _authBloc),
-        ChangeNotifierProvider.value(value: _authService),
-        Provider.value(value: _shopService),
-      ],
-      child: Builder(
-        builder: (context) {
-          return MaterialApp.router(
-            title: 'Seller Sphere',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.system,
-            routerConfig: appRouter,
-          );
-        },
-      ),
+    return Builder(
+      builder: (context) {
+        return MaterialApp.router(
+          title: 'Seller Sphere',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.system,
+          routerConfig: appRouter,
+        );
+      },
     );
   }
 }

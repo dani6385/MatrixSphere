@@ -1,16 +1,8 @@
-// lib/features/auth/login/login_screen.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-//import 'package:seller_sphere/widgets/logo.dart';
-import 'package:shared_services/shared_services.dart';
-import 'package:shared_core/shared_core.dart';
-import 'package:shared_logics/shared_logics.dart';
-import 'package:shared_ui/shared_ui.dart';
-//import 'states/login_state.dart';
-//import 'logics/login_logic.dart';
+import 'package:shared_logics/shared_logics.dart'; // Impor untuk LoginFormFields
 import 'widgets/login_body.dart';
-//import 'widgets/login_form_fields.dart';
 import 'widgets/login_header.dart';
-//import 'widgets/login_loading_body.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,108 +12,92 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final LoginLogic _loginLogic = LoginLogic();
-
-  // Inisialisasi state login
-  late final LoginState _loginState;
-
-  @override
-  void initState() {
-    super.initState();
-    _loginState = LoginState(
-      isLoading: true,
-      isPasswordVisible: false,
-      rememberMe: false,
-      emailController: TextEditingController(),
-      passwordController: TextEditingController(),
-      formKey: GlobalKey<FormState>(),
-    );
-
-    _loadSavedCredentialsAndInitSession();
-  }
+  // 1. Buat semua state yang diperlukan untuk LoginFormFields
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  bool _rememberMe = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
-    _loginState.emailController.dispose();
-    _loginState.passwordController.dispose();
+    // Jangan lupa untuk membersihkan controller saat widget tidak lagi digunakan
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  // Fungsi baru untuk memuat kredensial sebelum inisialisasi sesi
-  void _loadSavedCredentialsAndInitSession() async {
-    final credentials = await LocalAuthStorage.getCredentials();
-    final savedEmail = credentials['email'];
-    final savedPassword = credentials['password'];
+  // 2. Buat fungsi callback yang akan dijalankan
+  void _login() {
+    // Validasi form sebelum melanjutkan
+    if (_formKey.currentState?.validate() ?? false) {
+      setState(() {
+        _isLoading = true;
+      });
 
-    if (savedEmail != null && savedPassword != null) {
-      if (mounted) {
-        setState(() {
-          _loginState.emailController.text = savedEmail;
-          _loginState.passwordController.text = savedPassword;
-          _loginState.rememberMe = true;
-        });
+      // Di sini Anda akan memanggil logika otentikasi Anda
+      // Misalnya: context.read<AuthService>().login(...)
+      if (kDebugMode) {
+        print('Proses Login untuk: ${_emailController.text}');
       }
-    }
 
-    _loginLogic.initSession(
-      setLoading: (loading) => setState(() => _loginState.isLoading = loading),
-      onLoggedIn: () {
-        if (!mounted) return;
-        // Navigasi ditangani otomatis oleh app_router atau go_router
-      }, // Pastikan initSession tidak lagi memuat kredensial
-    );
+      // Simulasi pemanggilan jaringan
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
+    }
   }
 
-  void _handleLoginPressed() {
-    if (_loginState.formKey.currentState?.validate() ?? false) {
-      _loginLogic.login(
-        email: _loginState.emailController.text.trim(),
-        password: _loginState.passwordController.text,
-        rememberMe: _loginState.rememberMe, // Kirim status rememberMe ke logic
-        context: context,
-        setLoading: (loading) => setState(() => _loginState.isLoading = loading),
-      );
-    }
+  void _togglePasswordVisibility() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+
+  void _onRememberMeChanged(bool? newValue) {
+    setState(() {
+      _rememberMe = newValue ?? false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loginState.isLoading) {
-      return const LoginLoadingBody();
-    }
+    // 3. Buat instance dari widget LoginFormFields dengan semua state yang diperlukan
+    final loginForm = LoginFormFields(
+      formKey: _formKey,
+      isLoading: _isLoading,
+      emailController: _emailController,
+      passwordController: _passwordController,
+      isPasswordVisible: _isPasswordVisible,
+      rememberMe: _rememberMe,
+      onLoginPressed: _login,
+      onTogglePasswordVisibility: _togglePasswordVisibility,
+      onRememberMeChanged: _onRememberMeChanged,
+    );
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const LoginHeader(),
-              //const Logo(),
-              LoginBody(
-                onLogin: _handleLoginPressed,
-                formFields: LoginFormFields(
-                  formKey: _loginState.formKey,
-                  isLoading: _loginState.isLoading,
-                  emailController: _loginState.emailController,
-                  passwordController: _loginState.passwordController,
-                  isPasswordVisible: _loginState.isPasswordVisible,
-                  rememberMe: _loginState.rememberMe,
-                  onLoginPressed: _handleLoginPressed,
-                  onTogglePasswordVisibility: () {
-                    setState(() {
-                      _loginState.isPasswordVisible = !_loginState.isPasswordVisible;
-                    });
-                  },
-                  onRememberMeChanged: (bool? value) {
-                    setState(() {
-                      _loginState.rememberMe = value ?? false;
-                    });
-                  },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          // Tambahkan padding untuk estetika yang lebih baik
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                const LoginHeader(),
+                const SizedBox(height: 32),
+
+                // 4. Berikan widget loginForm yang sudah jadi ke LoginBody
+                LoginBody(
+                  onLogin: _login, // Berikan fungsi login yang sama
+                  formFields: loginForm, // Ini sekarang memiliki tipe yang benar
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
