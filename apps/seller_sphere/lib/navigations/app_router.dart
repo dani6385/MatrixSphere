@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_navigations/shared_navigation.dart' hide AuthGuard;
+import 'package:shared_services/auth/shop_status.enum.dart' hide ShopService;
 import 'package:shared_services/shared_services.dart';
-import 'package:shared_core/shared_core.dart';
+
 import 'app_extractor.dart';
 
 // The correct AuthGuard implementation
@@ -12,8 +13,10 @@ class AuthGuard {
     final authService = Provider.of<AuthService>(context, listen: false);
     final shopService = Provider.of<ShopService>(context, listen: false);
 
-    final isAuthenticated = authService.isAuthenticated;
-    final hasShop = await shopService.hasShop();
+    final isAuthenticated = authService.isLoggedIn();
+    final currentUser = authService.currentUser;
+    final shopStatus = await shopService.getUserShopStatus(currentUser);
+    final hasShop = shopStatus == ShopStatus.approved;
 
     final isLoginOrRegister =
         state.matchedLocation == '/login' ||
@@ -85,10 +88,5 @@ final GoRouter appRouter = GoRouter(
         return const Scaffold(body: Center(child: Text('Shop Registration')));
       },
     ),
-<<<<<<< HEAD
-=======
-    //buildAppShellRoute(),
-    //...buildFullscreenRoutes(_rootNavigatorKey),
->>>>>>> 3e92543a2d313b11f1ab3e66b10fd277fb337fcf
   ],
 );
