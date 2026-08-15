@@ -51,6 +51,7 @@ dependencies:
   shared_models: ^0.0.1
   shared_contents: ^0.0.1
   collection: ^1.19.1
+  dio: ^5.11.0
 
 dev_dependencies:
   flutter_test:

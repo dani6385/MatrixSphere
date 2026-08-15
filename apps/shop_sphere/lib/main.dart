@@ -4,10 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-//import 'package:shared_services/services/firebase_options.dart'; // Corrected import path
-//import 'navigations/app_router.dart';
+
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -70,22 +67,22 @@ class ShopSphere extends StatefulWidget {
 }
 
 class _ShopSphereState extends State<ShopSphere> {
-  late final AuthBloc _authBloc;
+  //late final AuthBloc _authBloc;
 
   @override
   void initState() {
     super.initState();
-    _authBloc = AuthBloc(authService: AuthService());
+    //_authBloc = AuthBloc(authService: AuthService());
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return /*MultiProvider(
       providers: [
         BlocProvider.value(value: _authBloc),
         //ChangeNotifierProvider(create: (context) => AppProvider()),
       ],
-      child: Builder(
+      child: */Builder(
         builder: (context) {
           return MaterialApp.router(
             title: 'Shop Sphere',
@@ -96,7 +93,7 @@ class _ShopSphereState extends State<ShopSphere> {
             //routerConfig: appRouter,
           );
         },
-      ),
+      //),
     );
   }
 }

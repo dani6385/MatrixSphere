@@ -3,9 +3,6 @@ import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -49,24 +46,24 @@ class MatrixSphere extends StatefulWidget {
 }
 
 class _MatrixSphereState extends State<MatrixSphere> {
-  late final AuthBloc _authBloc;
+  //late final AuthBloc _authBloc;
 
   @override
   void initState() {
     super.initState();
-    _authBloc = AuthBloc(authService: AuthService());
+    //_authBloc = AuthBloc(authService: AuthService());
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return /*MultiProvider(
       providers: [
         BlocProvider.value(value: _authBloc),
         //ChangeNotifierProvider(create: (context) => AppProvider()),
       ],
       // BlocListener tidak lagi diperlukan di sini karena GoRouter
       // akan menangani redirect secara otomatis berdasarkan perubahan state.
-      child: Builder(
+      child: */Builder(
         builder: (context) {
           // Add return statement here
           return MaterialApp.router(
@@ -86,7 +83,7 @@ class _MatrixSphereState extends State<MatrixSphere> {
             //routerConfig: appRouter,
           );
         },
-      ),
+      //),
     );
   }
 }

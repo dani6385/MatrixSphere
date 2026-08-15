@@ -10,7 +10,7 @@ class LocalAuthStorage {
   static const _userIdKey = 'user_id';
 
   // Menyimpan data email dan password
-  static Future<void> saveCredentials(String email, String password) async {
+  static Future<void> saveCredentials(String email, String password, {required String email}) async {
     await _storage.write(key: _emailKey, value: email);
     await _storage.write(key: _passwordKey, value: password);
   }
@@ -39,4 +39,8 @@ class LocalAuthStorage {
   static Future<String?> getUserId() async {
     return await _storage.read(key: _userIdKey);
   }
+
+  static Future<Object?> getToken() async {}
+
+  static Future<void> clearAll() async {}
 }

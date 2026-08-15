@@ -11,4 +11,4 @@ export 'src/route_transitions.dart';
 export 'src/route_names.dart';
 export 'src/route_metadata.dart';
 export 'src/custom_transition_page.dart';
-export 'src/route_generator.dart';
+//export 'src/route_generator.dart';
