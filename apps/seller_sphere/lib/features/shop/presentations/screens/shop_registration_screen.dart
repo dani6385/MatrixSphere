@@ -1,0 +1,187 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:seller_sphere/features/shop/bloc/shop_bloc.dart';
+import 'package:seller_sphere/features/shop/repositories/shop_repository.dart';
+import 'package:shared_services/shared_services.dart';
+
+class ShopRegistrationScreen extends StatelessWidget {
+  const ShopRegistrationScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return RepositoryProvider(
+      create: (context) => ShopRepository(),
+      child: BlocProvider(
+        create: (context) => ShopBloc(
+          shopRepository: context.read<ShopRepository>(),
+        ),
+        child: const ShopRegistrationView(),
+      ),
+    );
+  }
+}
+
+class ShopRegistrationView extends StatefulWidget {
+  const ShopRegistrationView({super.key});
+
+  @override
+  State<ShopRegistrationView> createState() => _ShopRegistrationViewState();
+}
+
+class _ShopRegistrationViewState extends State<ShopRegistrationView> {
+  final _formKey = GlobalKey<FormState>();
+  final _shopNameController = TextEditingController();
+  final _shopDescriptionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAnalyticsService.logEvent(
+      'begin_shop_registration',
+      eventCategory: 'engagement',
+      eventLabel: 'start',
+    );
+  }
+
+  @override
+  void dispose() {
+    _shopNameController.dispose();
+    _shopDescriptionController.dispose();
+    super.dispose();
+  }
+
+  void _onCreateShopPressed() {
+    if (_formKey.currentState?.validate() ?? false) {
+      context.read<ShopBloc>().add(
+            CreateShopRequested(
+              name: _shopNameController.text.trim(),
+              description: _shopDescriptionController.text.trim(),
+            ),
+          );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Buat Toko Anda'),
+      ),
+      body: BlocListener<ShopBloc, ShopState>(
+        listener: (context, state) {
+          if (state is ShopCreationSuccess) {
+            FirebaseAnalyticsService.logEvent(
+              'complete_shop_registration',
+              eventCategory: 'engagement',
+              eventLabel: 'success',
+            );
+
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                const SnackBar(
+                  content: Text('Toko Anda berhasil dibuat!'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            
+            context.go('/'); 
+          } else if (state is ShopCreationFailure) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text('Gagal membuat toko: ${state.error}'),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+          }
+        },
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Satu Langkah Lagi',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Lengkapi detail untuk membuka toko Anda.',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 48),
+
+                  TextFormField(
+                    controller: _shopNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nama Toko',
+                      prefixIcon: Icon(Icons.storefront_outlined),
+                      border: OutlineInputBorder(),
+                      hintText: 'Contoh: Kopi Kenangan Jiwa',
+                    ),
+                    keyboardType: TextInputType.text,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Nama toko tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  TextFormField(
+                    controller: _shopDescriptionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Deskripsi Singkat Toko',
+                      prefixIcon: Icon(Icons.description_outlined),
+                      border: OutlineInputBorder(),
+                      hintText: 'Contoh: Menjual aneka kopi dan makanan ringan',
+                    ),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 3,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Deskripsi tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  BlocBuilder<ShopBloc, ShopState>(
+                    builder: (context, state) {
+                      if (state is ShopLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        onPressed: _onCreateShopPressed,
+                        child: const Text('BUAT TOKO SEKARANG'),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
