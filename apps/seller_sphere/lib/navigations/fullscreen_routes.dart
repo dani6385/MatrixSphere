@@ -2,23 +2,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:seller_sphere/features/presentations/products/public_product_screen.dart';
-//import 'app_routes.dart';
 import 'app_extractor.dart';
-// Impor layar-layar terkait (pastikan jalurnya sesuai project-mu)
 
 List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
-    /*GoRoute(
+    GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
-      path: '/user-registration',
-      builder: (context, state) => const UserRegistrationScreen(),
+      path: '/register',
+      builder: (context, state) => const RegistrationScreen(),
     ),
-    GoRoute(
+    /*GoRoute(
       path: '/forgot-password',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ForgotPasswordScreen(),
