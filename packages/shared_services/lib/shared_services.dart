@@ -11,8 +11,8 @@ export 'firebase/firebase_rtdb.dart';
 export 'services/firebase_options.dart';
 
 export 'services/local_auth_storage.dart';
-export 'src/camera_service.dart';
-export 'src/location_service.dart';
+export 'services/camera_service.dart';
+export 'services/location_service.dart';
 
 export 'src/navigation/go_router_refresh_stream.dart';
 export 'src/product/product_service.dart';
@@ -21,4 +21,4 @@ export 'src/product/product_dialog_helper.dart';
 export 'utils/image_compressor.dart';
 
 //export 'widgets/google_maps.dart';
-export 'package:shared_services/src/shared_prefs_service.dart'; // Import SharedPrefsService directly
+export 'services/shared_prefs_service.dart'; // Import SharedPrefsService directly

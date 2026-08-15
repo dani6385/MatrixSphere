@@ -1,6 +1,7 @@
 
 import 'package:shared_contents/shared_contents.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 abstract class RouteGuard {
   Future<bool> canActivate();
 }
