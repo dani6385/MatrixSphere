@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'shell_route_config.dart';
@@ -13,52 +14,48 @@ final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   // Daftarkan AuthService sebagai listener. GoRouter akan re-route saat ada notifikasi.
   refreshListenable: AuthRedirectNotifier(),
-  errorBuilder: (context, state) => Scaffold(
-    body: Center(
-      child: Text('Halaman tidak ditemukan: ${state.error}'),
-    ),
-  ),
-  /*redirect: (BuildContext context, GoRouterState state) async {
-    final bool isLoggedIn = _authService.isLoggedIn();
-    final ShopService shopService = ShopService();
-    final String currentPath = state.matchedLocation;
+  errorBuilder: (context, state) {
+    // 1. Log error ke konsol debug untuk pengembangan
+    debugPrint('Kesalahan Navigasi GoRouter: ${state.error}');
 
-    // Izinkan akses bebas untuk halaman Login, Register, dan Forgot Password
-    final bool isAuthRoute = currentPath == AppRoutes.login ||
-        currentPath == AppRoutes.userRegistration ||
-        currentPath == AppRoutes.forgotPassword;
-    // Jika belum login dan tidak sedang di halaman auth, lempar ke login
-    if (!isLoggedIn && !isAuthRoute) {
-      return AppRoutes.login;
-    }
-    // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
-    if (isLoggedIn) {
-      // Jika sudah login dan mencoba akses halaman login/register, lempar ke home.
-      if (currentPath == AppRoutes.login || currentPath == AppRoutes.userRegistration) {
-        return AppRoutes.home;
-      }
-      // Cek status toko pengguna
-      // Asumsi: getCurrentShopId mengembalikan String? yang merupakan nama dari ShopStatus enum
-      final String? shopStatusString = await shopService.getCurrentShopId(_authService.currentUser);
-      final ShopStatus? shopStatusEnum = shopStatusString != null
-          ? ShopStatus.values.firstWhereOrNull((e) => e.name == shopStatusString)
-          : null;
-      final bool hasApprovedShop = shopStatusEnum == ShopStatus.approved;
-      final bool isAtShopRegistration =
-          state.matchedLocation == AppRoutes.shopRegistration;
+    // 2. Kirim error ke Firebase Crashlytics
+    FirebaseCrashlytics.instance.recordError(
+      state.error,
+      state.error != null ? StackTrace.current : null,
+      reason: 'Kesalahan Navigasi GoRouter di path: ${state.uri.toString()}',
+      fatal: false, // false karena aplikasi tidak langsung crash
+    );
 
-      // Jika toko belum disetujui (status 'none' atau 'pending') dan tidak sedang di halaman registrasi,
-      // paksa arahkan ke halaman registrasi/status.
-      if (!hasApprovedShop && !isAtShopRegistration) {
-        return AppRoutes.shopRegistration;
-      }
-      // Jika toko sudah disetujui tapi mencoba akses halaman registrasi, kembalikan ke home.
-      if (hasApprovedShop && isAtShopRegistration) {
-        return AppRoutes.home;
-      }
-    }
-    return null;
-  },*/
+    // 3. Tampilkan halaman error yang informatif kepada pengguna
+    return Scaffold(
+      appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Oops! Terjadi kesalahan.',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Halaman yang Anda tuju tidak dapat ditemukan. Kami telah mencatat error ini dan akan segera memperbaikinya.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => context.go('/'), // Arahkan kembali ke halaman utama
+                child: const Text('Kembali ke Home'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  },
   routes: <RouteBase>[
     buildAppShellRoute(),
     ...buildFullscreenRoutes(_rootNavigatorKey),
