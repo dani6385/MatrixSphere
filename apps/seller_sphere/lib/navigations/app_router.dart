@@ -50,7 +50,7 @@ final GoRouter appRouter = GoRouter(
         return const Scaffold(body: Center(child: Text('Shop Registration')));
       },
     ),
-    /*buildAppShellRoute(),
-    ...buildFullscreenRoutes(_rootNavigatorKey),*/
+    //buildAppShellRoute(),
+    //...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );
