@@ -8,9 +8,8 @@ part 'shop_state.dart';
 class ShopBloc extends Bloc<ShopEvent, ShopState> {
   final ShopRepository _shopRepository;
 
-  ShopBloc({required ShopRepository shopRepository})
-      : _shopRepository = shopRepository,
-        super(ShopInitial()) {
+  ShopBloc({required this._shopRepository})
+      : super(ShopInitial()) {
     on<CreateShopRequested>(_onCreateShopRequested);
   }
 

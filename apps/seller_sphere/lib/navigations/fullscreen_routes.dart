@@ -2,11 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:seller_sphere/features/auth/logins/login_screen.dart';
-import 'package:seller_sphere/features/auth/registers/register_screen.dart';
-import 'package:seller_sphere/features/presentations/products/public_product_screen.dart';
-import 'package:seller_sphere/features/shop/presentations/screens/shop_registration_screen.dart';
-
 import 'app_extractor.dart';
 
 List<RouteBase> buildFullscreenRoutes(
@@ -18,7 +13,7 @@ List<RouteBase> buildFullscreenRoutes(
     ),
     GoRoute(
       path: '/register',
-      builder: (context, state) => const RegisterScreen(),
+      builder: (context, state) => const RegistrationScreen(),
     ),
     GoRoute(
       path: '/shop-registration',

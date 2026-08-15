@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_models/shared_models.dart' as models;
+import 'package:flutter/foundation.dart';
 
 class ShopRepository {
   final FirebaseFirestore _firestore;
@@ -27,11 +27,15 @@ class ShopRepository {
       });
     } on FirebaseException catch (e) {
       // Menangani error spesifik dari Firestore
-      print('Firestore Error: ${e.message}');
+      if (kDebugMode) {
+        print('Firestore Error: ${e.message}');
+      }
       throw Exception('Gagal menyimpan toko ke Firestore: ${e.code}');
     } catch (e) {
       // Menangani error umum lainnya
-      print('Generic Error: $e');
+      if (kDebugMode) {
+        print('Generic Error: $e');
+      }
       throw Exception('Terjadi kesalahan tak terduga.');
     }
   }

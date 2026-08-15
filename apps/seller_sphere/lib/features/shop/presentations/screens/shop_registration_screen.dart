@@ -37,10 +37,13 @@ class _ShopRegistrationViewState extends State<ShopRegistrationView> {
   @override
   void initState() {
     super.initState();
-    FirebaseAnalyticsService.logEvent(
+    // PERBAIKAN 1: Menggunakan instance global analyticsService
+    analyticsService.logEvent(
       'begin_shop_registration',
-      eventCategory: 'engagement',
-      eventLabel: 'start',
+      parameters: {
+        'event_category': 'engagement',
+        'event_label': 'start',
+      },
     );
   }
 
@@ -71,10 +74,13 @@ class _ShopRegistrationViewState extends State<ShopRegistrationView> {
       body: BlocListener<ShopBloc, ShopState>(
         listener: (context, state) {
           if (state is ShopCreationSuccess) {
-            FirebaseAnalyticsService.logEvent(
+            // PERBAIKAN 2: Mengganti FirebaseAnalyticsService yang error dengan analyticsService
+            analyticsService.logEvent(
               'complete_shop_registration',
-              eventCategory: 'engagement',
-              eventLabel: 'success',
+              parameters: {
+                'event_category': 'engagement',
+                'event_label': 'success',
+              },
             );
 
             ScaffoldMessenger.of(context)
