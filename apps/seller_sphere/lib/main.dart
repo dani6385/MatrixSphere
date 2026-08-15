@@ -5,17 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-//import 'package:matrix_sphere/firebase_options.dart'; // Corrected import path
 import 'navigations/app_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 void main() async {
-  // 1. Pastikan binding diinisialisasi terlebih dahulu
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // 2. Pilih opsi Firebase yang benar untuk aplikasi ini
     FirebaseOptions options;
     if (kIsWeb) {
       options = DefaultFirebaseOptions.web;
@@ -34,12 +31,10 @@ void main() async {
       }
     }
 
-    // 3. Inisialisasi Firebase dengan opsi yang dipilih
     await Firebase.initializeApp(
       options: options,
     );
 
-    // 4. Set up Crashlytics hanya jika Firebase berhasil diinisialisasi
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
     };
@@ -51,13 +46,10 @@ void main() async {
 
     debugPrint("Firebase & Crashlytics berhasil dikonfigurasi untuk Seller Sphere.");
   } catch (e, stack) {
-    // Jika Firebase gagal, aplikasi TIDAK AKAN layar hitam, melainkan tetap berjalan
-    // dan menampilkan pesan error ini di konsol debug Anda.
     debugPrint("Gagal menginisialisasi Firebase: $e");
     debugPrint(stack.toString());
   }
 
-  // 5. Selalu panggil runApp di luar blok inisialisasi agar layar hitam terhindari
   runApp(const SellerSphere());
 }
 
@@ -70,11 +62,15 @@ class SellerSphere extends StatefulWidget {
 
 class _SellerSphereState extends State<SellerSphere> {
   late final AuthBloc _authBloc;
+  late final AuthService _authService;
+  late final ShopService _shopService;
 
   @override
   void initState() {
     super.initState();
-    _authBloc = AuthBloc(authService: AuthService());
+    _authService = AuthService();
+    _shopService = ShopService();
+    _authBloc = AuthBloc(authService: _authService);
   }
 
   @override
@@ -82,7 +78,8 @@ class _SellerSphereState extends State<SellerSphere> {
     return MultiProvider(
       providers: [
         BlocProvider.value(value: _authBloc),
-        //ChangeNotifierProvider(create: (context) => AppProvider()),
+        ChangeNotifierProvider.value(value: _authService),
+        Provider.value(value: _shopService),
       ],
       child: Builder(
         builder: (context) {
