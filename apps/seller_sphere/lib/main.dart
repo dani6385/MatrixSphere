@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:seller_sphere/navigations/app_router.dart';
-import 'package:seller_sphere/providers/app_provider.dart';
+//import 'package:seller_sphere/navigations/app_router.dart';
+//import 'package:seller_sphere/providers/app_provider.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -60,18 +60,18 @@ class _SellerSphereState extends State<SellerSphere> {
     return MultiProvider(
       providers: [
         BlocProvider.value(value: _authBloc),
-        ChangeNotifierProvider(create: (context) => AppProvider()),
+        //ChangeNotifierProvider(create: (context) => AppProvider()),
       ],
       child: Builder(
         builder: (context) {
-          final appProvider = context.watch<AppProvider>();
+          //final appProvider = context.watch<AppProvider>();
           return MaterialApp.router(
             title: 'Seller Sphere',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: appProvider.themeMode,
-            routerConfig: appRouter,
+            //themeMode: appProvider.themeMode,
+            //routerConfig: appRouter,
           );
         },
       ),
