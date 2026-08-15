@@ -1,43 +1,39 @@
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:seller_sphere/navigations/app_router.dart';
 import 'package:seller_sphere/providers/app_provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 void main() async {
-  // 1. Pastikan binding diinisialisasi terlebih dahulu
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: ".env");
   try {
-    // 2. Coba inisialisasi Firebase
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    // 3. Set up Crashlytics hanya jika Firebase berhasil diinisialisasi
-    FlutterError.onError = (errorDetails) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    };
+    // Setup centralized fatal error handling
+    FlutterError.onError = crashlyticsService.recordFlutterFatalError;
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
+      crashlyticsService.recordFatalError(error, stack);
+      return true; // Mark as handled
     };
 
     debugPrint("Firebase & Crashlytics berhasil dikonfigurasi.");
   } catch (e, stack) {
-    debugPrint("Gagal menginisialisasi Firebase: $e");
-    debugPrint(stack.toString());
+    crashlyticsService.recordError(
+      e,
+      stack,
+      reason: 'Failed to initialize Firebase',
+    );
   }
+
   runApp(const SellerSphere());
 }
 
