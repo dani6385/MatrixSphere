@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.seller.sphere"
+    namespace = "com.Shop.sphere"
     compileSdk = flutter.compileSdkVersion
 
     compileOptions {
@@ -17,7 +17,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.seller.sphere"
+        applicationId = "com.Shop.sphere"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
