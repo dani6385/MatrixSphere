@@ -47,6 +47,8 @@ dependency_overrides:
   cli_util: ^0.5.0
 
 workspace:
+  - apps/admin_mikrotik
+  - apps/client_connectivity
   - apps/seller_sphere
   - apps/shop_sphere
   #- packages/shared_core

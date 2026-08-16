@@ -37,15 +37,19 @@ jobs:
         run: |
           MATRIX="[]"
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            MATRIX='["seller_sphere", "shop_sphere", "matrix_sphere"]'
+            MATRIX='["seller_sphere", "shop_sphere", "admin_mikrotik", "client_connectivity", "matrix_sphere"]'
           else
             SELLER="${{ steps.filter.outputs.seller_sphere }}"
             SHOP="${{ steps.filter.outputs.shop_sphere }}"
+            ADMIN="${{ steps.filter.outputs.admin_mikrotik }}"
+            CLIENT="${{ steps.filter.outputs.client_connectivity }}"
             MATRIX_SPHERE="${{ steps.filter.outputs.matrix_sphere }}"
 
             LIST=()
             [ "$SELLER" = "true" ] && LIST+=('"seller_sphere"')
             [ "$SHOP" = "true" ] && LIST+=('"shop_sphere"')
+            [ "$ADMIN" = "true" ] && LIST+=('"admin_mikrotik"')
+            [ "$CLIENT" = "true" ] && LIST+=('"client_connectivity"')
             [ "$MATRIX_SPHERE" = "true" ] && LIST+=('"matrix_sphere"')
 
             if [ ${#LIST[@]} -gt 0 ]; then
@@ -85,6 +89,14 @@ jobs:
             DIR="apps/shop_sphere"
             echo "dir=apps/shop_sphere" >> $GITHUB_OUTPUT
             echo "app_id=${{ secrets.FIREBASE_APP_ID_SHOP }}" >> $GITHUB_OUTPUT
+          elif [ "$PROJECT" = "admin_mikrotik" ]; then
+            DIR="apps/admin_mikrotik"
+            echo "dir=apps/admin_mikrotik" >> $GITHUB_OUTPUT
+            echo "app_id=${{ secrets.FIREBASE_APP_ID_ADMIN }}" >> $GITHUB_OUTPUT
+          elif [ "$PROJECT" = "client_connectivity" ]; then
+            DIR="apps/client_connectivity"
+            echo "dir=apps/client_connectivity" >> $GITHUB_OUTPUT
+            echo "app_id=${{ secrets.FIREBASE_APP_ID_CLIENT }}" >> $GITHUB_OUTPUT
           elif [ "$PROJECT" = "matrix_sphere" ]; then
             DIR="."
             echo "dir=$DIR" >> $GITHUB_OUTPUT
