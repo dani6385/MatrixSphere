@@ -17,3 +17,4 @@ export 'widgets/quick_action_chip.dart';
 
 export 'widgets/side_menu.dart';
 export 'widgets/summary_card.dart';
+export 'src/base_app.dart';
