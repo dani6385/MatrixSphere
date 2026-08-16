@@ -9,6 +9,7 @@ import 'package:shared_ui/shared_ui.dart';
 import 'services/firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await AppInitializer.initializeFirebase(
       DefaultFirebaseOptions.currentPlatform);
   runApp(const MatrixSphere());
