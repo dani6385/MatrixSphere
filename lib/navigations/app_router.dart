@@ -6,6 +6,9 @@ import 'matrix_bottom_nav.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 
+// Impor ini kemungkinan besar berisi definisi AppRoutes
+
+
 
 //import 'shell_route_config.dart';
 
@@ -17,6 +20,16 @@ final GoRouter appRouter = GoRouter(
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   //refreshListenable: AuthRedirectNotifier(),
+
+  // Tambahkan redirect untuk menangani rute awal
+  redirect: (BuildContext context, GoRouterState state) {
+    // Jika pengguna berada di rute root ('/'), arahkan ke halaman home.
+    if (state.uri.toString() == '/') {
+      return AppRoutes.home; // Asumsi AppRoutes.home adalah '/home'
+    }
+    // Jika tidak, jangan lakukan pengalihan.
+    return null;
+  },
 
   // 1. Tambahkan observer analitik di sini. Ini adalah lokasi yang benar.
   observers: [
