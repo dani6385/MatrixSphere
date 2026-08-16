@@ -1,7 +1,7 @@
 import 'package:shared_navigations/shared_navigation.dart';
 import 'app_extractor.dart';
 
-final adminBranches = buildSharedShellBranches(
+final adminBranches = bottomShellBranches(
   case0Screen: const HomeScreen(),
   case1Screen: const ApprovalScreen(),
   case2Screen: const AnalyticScreen(),

@@ -2,15 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'matrix_branches.dart';
 import 'matrix_bottom_nav.dart';
-
-import 'package:shared_services/shared_services.dart';
+//import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
-
-// Impor ini kemungkinan besar berisi definisi AppRoutes
-
-
-
-//import 'shell_route_config.dart';
 
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -31,17 +24,17 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
 
-  // 1. Tambahkan observer analitik di sini. Ini adalah lokasi yang benar.
-  observers: [
-    analyticsService.analitycsObserver,
-  ],
+  // 1. Observer analitik dinonaktifkan untuk sementara
+  // observers: [
+  //   analyticsService.analitycsObserver,
+  // ],
   errorBuilder: (context, state) {
-    // 2. Gunakan layanan terpusat untuk melaporkan error navigasi
-    crashlyticsService.recordError(
-      state.error ?? 'GoRouter Navigation Error',
-      StackTrace.current,
-      reason: 'Kesalahan Navigasi GoRouter di path: ${state.uri.toString()}',
-    );
+    // 2. Pelaporan error navigasi ke Crashlytics dinonaktifkan untuk sementara
+    // crashlyticsService.recordError(
+    //   state.error ?? 'GoRouter Navigation Error',
+    //   StackTrace.current,
+    //   reason: 'Kesalahan Navigasi GoRouter di path: ${state.uri.toString()}',
+    // );
 
     // Tampilkan halaman error yang informatif kepada pengguna
     return Scaffold(
@@ -59,7 +52,7 @@ final GoRouter appRouter = GoRouter(
               ),
               const SizedBox(height: 8),
               const Text(
-                'Halaman yang Anda tuju tidak dapat ditemukan. Kami telah mencatat error ini dan akan segera memperbaikinya.',
+                'Halaman yang Anda tuju tidak dapat ditemukan.',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
@@ -86,7 +79,7 @@ final GoRouter appRouter = GoRouter(
           },
         );
       },
-      branches: matrixBranches, // Daftar cabang rute khusus Matrix
+      branches: bottomBranches, // Menggunakan matrixBranches yang benar
     ),
   ],
 );
