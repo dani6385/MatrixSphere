@@ -1,6 +1,6 @@
 {
-    "name": "client_connectivity",
-    "short_name": "client_connectivity",
+    "name": "CC Client Connectivity",
+    "short_name": "Client Connectivity",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
