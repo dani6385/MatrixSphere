@@ -49,7 +49,7 @@ class MatrixBottomNavBar extends StatelessWidget {
       currentIndex: currentIndex,
       onTap: (index) {
         // Ambil rute berdasarkan indeks cabang yang ditekan
-        final routePath = (bottomBranches[index].routes.first as dynamic).path;
+        final routePath = (matrixBranches[index].routes.first as dynamic).path;
         if (routePath == AppRoutes.approvals) {
           logger.i(
               'Mengakses Halaman Reports / Laporan untuk memantau grafik penjualan pendapatan toko secara real-time.'); // Log aktivitas
@@ -70,9 +70,9 @@ class MatrixBottomNavBar extends StatelessWidget {
         // Jalankan fungsi onTap bawaan
         onTap(index);
       },
-      tabs: List.generate(bottomBranches.length, (index) {
+      tabs: List.generate(matrixBranches.length, (index) {
         final isSelected = index == currentIndex;
-        final routePath = (bottomBranches[index].routes.first as dynamic).path;
+        final routePath = (matrixBranches[index].routes.first as dynamic).path;
         final icons = tabIcons[routePath]!;
         return GButton(
           icon: isSelected ? icons.activeIcon : icons.icon,

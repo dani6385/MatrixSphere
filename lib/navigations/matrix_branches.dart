@@ -6,7 +6,7 @@ import 'app_extractor.dart';
   forgotScreen:  const ForgotScreen(),
   regitrationScreen: const RegisterScreen(),
 );*/
-final bottomBranches = bottomShellBranches(
+final matrixBranches = bottomShellBranches(
   case0Screen: const HomeScreen(),
   case1Screen: const ApprovalScreen(),
   case2Screen: const AnalyticScreen(),
