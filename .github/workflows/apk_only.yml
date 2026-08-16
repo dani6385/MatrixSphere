@@ -29,6 +29,10 @@ jobs:
               - 'apps/seller_sphere/**'
             shop_sphere:
               - 'apps/shop_sphere/**'
+            admin_mikrotik:
+              - 'apps/admin_mikrotik/**'
+            client_connectivity:
+              - 'apps/client_connectivity/**'
             matrix_sphere:
               - 'lib/**'
 

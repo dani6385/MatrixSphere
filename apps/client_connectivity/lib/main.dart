@@ -26,4 +26,3 @@ class ClientConnect extends StatelessWidget {
     );
   }
 }
-
