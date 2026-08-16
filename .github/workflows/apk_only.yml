@@ -83,7 +83,7 @@ jobs:
             echo "app_id=${{ secrets.FIREBASE_APP_ID_SELLER }}" >> $GITHUB_OUTPUT
           elif [ "$PROJECT" = "shop_sphere" ]; then
             DIR="apps/shop_sphere"
-            echo "dir=$DIR" >> $GITHUB_OUTPUT
+            echo "dir=apps/shop_sphere" >> $GITHUB_OUTPUT
             echo "app_id=${{ secrets.FIREBASE_APP_ID_SHOP }}" >> $GITHUB_OUTPUT
           elif [ "$PROJECT" = "matrix_sphere" ]; then
             DIR="."
