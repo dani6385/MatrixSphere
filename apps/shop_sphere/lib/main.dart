@@ -78,4 +78,3 @@ class _ShopSphereState extends State<ShopSphere> {
     );
   }
 }
-
