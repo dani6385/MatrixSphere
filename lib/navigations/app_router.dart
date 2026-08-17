@@ -14,16 +14,13 @@ final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
-  
-  // 1. NONAKTIFKAN refreshListenable agar tidak diredirect ke halaman login
-  // refreshListenable: AuthRedirectNotifier(),
-
-  // 2. (Opsional) Jika ada fungsi redirect otentikasi di bawah, Anda bisa menonaktifkannya juga:
-  // redirect: (context, state) {
-  //   // Logika pengecekan login dilewati sementara
-  //   return null; 
-  // },
-
+  redirect: (context, state) {
+    // Jika rute yang diakses adalah root ('/'), arahkan secara aman ke halaman utama Anda
+    if (state.uri.toString() == '/') {
+      return '/home'; // Ubah '/home' sesuai dengan path rute beranda di appBranches Anda
+    }
+    return null; // Lanjutkan navigasi normal jika bukan '/'
+  },
   observers: [
     analyticsService.analitycsObserver,
   ],
