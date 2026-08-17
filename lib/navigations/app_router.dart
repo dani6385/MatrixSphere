@@ -1,4 +1,3 @@
-// app_router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_branches.dart';
@@ -17,7 +16,7 @@ final GoRouter appRouter = GoRouter(
   redirect: (context, state) {
     // Jika rute yang diakses adalah root ('/'), arahkan secara aman ke halaman utama Anda
     if (state.uri.toString() == '/') {
-      return '/home'; // Ubah '/home' sesuai dengan path rute beranda di appBranches Anda
+      return '/home'; // Pastikan path '/home' ada di salah satu branch Anda
     }
     return null; // Lanjutkan navigasi normal jika bukan '/'
   },
@@ -62,14 +61,13 @@ final GoRouter appRouter = GoRouter(
   },
   routes: [
     buildAppShellRoute(
+      // === DEBUG: Melewati BottomNavBar untuk sementara ===
+      // Daripada membuat widget BottomNavBar, kita langsung tampilkan konten halaman (navigationShell).
+      // Ini untuk mengisolasi masalah.
       shellBuilder: (context, state, navigationShell) {
-        return BottomNavBar(
-          navigationShell: navigationShell,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) {
-            navigationShell.goBranch(index);
-          },
-        );
+        // Jika halaman sekarang muncul, maka masalahnya ada di dalam widget BottomNavBar.
+        // Jika masih abu-abu, masalahnya ada di konfigurasi branch atau halaman itu sendiri.
+        return navigationShell;
       },
       branches: appBranches,
     ),
