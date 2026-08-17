@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:matrix_sphere/screens/attendance/components/attendance_drawer.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_end_drawer.dart';
 import 'package:matrix_sphere/screens/attendance/providers/attendance_viewmodel.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_appbar.dart';
@@ -10,7 +9,7 @@ import 'package:matrix_sphere/core/utils/ui_helper.dart';
 
 /// The main screen for the Attendance feature.
 ///
-/// This widget acts as the entry point, providing the [AttendanceViewModel]
+/// This widget acts as the root for the attendance feature, providing the [AttendanceViewModel]
 /// to its children and housing the main UI structure.
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
@@ -18,7 +17,10 @@ class AttendanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => AttendanceViewModel(),
+      // Inisialisasi ViewModel dan panggil metode untuk memuat data awal.
+      create: (_) => AttendanceViewModel()
+        ..initCamera()
+        ..pullAttendanceFromRtdb(),
       child: const AttendanceView(),
     );
   }
@@ -45,9 +47,6 @@ class _AttendanceViewState extends State<AttendanceView>
   void initState() {
     super.initState();
     final viewModel = context.read<AttendanceViewModel>();
-
-    // Initialize camera and animation controllers via the ViewModel
-    viewModel.initCamera();
     _laserAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -57,8 +56,6 @@ class _AttendanceViewState extends State<AttendanceView>
       CurvedAnimation(
           parent: _laserAnimationController, curve: Curves.easeInOut),
     );
-    // Fetch initial data
-    viewModel.pullAttendanceFromRtdb();
 
     // Listen to one-time events from the ViewModel to show dialogs.
     viewModel.addListener(_handleViewModelEvents);
@@ -96,7 +93,6 @@ class _AttendanceViewState extends State<AttendanceView>
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       appBar: const AttendanceAppBar(),
-      drawer: const AttendanceDrawer(),
       endDrawer: const AttendanceEndDrawer(),
       body: Consumer<AttendanceViewModel>(
         builder: (context, viewModel, child) {

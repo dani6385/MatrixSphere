@@ -9,7 +9,8 @@ class AttendanceHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ownerName = context.watch<AppViewModel>().ownerName;
+    // Gunakan select untuk hanya rebuild saat ownerName berubah dan berikan nilai default.
+    final ownerName = context.select((AppViewModel vm) => vm.ownerName.isNotEmpty ? vm.ownerName : 'Pengguna');
     
 
     return Card(

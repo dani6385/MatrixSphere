@@ -3,7 +3,7 @@ import 'package:matrix_sphere/navigations/app_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart'; // BaseApp tidak digunakan untuk sementara
 import 'services/firebase_options.dart';
-import 'screens/attendance/attendance_screen.dart';
+//import 'screens/attendance/attendance_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,16 +18,16 @@ class MatrixSphere extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Anda bisa membungkus dengan BlocProvider di sini
-    return MaterialApp(
-      title: 'Matrix Sphere',
-      home: const AttendanceScreen(),
-      themeMode: ThemeMode.system,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-        /*BaseApp(
+    return /*MaterialApp.router(
       title: 'Matrix Sphere',
       routerConfig: appRouter,
-      themeMode: ThemeMode.system,*/
+      themeMode: ThemeMode.system,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),*/
+        BaseApp(
+      title: 'Matrix Sphere',
+      routerConfig: appRouter,
+      themeMode: ThemeMode.system,
     );
   }
 }
