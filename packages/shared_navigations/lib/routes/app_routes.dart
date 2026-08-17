@@ -9,4 +9,8 @@ class AppRoutes {
   static const String attendance = '/attendance';
 
   static const String settings = '/settings';
+  static const String sellers = '/sellers';
+  static const String management = '/management';
+  static const String financial = '/financial';
+  static const String reports = '/reports';
 }

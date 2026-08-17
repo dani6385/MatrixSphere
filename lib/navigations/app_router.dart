@@ -1,35 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:matrix_sphere/navigations/matrix_bottom_nav.dart';
-import 'package:matrix_sphere/navigations/matrix_branches.dart';
-import 'package:shared_navigations/shared_navigation.dart';
+import 'package:matrix_sphere/navigations/app_routes.dart';
+import 'package:shared_services/auth/shop_status.enum.dart' hide ShopService;
+import 'package:shared_services/shared_services.dart';
+import 'package:collection/collection.dart'; // Import untuk firstWhereOrNull
+import 'shell_route_config.dart';
+import 'auth_redirect_notifier.dart';
+import 'fullscreen_routes.dart';
+
+// Kunci global untuk navigator utama (root)
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+// Buat instance AuthService yang akan didengarkan oleh GoRouter
+final AuthService _authService = AuthService();
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutes.home, // Langsung mulai dari halaman home
-  debugLogDiagnostics: true,
+  // Kita mulai dari rute awal di salah satu branch, yaitu Home ('/')
+  initialLocation: '/',
+  navigatorKey: _rootNavigatorKey,
+  // Daftarkan AuthService sebagai listener. GoRouter akan re-route saat ada notifikasi.
+  refreshListenable: AuthRedirectNotifier(),
   errorBuilder: (context, state) => Scaffold(
-    appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
     body: Center(
-      child: Text('Error: ${state.error}'),
+      child: Text('Halaman tidak ditemukan: ${state.error}'),
     ),
   ),
+  redirect: (BuildContext context, GoRouterState state) async {
+    final bool isLoggedIn = _authService.isLoggedIn();
+    final ShopService shopService = ShopService();
+    final String currentPath = state.matchedLocation;
+
+    // Izinkan akses bebas untuk halaman Login, Register, dan Forgot Password
+    final bool isAuthRoute = currentPath == AppRoutes.login ||
+        currentPath == AppRoutes.userRegistration ||
+        currentPath == AppRoutes.forgotPassword;
+    // Jika belum login dan tidak sedang di halaman auth, lempar ke login
+    if (!isLoggedIn && !isAuthRoute) {
+      return AppRoutes.login;
+    }
+    // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
+    if (isLoggedIn) {
+      // Jika sudah login dan mencoba akses halaman login/register, lempar ke home.
+      if (currentPath == AppRoutes.login || currentPath == AppRoutes.userRegistration) {
+        return AppRoutes.home;
+      }
+      // Cek status toko pengguna
+      // Asumsi: getCurrentShopId mengembalikan String? yang merupakan nama dari ShopStatus enum
+      final String? shopStatusString = await shopService.getCurrentShopId(_authService.currentUser);
+      final ShopStatus? shopStatusEnum = shopStatusString != null
+          ? ShopStatus.values.firstWhereOrNull((e) => e.name == shopStatusString)
+          : null;
+      final bool hasApprovedShop = shopStatusEnum == ShopStatus.approved;
+      final bool isAtShopRegistration =
+          state.matchedLocation == AppRoutes.shopRegistration;
+
+      // Jika toko belum disetujui (status 'none' atau 'pending') dan tidak sedang di halaman registrasi,
+      // paksa arahkan ke halaman registrasi/status.
+      if (!hasApprovedShop && !isAtShopRegistration) {
+        return AppRoutes.shopRegistration;
+      }
+      // Jika toko sudah disetujui tapi mencoba akses halaman registrasi, kembalikan ke home.
+      if (hasApprovedShop && isAtShopRegistration) {
+        return AppRoutes.home;
+      }
+    }
+    return null;
+  },
   routes: <RouteBase>[
-    // StatefulShellRoute digunakan untuk membuat navigasi dengan shell (seperti BottomNavBar)
-    // Di sini kita menggunakan helper `buildAppShellRoute` yang sudah Anda miliki
-    buildAppShellRoute(
-      // `shellBuilder` bertugas membangun UI shell (MatrixBottomNavBar)
-      shellBuilder: (context, state, navigationShell) {
-        return MatrixBottomNavBar(
-          navigationShell: navigationShell,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) {
-            // `goBranch` adalah fungsi dari navigationShell untuk berpindah tab
-            navigationShell.goBranch(index);
-          },
-        );
-      },
-      // `branches` berisi daftar rute/tab yang akan ditampilkan di dalam shell
-      branches: matrixBranches,
-    ),
+    buildAppShellRoute(),
+    ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );
