@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 final appBranches = <StatefulShellBranch>[
   StatefulShellBranch(routes: [
     GoRoute(
-      path: AppRoutes.home, // Menggunakan '/home' dari AppRoutes
+      path: '/', // Jadikan ini sebagai rute default untuk shell
       builder: (context, state) => const HomeScreen(),
     ),
   ]),
