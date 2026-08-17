@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_ui/shared_ui.dart';
-
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:shared_navigations/shared_navigation.dart';
 /// Widget yang berfungsi sebagai shell UI utama aplikasi.
 ///
 /// Ini membangun Scaffold dengan BottomNavigationBar dan menggunakan
@@ -31,22 +31,18 @@ class BottomNavBar extends StatelessWidget {
       // Tampilkan konten dari rute yang aktif di sini.
       body: navigationShell,
 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
+      // Ganti BottomNavigationBar standar dengan SharedBottomNavBar kustom.
+      // SharedBottomNavBar menggunakan CurvedNavigationBar di dalamnya.
+      bottomNavigationBar: SharedBottomNavBar(
+        selectedIndex: currentIndex,
         onTap: onTap,
-        type: BottomNavigationBarType.fixed, // Agar semua item terlihat
-        selectedItemColor: kBrandPrimary,
-        unselectedItemColor: kDarkTextSecondary,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.check_circle_outline), label: 'Approvals'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.analytics_outlined), label: 'Analytics'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long_outlined), label: 'Transactions'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.co_present_outlined), label: 'Attendance'),
+        // SharedBottomNavBar memerlukan List<GButton> untuk tabs-nya.
+        tabs: const [
+          GButton(icon: Icons.home_outlined, text: 'Home'),
+          GButton(icon: Icons.check_circle_outline, text: 'Approvals'),
+          GButton(icon: Icons.analytics_outlined, text: 'Analytics'),
+          GButton(icon: Icons.receipt_long_outlined, text: 'Transactions'),
+          GButton(icon: Icons.co_present_outlined, text: 'Attendance'),
         ],
       ),
     );

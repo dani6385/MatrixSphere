@@ -46,7 +46,7 @@ class ClientBottomNavBar extends StatelessWidget {
     };
 
     return SharedBottomNavBar(
-      currentIndex: currentIndex,
+      
       onTap: (index) {
         // Ambil rute berdasarkan indeks cabang yang ditekan
         final routePath = (clientBranches[index].routes.first as dynamic).path;
@@ -79,7 +79,7 @@ class ClientBottomNavBar extends StatelessWidget {
         );
       }),
       selectedIndex: currentIndex,
-      items: const [],
+      
     );
   }
 }

@@ -10,19 +10,16 @@ import 'package:shared_ui/shared_ui.dart';
 class SharedBottomNavBar extends StatelessWidget {
   const SharedBottomNavBar({
     super.key,
-    required this.currentIndex,
+    required this.selectedIndex,
     required this.onTap,
-    required this.tabs, // Changed from 'items' to 'tabs'
-    required this.selectedIndex, required List<dynamic> items,
+    required this.tabs,
   });
 
   /// The index of the currently active tab.
-  final int currentIndex;
+  final int selectedIndex;
 
   /// The callback function when a tab is tapped
-  // final void Function(int) onItemTapped;.
   final void Function(int) onTap;
-  final int selectedIndex;
 
   /// The list of [GButton] widgets to display as tabs.
   final List<GButton> tabs;

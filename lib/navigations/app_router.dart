@@ -63,17 +63,12 @@ final GoRouter appRouter = GoRouter(
   routes: [
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        // Bungkus BottomNavBar dan navigationShell dalam sebuah Scaffold.
-        // navigationShell adalah widget yang akan menampilkan konten halaman aktif.
-        return Scaffold(
-          body: navigationShell, // Tampilkan konten halaman di sini
-          bottomNavigationBar: BottomNavBar(
-            currentIndex: navigationShell.currentIndex,
-            onTap: (index) {
-              navigationShell.goBranch(index);
-            },
-            navigationShell: navigationShell,
-          ),
+        // shellBuilder harus mengembalikan widget shell UI.
+        // Widget BottomNavBar sudah berisi Scaffold dan akan menampilkan navigationShell.
+        return BottomNavBar(
+          navigationShell: navigationShell,
+          currentIndex: navigationShell.currentIndex,
+          onTap: (index) => navigationShell.goBranch(index),
         );
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
