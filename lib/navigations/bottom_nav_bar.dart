@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-//import 'package:go_router/src/route.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:logger/logger.dart';
 
-//import 'package:shared_ui/shared_ui.dart';
-import 'package:shared_navigations/shared_navigation.dart';
+// Impor dari shared_ui jika diperlukan nanti
+// import 'package:shared_ui/shared_ui.dart';
+
+// Mengimpor shared_navigation dan menyembunyikan simbol yang berkonflik
+import 'package:shared_navigations/shared_navigation.dart' hide appShellBranches;
 import 'app_branches.dart';
 
 final Logger logger = Logger();
 
-/// A wrapper widget that configures and displays the [SharedBottomNavBar]
-/// with tabs specific to the Shop Sphere application.
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
     super.key,
-    required this.currentIndex,
-    required this.onTap,
-    required StatefulNavigationShell navigationShell,
+    required this.navigationShell, // Menerima StatefulNavigationShell
   });
 
-  final int currentIndex;
-  final void Function(int) onTap;
+  // Menyimpan navigationShell sebagai properti dari widget
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
@@ -46,43 +44,38 @@ class BottomNavBar extends StatelessWidget {
       ),
     };
 
-    return SharedBottomNavBar(
-      currentIndex: currentIndex,
-      onTap: (index) {
-        // Ambil rute berdasarkan indeks cabang yang ditekan
-        final routePath = (appBranches[index].routes.first as dynamic).path;
-        if (routePath == AppRoutes.approvals) {
-          logger.i(
-              'Mengakses Halaman Reports / Laporan untuk memantau grafik penjualan pendapatan toko secara real-time.'); // Log aktivitas
-        }
-        // Periksa apakah rute yang diklik adalah halaman Reports
-        if (routePath == AppRoutes.analytics) {
-          logger.i(
-              'Pusat kendali khusus bagi penjual untuk memantau performa penjualan produk.'); // Log aktivitas
-        }
-        if (routePath == AppRoutes.transactions) {
-          logger.i(
-              'Mengakses fitur pengelolaan operasional, staf, atau pengaturan toko secara mendetail.'); // Log aktivitas
-        }
-        if (routePath == AppRoutes.attendance) {
-          logger.i(
-              'Mengakses fitur pencatatan presensi, jam kerja, atau shift karyawan.'); // Log aktivitas
-        }
-        // Jalankan fungsi onTap bawaan
-        onTap(index);
-      },
-      tabs: List.generate(appBranches
-      .length, (index) {
-        final isSelected = index == currentIndex;
-        final routePath = (appBranches
-        [index].routes.first as dynamic).path;
-        final icons = tabIcons[routePath]!;
-        return GButton(
-          icon: isSelected ? icons.activeIcon : icons.icon,
-        );
-      }),
-      selectedIndex: currentIndex,
-      items: const [],
+    // Menggunakan Scaffold untuk memberikan struktur halaman yang benar
+    return Scaffold(
+      // Menampilkan konten halaman aktif (misalnya, HomeScreen)
+      body: navigationShell,
+      
+      // Menempatkan bilah navigasi di bagian bawah
+      bottomNavigationBar: BottomAppBar(
+        child: GNav(
+          selectedIndex: navigationShell.currentIndex,
+          onTabChange: (index) {
+            // Logika logging Anda
+            final routePath = (appBranches[index].routes.first as GoRoute).path;
+            if (routePath == AppRoutes.approvals) {
+              logger.i('Mengakses Halaman Reports / Laporan...');
+            } else if (routePath == AppRoutes.analytics) {
+              logger.i('Pusat kendali khusus bagi penjual...');
+            }
+            // ... dan seterusnya untuk log lainnya
+
+            // Memberitahu GoRouter untuk berpindah ke tab/branch yang dipilih
+            navigationShell.goBranch(index);
+          },
+          tabs: List.generate(appBranches.length, (index) {
+            final isSelected = index == navigationShell.currentIndex;
+            final routePath = (appBranches[index].routes.first as GoRoute).path;
+            final icons = tabIcons[routePath]!;
+            return GButton(
+              icon: isSelected ? icons.activeIcon : icons.icon,
+            );
+          }),
+        ),
+      ),
     );
   }
 }

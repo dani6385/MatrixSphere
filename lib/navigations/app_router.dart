@@ -73,10 +73,6 @@ final GoRouter appRouter = GoRouter(
         // Di sini kamu masukkan BottomNavBar khusus Matrix Sphere
         return BottomNavBar(
           navigationShell: navigationShell,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) {
-            navigationShell.goBranch(index);
-          },
         );
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
