@@ -1,6 +1,7 @@
 
-export 'package:shop_sphere/screens/homes/home_screen.dart';
-export 'package:shop_sphere/screens/feeds/feed_screen.dart';
-export 'package:shop_sphere/screens/searching/searching_screen.dart';
-export 'package:shop_sphere/screens/transactions/transaction_screen.dart';
-export 'package:shop_sphere/screens/accounts/account_screen.dart';
+
+export 'package:matrix_sphere/screens/home/home_screen.dart';
+export 'package:matrix_sphere/screens/analytics/analytic_screen.dart';
+export 'package:matrix_sphere/screens/approvals/approval_screen.dart';
+export 'package:matrix_sphere/screens/attendances/attendance_screen.dart';
+export 'package:matrix_sphere/screens/transactions/transaction_screen.dart';

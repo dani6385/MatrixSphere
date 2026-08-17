@@ -1,66 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'app_branches.dart';
+import 'package:matrix_sphere/navigations/app_branches.dart';
+import 'package:shared_navigations/shared_navigation.dart';
+import 'package:shared_services/auth/shop_status.enum.dart' hide ShopService;
+import 'package:shared_services/shared_services.dart';
+import 'package:collection/collection.dart'; // Import untuk firstWhereOrNull
+import 'auth_redirect_notifier.dart';
 import 'bottom_nav_bar.dart';
 
-import 'package:shared_services/shared_services.dart';
-import 'package:shared_navigations/shared_navigation.dart';
 
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+// Buat instance AuthService yang akan didengarkan oleh GoRouter
+final AuthService _authService = AuthService();
+
 final GoRouter appRouter = GoRouter(
-  // Langsung arahkan ke path root ('/'), di mana HomeScreen Anda terdaftar.
+  // Kita mulai dari rute awal di salah satu branch, yaitu Home ('/')
   initialLocation: '/',
-  debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
+  // Daftarkan AuthService sebagai listener. GoRouter akan re-route saat ada notifikasi.
+  refreshListenable: AuthRedirectNotifier(),
+  errorBuilder: (context, state) => Scaffold(
+    body: Center(
+      child: Text('Halaman tidak ditemukan: ${state.error}'),
+    ),
+  ),
+  redirect: (BuildContext context, GoRouterState state) async {
+    final bool isLoggedIn = _authService.isLoggedIn();
+    final ShopService shopService = ShopService();
+    final String currentPath = state.matchedLocation;
 
-  // Redirect tidak diperlukan dan telah dihapus untuk memperbaiki error navigasi.
+    // Izinkan akses bebas untuk halaman Login, Register, dan Forgot Password
+    final bool isAuthRoute = currentPath == AppRoutes.login ||
+        currentPath == AppRoutes.userRegistration ||
+        currentPath == AppRoutes.forgotPassword;
+    // Jika belum login dan tidak sedang di halaman auth, lempar ke login
+    if (!isLoggedIn && !isAuthRoute) {
+      return AppRoutes.login;
+    }
+    // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
+    if (isLoggedIn) {
+      // Jika sudah login dan mencoba akses halaman login/register, lempar ke home.
+      if (currentPath == AppRoutes.login || currentPath == AppRoutes.userRegistration) {
+        return AppRoutes.home;
+      }
+      // Cek status toko pengguna
+      // Asumsi: getCurrentShopId mengembalikan String? yang merupakan nama dari ShopStatus enum
+      final String? shopStatusString = await shopService.getCurrentShopId(_authService.currentUser);
+      final ShopStatus? shopStatusEnum = shopStatusString != null
+          ? ShopStatus.values.firstWhereOrNull((e) => e.name == shopStatusString)
+          : null;
+      final bool hasApprovedShop = shopStatusEnum == ShopStatus.approved;
+      final bool isAtShopRegistration =
+          state.matchedLocation == AppRoutes.shopRegistration;
 
-  observers: [
-    analyticsService.analitycsObserver,
-  ],
-  errorBuilder: (context, state) {
-    crashlyticsService.recordError(
-      state.error ?? 'GoRouter Navigation Error',
-      StackTrace.current,
-      reason: 'Kesalahan Navigasi GoRouter di path: ${state.uri.toString()}',
-    );
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Oops! Terjadi kesalahan.',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Halaman yang Anda tuju tidak dapat ditemukan. Kami telah mencatat error ini dan akan segera memperbaikinya.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              // AppRoutes.home seharusnya mengarah ke '/'
-              ElevatedButton(
-                onPressed: () => context.go(AppRoutes.home),
-                child: const Text('Kembali ke Home'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+      // Jika toko belum disetujui (status 'none' atau 'pending') dan tidak sedang di halaman registrasi,
+      // paksa arahkan ke halaman registrasi/status.
+      if (!hasApprovedShop && !isAtShopRegistration) {
+        return AppRoutes.shopRegistration;
+      }
+      // Jika toko sudah disetujui tapi mencoba akses halaman registrasi, kembalikan ke home.
+      if (hasApprovedShop && isAtShopRegistration) {
+        return AppRoutes.home;
+      }
+    }
+    return null;
   },
   routes: [
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        // Mengembalikan BottomNavBar karena perutean sudah benar.
+        // Di sini kamu masukkan BottomNavBar khusus Matrix Sphere
         return BottomNavBar(
           navigationShell: navigationShell,
           currentIndex: navigationShell.currentIndex,
@@ -69,7 +79,7 @@ final GoRouter appRouter = GoRouter(
           },
         );
       },
-      branches: appBranches,
+      branches: appBranches, // Daftar cabang rute khusus Matrix
     ),
   ],
 );

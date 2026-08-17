@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+//import 'package:go_router/src/route.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:logger/logger.dart';
+
 //import 'package:shared_ui/shared_ui.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 import 'app_branches.dart';
 
 final Logger logger = Logger();
 
+/// A wrapper widget that configures and displays the [SharedBottomNavBar]
+/// with tabs specific to the Shop Sphere application.
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
-    required this.navigationShell, // Terima navigationShell
+    required StatefulNavigationShell navigationShell,
   });
 
   final int currentIndex;
   final void Function(int) onTap;
-  final StatefulNavigationShell navigationShell; // Simpan navigationShell sebagai field
 
   @override
   Widget build(BuildContext context) {
@@ -43,43 +46,43 @@ class BottomNavBar extends StatelessWidget {
       ),
     };
 
-    // Bungkus dengan Scaffold untuk struktur halaman yang benar
-    return Scaffold(
-      // Gunakan navigationShell sebagai body untuk menampilkan konten halaman aktif
-      body: navigationShell,
-      // Tempatkan bilah navigasi di bagian bawah Scaffold
-      bottomNavigationBar: SharedBottomNavBar(
-        currentIndex: currentIndex,
-        onTap: (index) {
-          // ... Logika logging Anda tetap sama ...
-          final routePath = (appBranches[index].routes.first as dynamic).path;
-          if (routePath == AppRoutes.approvals) {
-            logger.i(
-                'Mengakses Halaman Reports / Laporan untuk memantau grafik penjualan pendapatan toko secara real-time.');
-          } else if (routePath == AppRoutes.analytics) {
-            logger.i(
-                'Pusat kendali khusus bagi penjual untuk memantau performa penjualan produk.');
-          } else if (routePath == AppRoutes.transactions) {
-            logger.i(
-                'Mengakses fitur pengelolaan operasional, staf, atau pengaturan toko secara mendetail.');
-          } else if (routePath == AppRoutes.attendance) {
-            logger.i(
-                'Mengakses fitur pencatatan presensi, jam kerja, atau shift karyawan.');
-          }
-          // Jalankan fungsi onTap asli untuk berpindah tab
-          onTap(index);
-        },
-        tabs: List.generate(appBranches.length, (index) {
-          final isSelected = index == currentIndex;
-          final routePath = (appBranches[index].routes.first as dynamic).path;
-          final icons = tabIcons[routePath]!;
-          return GButton(
-            icon: isSelected ? icons.activeIcon : icons.icon,
-          );
-        }),
-        selectedIndex: currentIndex,
-        items: const [],
-      ),
+    return SharedBottomNavBar(
+      currentIndex: currentIndex,
+      onTap: (index) {
+        // Ambil rute berdasarkan indeks cabang yang ditekan
+        final routePath = (appBranches[index].routes.first as dynamic).path;
+        if (routePath == AppRoutes.approvals) {
+          logger.i(
+              'Mengakses Halaman Reports / Laporan untuk memantau grafik penjualan pendapatan toko secara real-time.'); // Log aktivitas
+        }
+        // Periksa apakah rute yang diklik adalah halaman Reports
+        if (routePath == AppRoutes.analytics) {
+          logger.i(
+              'Pusat kendali khusus bagi penjual untuk memantau performa penjualan produk.'); // Log aktivitas
+        }
+        if (routePath == AppRoutes.transactions) {
+          logger.i(
+              'Mengakses fitur pengelolaan operasional, staf, atau pengaturan toko secara mendetail.'); // Log aktivitas
+        }
+        if (routePath == AppRoutes.attendance) {
+          logger.i(
+              'Mengakses fitur pencatatan presensi, jam kerja, atau shift karyawan.'); // Log aktivitas
+        }
+        // Jalankan fungsi onTap bawaan
+        onTap(index);
+      },
+      tabs: List.generate(appBranches
+      .length, (index) {
+        final isSelected = index == currentIndex;
+        final routePath = (appBranches
+        [index].routes.first as dynamic).path;
+        final icons = tabIcons[routePath]!;
+        return GButton(
+          icon: isSelected ? icons.activeIcon : icons.icon,
+        );
+      }),
+      selectedIndex: currentIndex,
+      items: const [],
     );
   }
 }
