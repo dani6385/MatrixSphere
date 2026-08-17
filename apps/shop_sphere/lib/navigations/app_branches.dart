@@ -12,13 +12,13 @@ final appBranches = <StatefulShellBranch>[
   StatefulShellBranch(routes: [
     GoRoute(
       path: AppRoutes.approvals, // Menggunakan '/approvals'
-      builder: (context, state) => const ApprovalScreen(),
+      builder: (context, state) => const FeedScreen(),
     ),
   ]),
   StatefulShellBranch(routes: [
     GoRoute(
       path: AppRoutes.analytics, // Menggunakan '/analytics'
-      builder: (context, state) => const AnalyticScreen(),
+      builder: (context, state) => const SearchingScreen(),
     ),
   ]),
   StatefulShellBranch(routes: [
@@ -30,7 +30,7 @@ final appBranches = <StatefulShellBranch>[
   StatefulShellBranch(routes: [
     GoRoute(
       path: AppRoutes.attendance, // Menggunakan '/attendance'
-      builder: (context, state) => const AttendanceScreen(),
+      builder: (context, state) => const AccountScreen(),
     ),
   ]),
 ];

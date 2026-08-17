@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_navigations/shared_navigation.dart';
+import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
+
+
 /// Widget yang berfungsi sebagai shell UI utama aplikasi.
 ///
 /// Ini membangun Scaffold dengan BottomNavigationBar dan menggunakan
@@ -30,6 +36,12 @@ class BottomNavBar extends StatelessWidget {
       // INI BAGIAN PENTING:
       // Tampilkan konten dari rute yang aktif di sini.
       body: navigationShell,
+      floatingActionButton: FloatingActionButton(
+        elevation: 4,
+        onPressed: () => logger.i("Scan"),
+        child: const Icon(Icons.qr_code_scanner),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
       // Ganti BottomNavigationBar standar dengan SharedBottomNavBar kustom.
       // SharedBottomNavBar menggunakan CurvedNavigationBar di dalamnya.
@@ -39,10 +51,10 @@ class BottomNavBar extends StatelessWidget {
         // SharedBottomNavBar memerlukan List<GButton> untuk tabs-nya.
         tabs: const [
           GButton(icon: Icons.home_outlined, text: 'Home'),
-          GButton(icon: Icons.check_circle_outline, text: 'Approvals'),
-          GButton(icon: Icons.analytics_outlined, text: 'Analytics'),
-          GButton(icon: Icons.receipt_long_outlined, text: 'Transactions'),
-          GButton(icon: Icons.co_present_outlined, text: 'Attendance'),
+          GButton(icon: Icons.check_circle_outline, text: 'Devices'),
+
+          GButton(icon: Icons.receipt_long_outlined, text: 'Monitor'),
+          GButton(icon: Icons.co_present_outlined, text: 'Settings'),
         ],
       ),
     );

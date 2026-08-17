@@ -12,19 +12,19 @@ final appBranches = <StatefulShellBranch>[
   StatefulShellBranch(routes: [
     GoRoute(
       path: AppRoutes.approvals, // Menggunakan '/approvals'
-      builder: (context, state) => const ApprovalScreen(),
+      builder: (context, state) => const FinancialScreen(),
     ),
   ]),
   StatefulShellBranch(routes: [
     GoRoute(
       path: AppRoutes.analytics, // Menggunakan '/analytics'
-      builder: (context, state) => const AnalyticScreen(),
+      builder: (context, state) => const ManagementScreen(),
     ),
   ]),
   StatefulShellBranch(routes: [
     GoRoute(
       path: AppRoutes.transactions, // Menggunakan '/transactions'
-      builder: (context, state) => const TransactionScreen(),
+      builder: (context, state) => const SellersScreen(),
     ),
   ]),
   StatefulShellBranch(routes: [

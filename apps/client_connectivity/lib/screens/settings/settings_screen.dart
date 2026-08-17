@@ -1,17 +1,17 @@
 
 import 'package:flutter/material.dart';
 
-class ApprovalScreen extends StatelessWidget {
-  const ApprovalScreen({super.key});
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Approval Screen'),
+        title: const Text('Settings'),
       ),
       body: const Center(
-        child: Text('Approval Screen Content'),
+        child: Text('Settings Screen Content'),
       ),
     );
   }

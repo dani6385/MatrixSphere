@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'shop_branches.dart';
-import 'shop_bottom_nav.dart';
-
+import 'app_branches.dart';
+import 'bottom_nav_bar.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 
@@ -16,17 +15,12 @@ final GoRouter appRouter = GoRouter(
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   //refreshListenable: AuthRedirectNotifier(),
-  redirect: (context, state) {
-    // Jika rute yang diakses adalah root ('/'), arahkan secara aman ke halaman utama Anda
-    if (state.uri.toString() == '/') {
-      return '/home'; // Pastikan path '/home' ada di salah satu branch Anda
-    }
-    return null; // Lanjutkan navigasi normal jika bukan '/'
-  },
+
   // 1. Tambahkan observer analitik di sini. Ini adalah lokasi yang benar.
   observers: [
     analyticsService.analitycsObserver,
   ],
+  // Redirect tidak lagi diperlukan, karena '/' akan menjadi rute yang valid.
   errorBuilder: (context, state) {
     // 2. Gunakan layanan terpusat untuk melaporkan error navigasi
     crashlyticsService.recordError(
@@ -69,16 +63,15 @@ final GoRouter appRouter = GoRouter(
   routes: [
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        // Di sini kamu masukkan BottomNavBar khusus Matrix Sphere
-        return ShopBottomNavBar(
+        // shellBuilder harus mengembalikan widget shell UI.
+        // Widget BottomNavBar sudah berisi Scaffold dan akan menampilkan navigationShell.
+        return BottomNavBar(
           navigationShell: navigationShell,
           currentIndex: navigationShell.currentIndex,
-          onTap: (index) {
-            navigationShell.goBranch(index);
-          },
+          onTap: (index) => navigationShell.goBranch(index),
         );
       },
-      branches: shopBranches, // Daftar cabang rute khusus Matrix
+      branches: appBranches, // Daftar cabang rute khusus Matrix
     ),
   ],
 );

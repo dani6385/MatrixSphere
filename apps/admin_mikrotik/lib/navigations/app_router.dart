@@ -5,7 +5,6 @@ import 'bottom_nav_bar.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 
-
 //import 'shell_route_config.dart';
 
 // Kunci global untuk navigator utama (root)
@@ -21,13 +20,7 @@ final GoRouter appRouter = GoRouter(
   observers: [
     analyticsService.analitycsObserver,
   ],
-  redirect: (context, state) {
-    // Jika rute yang diakses adalah root ('/'), arahkan secara aman ke halaman utama Anda
-    if (state.uri.toString() == '/') {
-      return '/home'; // Pastikan path '/home' ada di salah satu branch Anda
-    }
-    return null; // Lanjutkan navigasi normal jika bukan '/'
-  },
+  // Redirect tidak lagi diperlukan, karena '/' akan menjadi rute yang valid.
   errorBuilder: (context, state) {
     // 2. Gunakan layanan terpusat untuk melaporkan error navigasi
     crashlyticsService.recordError(
@@ -70,13 +63,12 @@ final GoRouter appRouter = GoRouter(
   routes: [
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        // Di sini kamu masukkan BottomNavBar khusus Matrix Sphere
+        // shellBuilder harus mengembalikan widget shell UI.
+        // Widget BottomNavBar sudah berisi Scaffold dan akan menampilkan navigationShell.
         return BottomNavBar(
           navigationShell: navigationShell,
           currentIndex: navigationShell.currentIndex,
-          onTap: (index) {
-            navigationShell.goBranch(index);
-          },
+          onTap: (index) => navigationShell.goBranch(index),
         );
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
