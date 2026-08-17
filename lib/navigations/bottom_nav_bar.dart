@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:logger/logger.dart';
-import 'package:matrix_sphere/navigations/app_navigation.dart';
 
+//import 'package:shared_ui/shared_ui.dart';
 import 'package:shared_navigations/shared_navigation.dart';
+import 'app_branches.dart';
 
 final Logger logger = Logger();
 
@@ -14,6 +16,7 @@ class BottomNavBar extends StatelessWidget {
     super.key,
     required this.currentIndex,
     required this.onTap,
+    required StatefulNavigationShell navigationShell,
   });
 
   final int currentIndex;
@@ -24,14 +27,17 @@ class BottomNavBar extends StatelessWidget {
     // Data untuk ikon, dipetakan berdasarkan rute
     const Map<String, ({IconData icon, IconData activeIcon})> tabIcons = {
       AppRoutes.home: (icon: Icons.home_outlined, activeIcon: Icons.home),
-      AppRoutes.financial: (icon: Icons.analytics, activeIcon: Icons.analytics),
-      AppRoutes.management: (
-        icon: Icons.point_of_sale,
-        activeIcon: Icons.point_of_sale_outlined
+      AppRoutes.approvals: (
+        icon: Icons.store_mall_directory_outlined,
+        activeIcon: Icons.store_mall_directory
       ),
-      AppRoutes.sellers: (
-        icon: Icons.person,
-        activeIcon: Icons.person_2_outlined
+      AppRoutes.analytics: (
+        icon: Icons.analytics_outlined,
+        activeIcon: Icons.analytics
+      ),
+      AppRoutes.transactions: (
+        icon: Icons.receipt_long_outlined,
+        activeIcon: Icons.receipt_long
       ),
       AppRoutes.attendance: (
         icon: Icons.fingerprint_outlined,
@@ -42,36 +48,38 @@ class BottomNavBar extends StatelessWidget {
     return SharedBottomNavBar(
       currentIndex: currentIndex,
       onTap: (index) {
-        final List<String> routes = tabIcons.keys.toList();
-        if (index < routes.length) {
-          AppNavigation.goToTab(context, routes[index]);
+        // Ambil rute berdasarkan indeks cabang yang ditekan
+        final routePath = (appBranches[index].routes.first as dynamic).path;
+        if (routePath == AppRoutes.approvals) {
+          logger.i(
+              'Mengakses Halaman Reports / Laporan untuk memantau grafik penjualan pendapatan toko secara real-time.'); // Log aktivitas
         }
+        // Periksa apakah rute yang diklik adalah halaman Reports
+        if (routePath == AppRoutes.analytics) {
+          logger.i(
+              'Pusat kendali khusus bagi penjual untuk memantau performa penjualan produk.'); // Log aktivitas
+        }
+        if (routePath == AppRoutes.transactions) {
+          logger.i(
+              'Mengakses fitur pengelolaan operasional, staf, atau pengaturan toko secara mendetail.'); // Log aktivitas
+        }
+        if (routePath == AppRoutes.attendance) {
+          logger.i(
+              'Mengakses fitur pencatatan presensi, jam kerja, atau shift karyawan.'); // Log aktivitas
+        }
+        // Jalankan fungsi onTap bawaan
+        onTap(index);
       },
-      tabs: tabIcons.entries.map((entry) {
-        final String route = entry.key;
-        final ({IconData icon, IconData activeIcon}) icons = entry.value;
-        String label = ''; // Default label
-
-        // Set label based on route
-        if (route == AppRoutes.home) {
-          label = 'Home';
-        } else if (route == AppRoutes.financial) {
-          label = 'Financial';
-        } else if (route == AppRoutes.management) {
-          label = 'Management';
-        } else if (route == AppRoutes.sellers) {
-          label = 'Sellers';
-        } else if (route == AppRoutes.attendance) {
-          label = 'Attendance';
-        }
-
+      tabs: List.generate(appBranches.length, (index) {
+        final isSelected = index == currentIndex;
+        final routePath = (appBranches[index].routes.first as dynamic).path;
+        final icons = tabIcons[routePath]!;
         return GButton(
-          icon: icons.icon,
-          text: label,
+          icon: isSelected ? icons.activeIcon : icons.icon,
         );
-      }).toList(),
+      }),
       selectedIndex: currentIndex,
-      items: [],
+      items: const [],
     );
   }
 }

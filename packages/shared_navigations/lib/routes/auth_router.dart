@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 List<StatefulShellBranch> authShellBranches({
+  required Widget onboardScreen,
   required Widget loginScreen, // Contoh: Home / Beranda
   required Widget regitrationScreen, // Contoh: Approvals (Matrix) atau Financial (Seller)
   required Widget forgotScreen, // Contoh: Analytics (Matrix) atau Management (Seller)
@@ -10,6 +11,16 @@ List<StatefulShellBranch> authShellBranches({
   
 }) {
   return [
+    StatefulShellBranch(
+      navigatorKey: homeNavigatorKey,
+      routes: [
+        GoRoute(
+          path: '/onboard',
+          builder: (context, state) => onboardScreen,
+        ),
+      ],
+    ),
+    
     // Branch untuk Tab Home
     StatefulShellBranch(
       navigatorKey: homeNavigatorKey,
