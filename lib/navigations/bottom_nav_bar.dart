@@ -1,42 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:logger/logger.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 
-// Impor dari shared_ui jika diperlukan nanti
-// import 'package:shared_ui/shared_ui.dart';
-
-// Mengimpor shared_navigation dan menyembunyikan simbol yang berkonflik
-import 'package:shared_navigations/shared_navigation.dart' hide appShellBranches;
-import 'app_branches.dart';
+import 'package:shared_navigations/shared_navigation.dart';
 
 final Logger logger = Logger();
 
+/// A wrapper widget that configures and displays the [SharedBottomNavBar]
+/// with tabs specific to the Seller Sphere application.
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
     super.key,
-    required this.navigationShell, // Menerima StatefulNavigationShell
+    required this.currentIndex,
+    required this.onTap,
   });
 
-  // Menyimpan navigationShell sebagai properti dari widget
-  final StatefulNavigationShell navigationShell;
+  final int currentIndex;
+  final void Function(int) onTap;
 
   @override
   Widget build(BuildContext context) {
     // Data untuk ikon, dipetakan berdasarkan rute
     const Map<String, ({IconData icon, IconData activeIcon})> tabIcons = {
       AppRoutes.home: (icon: Icons.home_outlined, activeIcon: Icons.home),
-      AppRoutes.approvals: (
-        icon: Icons.store_mall_directory_outlined,
-        activeIcon: Icons.store_mall_directory
+      AppRoutes.financial: (icon: Icons.analytics, activeIcon: Icons.analytics),
+      AppRoutes.management: (
+        icon: Icons.point_of_sale,
+        activeIcon: Icons.point_of_sale_outlined
       ),
-      AppRoutes.analytics: (
-        icon: Icons.analytics_outlined,
-        activeIcon: Icons.analytics
-      ),
-      AppRoutes.transactions: (
-        icon: Icons.receipt_long_outlined,
-        activeIcon: Icons.receipt_long
+      AppRoutes.sellers: (
+        icon: Icons.person,
+        activeIcon: Icons.person_2_outlined
       ),
       AppRoutes.attendance: (
         icon: Icons.fingerprint_outlined,
@@ -44,38 +39,39 @@ class BottomNavBar extends StatelessWidget {
       ),
     };
 
-    // Menggunakan Scaffold untuk memberikan struktur halaman yang benar
-    return Scaffold(
-      // Menampilkan konten halaman aktif (misalnya, HomeScreen)
-      body: navigationShell,
-      
-      // Menempatkan bilah navigasi di bagian bawah
-      bottomNavigationBar: BottomAppBar(
-        child: GNav(
-          selectedIndex: navigationShell.currentIndex,
-          onTabChange: (index) {
-            // Logika logging Anda
-            final routePath = (appBranches[index].routes.first as GoRoute).path;
-            if (routePath == AppRoutes.approvals) {
-              logger.i('Mengakses Halaman Reports / Laporan...');
-            } else if (routePath == AppRoutes.analytics) {
-              logger.i('Pusat kendali khusus bagi penjual...');
-            }
-            // ... dan seterusnya untuk log lainnya
+    return SharedBottomNavBar(
+      currentIndex: currentIndex,
+      onTap: (index) {
+        final List<String> routes = tabIcons.keys.toList();
+        if (index < routes.length) {
+          AppNavigation.goToTab(context, routes[index]);
+        }
+      },
+      tabs: tabIcons.entries.map((entry) {
+        final String route = entry.key;
+        final ({IconData icon, IconData activeIcon}) icons = entry.value;
+        String label = ''; // Default label
 
-            // Memberitahu GoRouter untuk berpindah ke tab/branch yang dipilih
-            navigationShell.goBranch(index);
-          },
-          tabs: List.generate(appBranches.length, (index) {
-            final isSelected = index == navigationShell.currentIndex;
-            final routePath = (appBranches[index].routes.first as GoRoute).path;
-            final icons = tabIcons[routePath]!;
-            return GButton(
-              icon: isSelected ? icons.activeIcon : icons.icon,
-            );
-          }),
-        ),
-      ),
+        // Set label based on route
+        if (route == AppRoutes.home) {
+          label = 'Home';
+        } else if (route == AppRoutes.financial) {
+          label = 'Financial';
+        } else if (route == AppRoutes.management) {
+          label = 'Management';
+        } else if (route == AppRoutes.sellers) {
+          label = 'Sellers';
+        } else if (route == AppRoutes.attendance) {
+          label = 'Attendance';
+        }
+
+        return GButton(
+          icon: icons.icon,
+          text: label,
+        );
+      }).toList(),
+      selectedIndex: currentIndex,
+      items: [],
     );
   }
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:matrix_sphere/navigations/app_branches.dart';
-import 'package:shared_navigations/shared_navigation.dart';
+import 'package:matrix_sphere/navigations/app_navigator.dart';
 import 'package:shared_services/auth/shop_status.enum.dart' hide ShopService;
 import 'package:shared_services/shared_services.dart';
 import 'package:collection/collection.dart'; // Import untuk firstWhereOrNull
-import 'auth_redirect_notifier.dart';
-import 'bottom_nav_bar.dart';
 
+import 'auth_redirect_notifier.dart';
+import 'fullscreen_routes.dart';
+import 'package:shared_navigations/shared_navigation.dart';
 
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -42,14 +42,17 @@ final GoRouter appRouter = GoRouter(
     // 2. Jika sudah login, cegah agar tidak bisa masuk ke halaman login/register lagi, lalu cek toko
     if (isLoggedIn) {
       // Jika sudah login dan mencoba akses halaman login/register, lempar ke home.
-      if (currentPath == AppRoutes.login || currentPath == AppRoutes.userRegistration) {
+      if (currentPath == AppRoutes.login ||
+          currentPath == AppRoutes.userRegistration) {
         return AppRoutes.home;
       }
       // Cek status toko pengguna
       // Asumsi: getCurrentShopId mengembalikan String? yang merupakan nama dari ShopStatus enum
-      final String? shopStatusString = await shopService.getCurrentShopId(_authService.currentUser);
+      final String? shopStatusString =
+          await shopService.getCurrentShopId(_authService.currentUser);
       final ShopStatus? shopStatusEnum = shopStatusString != null
-          ? ShopStatus.values.firstWhereOrNull((e) => e.name == shopStatusString)
+          ? ShopStatus.values
+              .firstWhereOrNull((e) => e.name == shopStatusString)
           : null;
       final bool hasApprovedShop = shopStatusEnum == ShopStatus.approved;
       final bool isAtShopRegistration =
@@ -67,15 +70,13 @@ final GoRouter appRouter = GoRouter(
     }
     return null;
   },
-  routes: [
+  routes: <RouteBase>[
     buildAppShellRoute(
-      shellBuilder: (context, state, navigationShell) {
-        // Di sini kamu masukkan BottomNavBar khusus Matrix Sphere
-        return BottomNavBar(
-          navigationShell: navigationShell,
-        );
-      },
-      branches: appBranches, // Daftar cabang rute khusus Matrix
-    ),
+        shellBuilder:
+            (BuildContext p1, GoRouterState p2, StatefulNavigationShell p3) {
+          return AppNavigator(navigationShell: p3);
+        },
+        branches: []),
+    ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );
