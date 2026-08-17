@@ -1,85 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:logger/logger.dart';
+import 'package:shared_ui/shared_ui.dart';
 
-//import 'package:shared_ui/shared_ui.dart';
-import 'package:shared_navigations/shared_navigation.dart';
-import 'app_branches.dart';
-
-final Logger logger = Logger();
-
-/// A wrapper widget that configures and displays the [SharedBottomNavBar]
-/// with tabs specific to the Seller Sphere application.
+/// Widget yang berfungsi sebagai shell UI utama aplikasi.
+///
+/// Ini membangun Scaffold dengan BottomNavigationBar dan menggunakan
+/// [navigationShell] yang disediakan oleh GoRouter untuk menampilkan
+/// konten halaman yang sesuai dengan tab yang aktif.
 class BottomNavBar extends StatelessWidget {
+  /// Widget yang disediakan oleh [StatefulShellRoute] untuk merender
+  /// halaman dari branch yang sedang aktif.
+  final Widget navigationShell;
+
+  /// Indeks dari tab yang sedang aktif.
+  final int currentIndex;
+
+  /// Callback yang dipanggil ketika tab baru dipilih.
+  final ValueChanged<int> onTap;
+
   const BottomNavBar({
     super.key,
+    required this.navigationShell,
     required this.currentIndex,
     required this.onTap,
-    required StatefulNavigationShell navigationShell,
   });
-
-  final int currentIndex;
-  final void Function(int) onTap;
 
   @override
   Widget build(BuildContext context) {
-    // Data untuk ikon, dipetakan berdasarkan rute
-    const Map<String, ({IconData icon, IconData activeIcon})> tabIcons = {
-      AppRoutes.home: (icon: Icons.home_outlined, activeIcon: Icons.home),
-      AppRoutes.approvals: (
-        icon: Icons.store_mall_directory_outlined,
-        activeIcon: Icons.store_mall_directory
-      ),
-      AppRoutes.analytics: (
-        icon: Icons.analytics_outlined,
-        activeIcon: Icons.analytics
-      ),
-      AppRoutes.transactions: (
-        icon: Icons.receipt_long_outlined,
-        activeIcon: Icons.receipt_long
-      ),
-      AppRoutes.attendance: (
-        icon: Icons.fingerprint_outlined,
-        activeIcon: Icons.fingerprint
-      ),
-    };
+    return Scaffold(
+      // INI BAGIAN PENTING:
+      // Tampilkan konten dari rute yang aktif di sini.
+      body: navigationShell,
 
-    return SharedBottomNavBar(
-      currentIndex: currentIndex,
-      onTap: (index) {
-        // Ambil rute berdasarkan indeks cabang yang ditekan
-        final routePath = (appBranches[index].routes.first as dynamic).path;
-        if (routePath == AppRoutes.approvals) {
-          logger.i(
-              'Mengakses Halaman Reports / Laporan untuk memantau grafik penjualan pendapatan toko secara real-time.'); // Log aktivitas
-        }
-        // Periksa apakah rute yang diklik adalah halaman Reports
-        if (routePath == AppRoutes.analytics) {
-          logger.i(
-              'Pusat kendali khusus bagi penjual untuk memantau performa penjualan produk.'); // Log aktivitas
-        }
-        if (routePath == AppRoutes.transactions) {
-          logger.i(
-              'Mengakses fitur pengelolaan operasional, staf, atau pengaturan toko secara mendetail.'); // Log aktivitas
-        }
-        if (routePath == AppRoutes.attendance) {
-          logger.i(
-              'Mengakses fitur pencatatan presensi, jam kerja, atau shift karyawan.'); // Log aktivitas
-        }
-        // Jalankan fungsi onTap bawaan
-        onTap(index);
-      },
-      tabs: List.generate(appBranches.length, (index) {
-        final isSelected = index == currentIndex;
-        final routePath = (appBranches[index].routes.first as dynamic).path;
-        final icons = tabIcons[routePath]!;
-        return GButton(
-          icon: isSelected ? icons.activeIcon : icons.icon,
-        );
-      }),
-      selectedIndex: currentIndex,
-      items: const [],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: onTap,
+        type: BottomNavigationBarType.fixed, // Agar semua item terlihat
+        selectedItemColor: kBrandPrimary,
+        unselectedItemColor: kDarkTextSecondary,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.check_circle_outline), label: 'Approvals'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.analytics_outlined), label: 'Analytics'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long_outlined), label: 'Transactions'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.co_present_outlined), label: 'Attendance'),
+        ],
+      ),
     );
   }
 }
