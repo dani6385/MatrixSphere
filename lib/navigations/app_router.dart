@@ -5,7 +5,6 @@ import 'bottom_nav_bar.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 
-
 //import 'shell_route_config.dart';
 
 // Kunci global untuk navigator utama (root)
@@ -64,13 +63,17 @@ final GoRouter appRouter = GoRouter(
   routes: [
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        // Di sini kamu masukkan BottomNavBar khusus Matrix Sphere
-        return BottomNavBar(
-          navigationShell: navigationShell,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) {
-            navigationShell.goBranch(index);
-          },
+        // Bungkus BottomNavBar dan navigationShell dalam sebuah Scaffold.
+        // navigationShell adalah widget yang akan menampilkan konten halaman aktif.
+        return Scaffold(
+          body: navigationShell, // Tampilkan konten halaman di sini
+          bottomNavigationBar: BottomNavBar(
+            currentIndex: navigationShell.currentIndex,
+            onTap: (index) {
+              navigationShell.goBranch(index);
+            },
+            navigationShell: navigationShell,
+          ),
         );
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
