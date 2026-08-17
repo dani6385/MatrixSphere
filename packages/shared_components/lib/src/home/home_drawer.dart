@@ -1,18 +1,18 @@
-// lib/navigation/widgets/app_Attendance_drawer.dart
+// lib/navigation/widgets/app_Home_drawer.dart
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'items/attendance_drawer_items.dart'; // Impor data menu yang sudah dipecah
+import 'home_drawer_items.dart'; // Impor data menu yang sudah dipecah
 
-class AttendanceDrawer extends StatelessWidget {
-  const AttendanceDrawer({super.key});
+class HomeDrawer extends StatelessWidget {
+  const HomeDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
     // Mendapatkan rute aktif saat ini
     final String currentRoute = GoRouterState.of(context).uri.toString();
-    
+
     // Mengambil daftar item menu dari fungsi terpisah
     final menuList = getDrawerItems(context, currentRoute);
 
@@ -30,7 +30,7 @@ class AttendanceDrawer extends StatelessWidget {
             // 1. Menambahkan Icon di dalam DrawerHeader
             Icon(
               Icons
-                  .fingerprint, // Kamu bisa mengganti ikon ini sesuai kebutuhan (misal: Icons.account_circle)
+                  .person_outline, // Kamu bisa mengganti ikon ini sesuai kebutuhan (misal: Icons.account_circle)
               size: 48, // Ukuran ikon
               color: Colors
                   .white, // Warna ikon agar kontras dengan latar belakang biru
@@ -55,7 +55,6 @@ class AttendanceDrawer extends StatelessWidget {
           icon: item.icon,
           label: item.label,
           route: '',
-          isSelected: item.route.isNotEmpty && currentRoute == item.route,
           onTap: item.onTap ?? () {},
         );
       }).toList(),

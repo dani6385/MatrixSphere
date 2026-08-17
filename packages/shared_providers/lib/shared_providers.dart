@@ -1,0 +1,1 @@
+export 'src/attendance_viewmodel.dart';

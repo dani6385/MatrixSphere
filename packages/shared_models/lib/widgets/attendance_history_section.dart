@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/models/attendance_model.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/attendance_history_item.dart';
+import 'attendance_history_item.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 class AttendanceHistorySection extends StatelessWidget {

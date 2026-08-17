@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'items/attendance_end_drawer_items.dart'; // Impor data menu EndDrawer yang baru dibuat
+import 'attendance_end_drawer_items.dart';
 
 class AttendanceEndDrawer extends StatelessWidget {
   const AttendanceEndDrawer({super.key});

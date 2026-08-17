@@ -4,11 +4,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/models/attendance_model.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/attendance_header_card.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/attendance_scanner_widget.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/attendance_action_buttons.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/attendance_history_header.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/attendance_history_section.dart';
+import 'package:shared_models/shared_models.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 class AttendanceBody extends StatelessWidget {

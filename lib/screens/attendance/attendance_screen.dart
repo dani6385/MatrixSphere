@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:matrix_sphere/screens/attendance/components/attendance_end_drawer.dart';
-import 'package:matrix_sphere/screens/attendance/providers/attendance_viewmodel.dart';
+import 'package:shared_components/shared_components.dart';
+import 'package:shared_providers/shared_providers.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_appbar.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_body.dart';
 //import 'package:matrix_sphere/features/settings/setting_screen.dart';
@@ -67,7 +67,8 @@ class _AttendanceViewState extends State<AttendanceView>
     // Handle location error dialog
     if (viewModel.locationErrorEvent != null) {
       final event = viewModel.locationErrorEvent!;
-      UiHelper.showLocationErrorDialog(context, event.title, event.message, showSettingsButton: event.needsSettings);
+      UiHelper.showLocationErrorDialog(context, event.title, event.message,
+          showSettingsButton: event.needsSettings);
       viewModel.clearLocationErrorEvent(); // Clear the event after handling
     }
 
@@ -93,7 +94,10 @@ class _AttendanceViewState extends State<AttendanceView>
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       appBar: const AttendanceAppBar(),
-      endDrawer: const AttendanceEndDrawer(),
+      drawer: AppDrawerFactory.buildDrawer(
+          side: DrawerSide.left, category: 'attendance'),
+      endDrawer: AppDrawerFactory.buildDrawer(
+          side: DrawerSide.right, category: 'attendance'),
       body: Consumer<AttendanceViewModel>(
         builder: (context, viewModel, child) {
           return AttendanceBody(

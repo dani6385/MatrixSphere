@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/models/attendance_model.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/status_chip.dart';
+import 'status_chip.dart';
 import 'package:shared_ui/shared_ui.dart';
 import 'package:intl/intl.dart';
 
