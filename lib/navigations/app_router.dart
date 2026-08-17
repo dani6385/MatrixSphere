@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_branches.dart';
-//import 'bottom_nav_bar.dart';
+import 'bottom_nav_bar.dart';
 
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
@@ -10,16 +10,13 @@ import 'package:shared_navigations/shared_navigation.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
+  // Langsung arahkan ke path root ('/'), di mana HomeScreen Anda terdaftar.
   initialLocation: '/',
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
-  redirect: (context, state) {
-    // Jika rute yang diakses adalah root ('/'), arahkan secara aman ke halaman utama Anda
-    if (state.uri.toString() == '/') {
-      return '/home'; // Pastikan path '/home' ada di salah satu branch Anda
-    }
-    return null; // Lanjutkan navigasi normal jika bukan '/'
-  },
+
+  // Redirect tidak diperlukan dan telah dihapus untuk memperbaiki error navigasi.
+
   observers: [
     analyticsService.analitycsObserver,
   ],
@@ -49,6 +46,7 @@ final GoRouter appRouter = GoRouter(
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
+              // AppRoutes.home seharusnya mengarah ke '/'
               ElevatedButton(
                 onPressed: () => context.go(AppRoutes.home),
                 child: const Text('Kembali ke Home'),
@@ -61,13 +59,15 @@ final GoRouter appRouter = GoRouter(
   },
   routes: [
     buildAppShellRoute(
-      // === DEBUG: Melewati BottomNavBar untuk sementara ===
-      // Daripada membuat widget BottomNavBar, kita langsung tampilkan konten halaman (navigationShell).
-      // Ini untuk mengisolasi masalah.
       shellBuilder: (context, state, navigationShell) {
-        // Jika halaman sekarang muncul, maka masalahnya ada di dalam widget BottomNavBar.
-        // Jika masih abu-abu, masalahnya ada di konfigurasi branch atau halaman itu sendiri.
-        return navigationShell;
+        // Mengembalikan BottomNavBar karena perutean sudah benar.
+        return BottomNavBar(
+          navigationShell: navigationShell,
+          currentIndex: navigationShell.currentIndex,
+          onTap: (index) {
+            navigationShell.goBranch(index);
+          },
+        );
       },
       branches: appBranches,
     ),
