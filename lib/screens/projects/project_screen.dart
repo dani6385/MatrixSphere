@@ -1,17 +1,17 @@
 
 import 'package:flutter/material.dart';
 
-class TransactionScreen extends StatelessWidget {
-  const TransactionScreen({super.key});
+class ProjectScreen extends StatelessWidget {
+  const ProjectScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transactions Screen'),
+        title: const Text('Projects Screen'),
       ),
       body: const Center(
-        child: Text('Transactions Screen Content'),
+        child: Text('Projects Screen Content'),
       ),
     );
   }

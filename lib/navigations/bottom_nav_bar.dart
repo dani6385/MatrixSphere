@@ -40,8 +40,8 @@ class BottomNavBar extends StatelessWidget {
         tabs: const [
           GButton(icon: Icons.home_outlined, text: 'Home'),
           GButton(icon: Icons.check_circle_outline, text: 'Approvals'),
+          GButton(icon: Icons.work_outline, text: 'Tasks'),
           GButton(icon: Icons.analytics_outlined, text: 'Analytics'),
-          GButton(icon: Icons.receipt_long_outlined, text: 'Transactions'),
           GButton(icon: Icons.co_present_outlined, text: 'Attendance'),
         ],
       ),
