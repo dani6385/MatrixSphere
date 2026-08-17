@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-List<StatefulShellBranch> bottomShellBranches({
+List<StatefulShellBranch> appShellBranches({
   required Widget case0Screen, // Contoh: Home / Beranda
   required Widget case1Screen, // Contoh: Approvals (Matrix) atau Financial (Seller)
   required Widget case2Screen, // Contoh: Analytics (Matrix) atau Management (Seller)
