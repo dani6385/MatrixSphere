@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'admin_branches.dart';
-import 'admin_bottom_nav.dart';
-
+import 'app_branches.dart';
+import 'bottom_nav_bar.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 
@@ -72,7 +71,7 @@ final GoRouter appRouter = GoRouter(
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
         // Di sini kamu masukkan BottomNavBar khusus Matrix Sphere
-        return AdminBottomNavBar(
+        return BottomNavBar(
           navigationShell: navigationShell,
           currentIndex: navigationShell.currentIndex,
           onTap: (index) {
@@ -80,7 +79,7 @@ final GoRouter appRouter = GoRouter(
           },
         );
       },
-      branches: adminBranches, // Daftar cabang rute khusus Matrix
+      branches: appBranches, // Daftar cabang rute khusus Matrix
     ),
   ],
 );

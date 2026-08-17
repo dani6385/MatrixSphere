@@ -5,14 +5,14 @@ import 'package:logger/logger.dart';
 
 //import 'package:shared_ui/shared_ui.dart';
 import 'package:shared_navigations/shared_navigation.dart';
-import 'admin_branches.dart';
+import 'app_branches.dart';
 
 final Logger logger = Logger();
 
 /// A wrapper widget that configures and displays the [SharedBottomNavBar]
 /// with tabs specific to the Seller Sphere application.
-class AdminBottomNavBar extends StatelessWidget {
-  const AdminBottomNavBar({
+class BottomNavBar extends StatelessWidget {
+  const BottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
@@ -49,7 +49,7 @@ class AdminBottomNavBar extends StatelessWidget {
       currentIndex: currentIndex,
       onTap: (index) {
         // Ambil rute berdasarkan indeks cabang yang ditekan
-        final routePath = (adminBranches[index].routes.first as dynamic).path;
+        final routePath = (appBranches[index].routes.first as dynamic).path;
         if (routePath == AppRoutes.approvals) {
           logger.i(
               'Mengakses Halaman Reports / Laporan untuk memantau grafik penjualan pendapatan toko secara real-time.'); // Log aktivitas
@@ -70,9 +70,9 @@ class AdminBottomNavBar extends StatelessWidget {
         // Jalankan fungsi onTap bawaan
         onTap(index);
       },
-      tabs: List.generate(adminBranches.length, (index) {
+      tabs: List.generate(appBranches.length, (index) {
         final isSelected = index == currentIndex;
-        final routePath = (adminBranches[index].routes.first as dynamic).path;
+        final routePath = (appBranches[index].routes.first as dynamic).path;
         final icons = tabIcons[routePath]!;
         return GButton(
           icon: isSelected ? icons.activeIcon : icons.icon,
