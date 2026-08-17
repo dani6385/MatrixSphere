@@ -6,7 +6,6 @@ import 'shop_bottom_nav.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 
-
 //import 'shell_route_config.dart';
 
 // Kunci global untuk navigator utama (root)
@@ -17,7 +16,13 @@ final GoRouter appRouter = GoRouter(
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   //refreshListenable: AuthRedirectNotifier(),
-
+  redirect: (context, state) {
+    // Jika rute yang diakses adalah root ('/'), arahkan secara aman ke halaman utama Anda
+    if (state.uri.toString() == '/') {
+      return '/home'; // Pastikan path '/home' ada di salah satu branch Anda
+    }
+    return null; // Lanjutkan navigasi normal jika bukan '/'
+  },
   // 1. Tambahkan observer analitik di sini. Ini adalah lokasi yang benar.
   observers: [
     analyticsService.analitycsObserver,

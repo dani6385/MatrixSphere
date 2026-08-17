@@ -22,6 +22,13 @@ final GoRouter appRouter = GoRouter(
   observers: [
     analyticsService.analitycsObserver,
   ],
+  redirect: (context, state) {
+    // Jika rute yang diakses adalah root ('/'), arahkan secara aman ke halaman utama Anda
+    if (state.uri.toString() == '/') {
+      return '/home'; // Pastikan path '/home' ada di salah satu branch Anda
+    }
+    return null; // Lanjutkan navigasi normal jika bukan '/'
+  },
   errorBuilder: (context, state) {
     // 2. Gunakan layanan terpusat untuk melaporkan error navigasi
     crashlyticsService.recordError(
