@@ -1,3 +1,4 @@
+// app_router.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_branches.dart';
@@ -6,9 +7,6 @@ import 'bottom_nav_bar.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 
-
-//import 'shell_route_config.dart';
-
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -16,21 +14,26 @@ final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
-  //refreshListenable: AuthRedirectNotifier(),
+  
+  // 1. NONAKTIFKAN refreshListenable agar tidak diredirect ke halaman login
+  // refreshListenable: AuthRedirectNotifier(),
 
-  // 1. Tambahkan observer analitik di sini. Ini adalah lokasi yang benar.
+  // 2. (Opsional) Jika ada fungsi redirect otentikasi di bawah, Anda bisa menonaktifkannya juga:
+  // redirect: (context, state) {
+  //   // Logika pengecekan login dilewati sementara
+  //   return null; 
+  // },
+
   observers: [
     analyticsService.analitycsObserver,
   ],
   errorBuilder: (context, state) {
-    // 2. Gunakan layanan terpusat untuk melaporkan error navigasi
     crashlyticsService.recordError(
       state.error ?? 'GoRouter Navigation Error',
       StackTrace.current,
       reason: 'Kesalahan Navigasi GoRouter di path: ${state.uri.toString()}',
     );
 
-    // Tampilkan halaman error yang informatif kepada pengguna
     return Scaffold(
       appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
       body: Center(
@@ -51,8 +54,7 @@ final GoRouter appRouter = GoRouter(
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => context
-                    .go(AppRoutes.home), // Arahkan kembali ke halaman utama
+                onPressed: () => context.go(AppRoutes.home),
                 child: const Text('Kembali ke Home'),
               ),
             ],
@@ -64,7 +66,6 @@ final GoRouter appRouter = GoRouter(
   routes: [
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        // Di sini kamu masukkan BottomNavBar khusus Matrix Sphere
         return BottomNavBar(
           navigationShell: navigationShell,
           currentIndex: navigationShell.currentIndex,
@@ -73,7 +74,7 @@ final GoRouter appRouter = GoRouter(
           },
         );
       },
-      branches: appBranches, // Daftar cabang rute khusus Matrix
+      branches: appBranches,
     ),
   ],
 );
