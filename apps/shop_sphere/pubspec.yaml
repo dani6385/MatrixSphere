@@ -20,6 +20,7 @@ dependencies:
   shared_navigations: ^0.0.1
   shared_services: ^0.0.1
   shared_ui: ^0.0.1
+  flutter_launcher_icons: "^0.14.1"
   
 
 dev_dependencies:
@@ -29,3 +30,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_icon.jpg" # Sesuaikan dengan lokasi file gambar Anda
+  min_sdk_android: 21
