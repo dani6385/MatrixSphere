@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_navigations/shared_navigation.dart';
-/// Widget yang berfungsi sebagai shell UI utama aplikasi.
+
+/// Custom Bottom Navigation Bar for the main application shell.
 ///
-/// Ini membangun Scaffold dengan BottomNavigationBar dan menggunakan
-/// [navigationShell] yang disediakan oleh GoRouter untuk menampilkan
-/// konten halaman yang sesuai dengan tab yang aktif.
+/// This widget wraps the [SharedBottomNavBar] from the `shared_navigations` package
+/// and provides the specific navigation items (tabs) for the application.
 class BottomNavBar extends StatelessWidget {
-  /// Widget yang disediakan oleh [StatefulShellRoute] untuk merender
-  /// halaman dari branch yang sedang aktif.
-  final Widget navigationShell;
-
-  /// Indeks dari tab yang sedang aktif.
+  final StatefulNavigationShell navigationShell;
   final int currentIndex;
-
-  /// Callback yang dipanggil ketika tab baru dipilih.
-  final ValueChanged<int> onTap;
+  final Function(int) onTap;
 
   const BottomNavBar({
     super.key,
@@ -26,25 +21,37 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // INI BAGIAN PENTING:
-      // Tampilkan konten dari rute yang aktif di sini.
-      body: navigationShell,
-
-      // Ganti BottomNavigationBar standar dengan SharedBottomNavBar kustom.
-      // SharedBottomNavBar menggunakan CurvedNavigationBar di dalamnya.
-      bottomNavigationBar: SharedBottomNavBar(
-        selectedIndex: currentIndex,
-        onTap: onTap,
-        // SharedBottomNavBar memerlukan List<GButton> untuk tabs-nya.
-        tabs: const [
-          GButton(icon: Icons.home_outlined, text: 'Home'),
-          GButton(icon: Icons.check_circle_outline, text: 'Approvals'),
-          GButton(icon: Icons.work_outline, text: 'Tasks'),
-          GButton(icon: Icons.analytics_outlined, text: 'Analytics'),
-          GButton(icon: Icons.co_present_outlined, text: 'Attendance'),
-        ],
+    // Define your navigation bar items here.
+    // These items should correspond to the branches defined in app_branches.dart.
+    // The order of these GButton items must match the order of StatefulShellBranch
+    // in app_branches.dart.
+    final List<GButton> tabs = [
+      const GButton(
+        icon: Icons.home,
+        text: 'Home',
       ),
+      const GButton(
+        icon: Icons.approval,
+        text: 'Approvals',
+      ),
+      const GButton(
+        icon: Icons.analytics,
+        text: 'Analytics',
+      ),
+      const GButton(
+        icon: Icons.receipt_long,
+        text: 'Transactions',
+      ),
+      const GButton(
+        icon: Icons.access_time,
+        text: 'Attendance',
+      ),
+    ];
+
+    return SharedBottomNavBar(
+      selectedIndex: currentIndex,
+      onTap: onTap,
+      tabs: tabs,
     );
   }
 }
