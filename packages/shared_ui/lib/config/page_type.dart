@@ -8,6 +8,12 @@ enum PageType {
   approvals,
   tasks,
   analytics,
+  feeds,
+  searching,
   transactions,
-  settings,
+  account,
+  financial,
+  management,
+  seller,
 }
+

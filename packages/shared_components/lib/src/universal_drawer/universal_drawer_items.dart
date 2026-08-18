@@ -27,9 +27,56 @@ List<SideMenuItem> getUniversalDrawerItems(
       ),
     ];
   }
-
+  if (appType == AppType.matrixSphere && pageType == PageType.approvals) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+  if (appType == AppType.matrixSphere && pageType == PageType.tasks) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+  if (appType == AppType.matrixSphere && pageType == PageType.analytics) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+  if (appType == AppType.matrixSphere && pageType == PageType.attendance) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
   // Logika untuk App: sellerSphere (berlaku untuk semua halaman di dalamnya)
-  if (appType == AppType.sellerSphere) {
+  if (appType == AppType.sellerSphere && pageType == PageType.home) {
     // Logika untuk aplikasi Seller Sphere
     return [
       SideMenuItem(
@@ -116,20 +163,122 @@ List<SideMenuItem> getUniversalDrawerItems(
     ];
   }
 
-  // Logika untuk App: matrixSphere, Page: attendance (sebelumnya shopSphere)
-  if (appType == AppType.matrixSphere && pageType == PageType.attendance) {
+  if (appType == AppType.sellerSphere && pageType == PageType.financial) {
     return [
       SideMenuItem(
-        title: 'Home / Beranda',
-        icon: Icons.home,
-        label: 'Kembali ke halaman utama.',
-        route: AppRoutes.home,
-        isSelected: currentRoute == AppRoutes.home,
-        onTap: () => context.go(AppRoutes.home),
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
       ),
     ];
   }
 
+  if (appType == AppType.sellerSphere && pageType == PageType.management) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.sellerSphere && pageType == PageType.seller) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.sellerSphere && pageType == PageType.attendance) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.home) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.feeds) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.searching) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.transactions) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.account) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        isSelected: currentRoute == AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
   return []; // Default empty list
 }
 
@@ -213,20 +362,113 @@ List<SideMenuItem> getUniversalEndDrawerItems(BuildContext context,
     ];
   }
 
-  // Logika untuk App: matrixSphere, Page: attendance
-  if (appType == AppType.matrixSphere && pageType == PageType.attendance) {
+  if (appType == AppType.sellerSphere && pageType == PageType.financial) {
     return [
       SideMenuItem(
-        title: 'Profile',
-        icon: Icons.person,
-        onTap: () => context
-            .go('/user-profile'), // Idealnya: context.go(AppRoutes.userProfile)
-        route: '/user-profile',
-        label: 'Lihat Profil Anda',
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
       ),
     ];
   }
 
+  if (appType == AppType.sellerSphere && pageType == PageType.management) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.sellerSphere && pageType == PageType.seller) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.sellerSphere && pageType == PageType.attendance) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.home) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.feeds) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.searching) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.transactions) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
+
+  if (appType == AppType.shopSphere && pageType == PageType.account) {
+    return [
+      SideMenuItem(
+        title: 'Settings',
+        icon: Icons.settings,
+        label: 'Kembali ke halaman utama dashboard.',
+        route: AppRoutes.settings,
+        onTap: () => context.go(AppRoutes.settings),
+      ),
+    ];
+  }
   // Fallback default jika fitur tidak dikenali
   return [
     SideMenuItem(
