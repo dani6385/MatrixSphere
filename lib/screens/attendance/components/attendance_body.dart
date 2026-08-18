@@ -36,7 +36,7 @@ class AttendanceBody extends StatelessWidget {
     required this.onClockIn,
     required this.onClockOut,
     required this.attendanceHistory,
-    required this.onSync,
+    required this.onSync, required Future<void> Function() onOfficeClockIn, required Future<void> Function() onOfficeClockOut,
   });
 
   @override

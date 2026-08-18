@@ -122,6 +122,10 @@ class _AttendanceViewState extends State<AttendanceView>
             onRequestPermission: viewModel.requestCameraPermission,
             onClockIn: () => viewModel.startScan(isClockIn: true),
             onClockOut: () => viewModel.startScan(isClockIn: false),
+            // Tambahkan pemanggilan untuk absensi kantor
+            onOfficeClockIn: () => viewModel.startOfficeScan(isClockIn: true),
+            onOfficeClockOut: () => viewModel.startOfficeScan(isClockIn: false),
+
             attendanceHistory: viewModel.attendanceList,
             onSync: viewModel.pullAttendanceFromRtdb,
           );

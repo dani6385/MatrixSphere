@@ -15,6 +15,7 @@ class AttendanceViewModel extends ChangeNotifier {
   final LocationService _locationService = LocationService();
   final DatabaseService _databaseService = DatabaseService();
   final FirebaseRtdbService _rtdbService = FirebaseRtdbService();
+  final ConfigService _configService = ConfigService();
 
   // Camera state
   bool _hasCameraPermission = false;
@@ -89,12 +90,13 @@ class AttendanceViewModel extends ChangeNotifier {
     _isCheckingLocation = true;
     notifyListeners();
 
+    // --- LOGIKA UNTUK ABSENSI TOKO ---
     if (_currentShop?.latitude == null || _currentShop?.longitude == null) {
       _isCheckingLocation = false;
       _locationErrorEvent = LocationErrorEvent(
         'Lokasi Toko Tidak Ditemukan',
         'Data lokasi toko Anda belum diatur. Silakan hubungi admin untuk memperbarui data toko.',
-        false,
+        false, // Tidak perlu tombol settings karena ini masalah data
       );
       notifyListeners();
       return;
@@ -103,9 +105,9 @@ class AttendanceViewModel extends ChangeNotifier {
     final shopLocation =
         LatLng(_currentShop!.latitude!, _currentShop!.longitude!);
 
-    // Menggunakan metode baru dengan lokasi toko yang dinamis
-    final locationResult = await _locationService.isUserWithinShopRadius(
-      shopLocation: shopLocation,
+    // Menggunakan metode generik isUserWithinRadius
+    final locationResult = await _locationService.isUserWithinRadius(
+      targetLocation: shopLocation,
       radiusMeters: 200, // Anda bisa atur radius di sini
     );
 
@@ -142,6 +144,58 @@ class AttendanceViewModel extends ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  /// Starts the attendance process for OFFICE staff.
+  Future<void> startOfficeScan({
+    required bool isClockIn,
+  }) async {
+    _isCheckingLocation = true;
+    notifyListeners();
+
+    try {
+      // 1. Ambil koordinat kantor dari ConfigService
+      final LatLng officeLocation = await _configService.getOfficeLocation();
+
+      // 2. Periksa apakah pengguna berada dalam radius kantor
+      final locationResult = await _locationService.isUserWithinRadius(
+        targetLocation: officeLocation,
+        radiusMeters: 100.0, // Radius kantor bisa diatur di sini
+      );
+
+      _isCheckingLocation = false;
+
+      if (!locationResult.isWithinRadius) {
+        _locationErrorEvent = LocationErrorEvent(
+          locationResult.errorTitle,
+          locationResult.errorMessage,
+          locationResult.needsSettings,
+        );
+        notifyListeners();
+        return;
+      }
+
+      // 3. Jika lokasi valid, lanjutkan dengan pemindaian wajah
+      _isScanning = true;
+      _scanProgress = 0.0;
+      _scanStatusMessage = 'Menganalisis pencahayaan sekitar...';
+      notifyListeners();
+
+      _runFaceScanSimulation(onSuccess: () {
+        _databaseService.recordAttendance(isClockIn: isClockIn);
+        _isScanning = false;
+        _scanSuccessEvent = ScanSuccessEvent(
+          isClockIn: isClockIn,
+          message: "Absen Kantor ${isClockIn ? 'Masuk' : 'Pulang'} berhasil dicatat.",
+        );
+        pullAttendanceFromRtdb();
+        notifyListeners();
+      });
+    } catch (e) {
+      _isCheckingLocation = false;
+      _locationErrorEvent = LocationErrorEvent('Gagal Konfigurasi', e.toString().replaceAll("Exception: ", ""), false);
+      notifyListeners();
+    }
   }
 
   Future<void> _runFaceScanSimulation({required VoidCallback onSuccess}) async {
