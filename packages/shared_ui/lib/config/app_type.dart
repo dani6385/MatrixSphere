@@ -1,1 +1,7 @@
-enum AppType { matrixSphere, sellerSphere, clientConnectivity, adminMikrotik }
+enum AppType {
+  matrixSphere,
+  sellerSphere,
+  clientConnectivity,
+  adminMikrotik,
+  shopSphere
+}

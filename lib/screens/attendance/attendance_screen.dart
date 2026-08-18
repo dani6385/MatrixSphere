@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_components/shared_components.dart';
 import 'package:shared_providers/shared_providers.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_appbar.dart';
+import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_body.dart';
 //import 'package:matrix_sphere/features/settings/setting_screen.dart';
 import 'package:matrix_sphere/core/utils/ui_helper.dart';
@@ -94,10 +95,14 @@ class _AttendanceViewState extends State<AttendanceView>
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       appBar: const AttendanceAppBar(),
-      drawer: AppDrawerFactory.buildDrawer(
-          side: DrawerSide.left, category: 'attendance'),
-      endDrawer: AppDrawerFactory.buildDrawer(
-          side: DrawerSide.right, category: 'attendance'),
+      drawer: DrawerFactory.createDrawer(
+        context,
+        appType: AppType.matrixSphere,
+        pageType: PageType.attendance,
+      ),
+      endDrawer: DrawerFactory.createEndDrawer(context,
+          appType: AppType.matrixSphere,
+          pageType: PageType.attendance),
       body: Consumer<AttendanceViewModel>(
         builder: (context, viewModel, child) {
           return AttendanceBody(
