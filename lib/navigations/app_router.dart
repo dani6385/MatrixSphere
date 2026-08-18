@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'app_navigator.dart';
 import 'app_branches.dart';
-import 'bottom_nav_bar.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigation.dart';
 
@@ -65,11 +65,7 @@ final GoRouter appRouter = GoRouter(
       shellBuilder: (context, state, navigationShell) {
         // shellBuilder harus mengembalikan widget shell UI.
         // Widget BottomNavBar sudah berisi Scaffold dan akan menampilkan navigationShell.
-        return BottomNavBar(
-          navigationShell: navigationShell,
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) => navigationShell.goBranch(index),
-        );
+        return AppNavigator(navigationShell: navigationShell);
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
     ),
