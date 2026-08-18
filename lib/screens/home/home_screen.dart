@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
+import 'widgets/home_drawer_items.dart';
+import 'widgets/home_end_drawer_items.dart';
 import 'package:shared_components/shared_components.dart';
-import 'package:shared_ui/shared_ui.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,14 +12,18 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Home Screen'),
       ),
-      drawer: DrawerFactory.createDrawer(
-        context,
-        appType: AppType.matrixSphere,
-        pageType: PageType.home,
+      drawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          // Panggil fungsi atau list item SideMenuItem yang ada di home_drawer_items.dart
+          return getDrawerSideMenuItems(context, currentRoute);
+        },
       ),
-      endDrawer: DrawerFactory.createEndDrawer(context,
-          appType: AppType.matrixSphere,
-          pageType: PageType.home),
+      endDrawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          // Panggil fungsi atau list item SideMenuItem yang ada di home_drawer_items.dart
+          return getEndDrawerSideMenuItems(context, currentRoute);
+        },
+      ),
       body: const Center(
         child: Text('Apaka sekarang benar saya ingin tahu hasilnya'),
       ),

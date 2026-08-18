@@ -3,10 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_components/shared_components.dart';
 import 'package:shared_providers/shared_providers.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_appbar.dart';
-import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_body.dart';
 //import 'package:matrix_sphere/features/settings/setting_screen.dart';
 import 'package:matrix_sphere/core/utils/ui_helper.dart';
+import 'widgets/attendance_drawer_items.dart';
+import 'widgets/attendance_end_drawer_items.dart';
 
 /// The main screen for the Attendance feature.
 ///
@@ -95,14 +96,18 @@ class _AttendanceViewState extends State<AttendanceView>
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       appBar: const AttendanceAppBar(),
-      drawer: DrawerFactory.createDrawer(
-        context,
-        appType: AppType.matrixSphere,
-        pageType: PageType.attendance,
+      drawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          // Panggil fungsi atau list item SideMenuItem yang ada di home_drawer_items.dart
+          return getDrawerSideMenuItems(context, currentRoute);
+        },
       ),
-      endDrawer: DrawerFactory.createEndDrawer(context,
-          appType: AppType.matrixSphere,
-          pageType: PageType.attendance),
+      endDrawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          // Panggil fungsi atau list item SideMenuItem yang ada di home_drawer_items.dart
+          return getEndDrawerSideMenuItems(context, currentRoute);
+        },
+      ),
       body: Consumer<AttendanceViewModel>(
         builder: (context, viewModel, child) {
           return AttendanceBody(
