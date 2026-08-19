@@ -26,5 +26,7 @@ class AppRoutes {
   static const String userProfile = '/user-profile';
   static const String userRegistration = '/user-registration';
   static const String workCalendar = '/work-calendar';
+  static const String scanQr = '/scan-qr';
+  static const String scanFace = '/scan-face';
   
 }

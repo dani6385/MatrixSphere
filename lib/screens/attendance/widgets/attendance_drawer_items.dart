@@ -76,10 +76,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun staf atau karyawan.',
       route: '/user-prfile',
-      onTap: () {
-        logger.i('Menu Profile diklik!');
-        context.go('/user-prfile');
-      },
+      onTap: () => context.go(AppRoutes.userProfile),
     ),
   ];
 }

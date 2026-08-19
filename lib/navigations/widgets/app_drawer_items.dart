@@ -34,13 +34,8 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       label:
           'Menampilkan ringkasan statistik penjualan, grafik, dan performa toko.',
       ontap: () {
-        logger.i('Memasuki Halaman Simulasi!');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ScannerScreen(isAttendance: true),
-          ),
-        );
+        logger.i('Navigasi ke Scanner Absensi');
+        context.push(AppRoutes.scanFace);
       },
     ),
     MenuDrawer(
@@ -48,13 +43,8 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       icon: Icons.analytics,
       label: '',
       ontap: () {
-        logger.i('Memasuki Halaman Simulasi!');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ScannerScreen(isAttendance: false),
-          ),
-        );
+        logger.i('Navigasi ke Scanner Produk');
+        context.push(AppRoutes.scanQr);
       },
     ),
     MenuDrawer(
