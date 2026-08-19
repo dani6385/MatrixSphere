@@ -5,7 +5,12 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:logger/logger.dart';
 
 class ScannerScreen extends StatefulWidget {
-  const ScannerScreen({super.key});
+  final bool isAttendance; // Menentukan apakah ini untuk absensi (true) atau produk/kasir (false)
+
+  const ScannerScreen({
+    super.key,
+    this.isAttendance = false, // Default ke false (kamera belakang / produk / kasir)
+  });
 
   @override
   State<ScannerScreen> createState() => _ScannerScreenState();
@@ -19,10 +24,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   void initState() {
     super.initState();
-    // Inisialisasi controller scanner kamera
+    
+    // Inisialisasi controller scanner dengan posisi kamera berdasarkan parameter
+    // Jika isAttendance true -> Kamera Depan (Front)
+    // Jika isAttendance false -> Kamera Belakang (Back)
     _controller = MobileScannerController(
       detectionSpeed: DetectionSpeed.normal,
-      facing: CameraFacing.front, // Default kamera depan
+      facing: widget.isAttendance ? CameraFacing.front : CameraFacing.back,
     );
   }
 
@@ -36,7 +44,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pemindai Kamera & Wajah'),
+        title: Text(widget.isAttendance ? 'Pemindai Absensi (Wajah)' : 'Pemindai Produk / Kasir'),
         actions: [
           // Tombol untuk menyalakan/mematikan lampu flash menggunakan value dari controller
           ValueListenableBuilder<MobileScannerState>(
@@ -52,7 +60,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
               );
             },
           ),
-          // Tombol untuk membalikkan kamera (depan/belakang)
+          // Tombol untuk membalikkan kamera (depan/belakang) secara manual jika diperlukan
           ValueListenableBuilder<MobileScannerState>(
             valueListenable: _controller,
             builder: (context, state, child) {
@@ -74,17 +82,18 @@ class _ScannerScreenState extends State<ScannerScreen> {
             controller: _controller,
             onDetect: (capture) {
               if (!_isScanning) return;
-              
+
               final List<Barcode> barcodes = capture.barcodes;
-              for (final barcode in barcodes) {
+
+              // Proses barcode / QR code yang terdeteksi
+              if (barcodes.isNotEmpty) {
+                final barcode = barcodes.first;
                 _logger.i('Data terdeteksi: ${barcode.rawValue}');
-                
                 setState(() {
                   _isScanning = false;
                 });
 
                 _showResultDialog(barcode.rawValue ?? 'Data tidak valid');
-                break;
               }
             },
           ),
@@ -106,10 +115,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
             bottom: 40,
             left: 0,
             right: 0,
-            child: const Text(
-              'Arahkan wajah atau kode ke dalam kotak',
+            child: Text(
+              widget.isAttendance 
+                  ? 'Arahkan wajah ke dalam kotak untuk absen' 
+                  : 'Arahkan barcode produk ke dalam kotak',
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
                 backgroundColor: Colors.black54,
