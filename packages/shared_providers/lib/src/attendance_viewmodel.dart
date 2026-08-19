@@ -4,9 +4,9 @@ import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geodesy/geodesy.dart';
-import 'package:matrix_sphere/screens/attendance/database_service.dart';
-import 'package:matrix_sphere/models/attendance_model.dart';
-import 'package:shared_services/shared_services.dart' hide DatabaseService;
+
+import 'package:shared_models/shared_models.dart' hide Shop;
+import 'package:shared_services/shared_services.dart';
 
 
 

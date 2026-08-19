@@ -7,3 +7,4 @@ export 'widgets/shared_bottom_nav_bar.dart';
 export 'routes/shell_route_config.dart';
 export 'routes/app_shell_branches.dart';
 export 'widgets/custom_transition_page.dart';
+export 'drawer/shared_project_drawer.dart';

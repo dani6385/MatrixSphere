@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_components/shared_components.dart';
+import 'package:shared_navigations/shared_navigations.dart';
+
 import 'package:shared_providers/shared_providers.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_appbar.dart';
 import 'package:matrix_sphere/screens/attendance/components/attendance_body.dart';
 //import 'package:matrix_sphere/features/settings/setting_screen.dart';
-import 'package:matrix_sphere/core/utils/ui_helper.dart';
+import 'package:shared_utils/shared_utils.dart';
 import 'widgets/attendance_drawer_items.dart';
 import 'widgets/attendance_end_drawer_items.dart';
 

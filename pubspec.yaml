@@ -65,7 +65,9 @@ workspace:
   - packages/shared_models
   - packages/shared_navigations
   - packages/shared_providers
+  - packages/shared_screens
   - packages/shared_services
   - packages/shared_ui
+  - packages/shared_utils
   #- apps/seller_sphere/third_party/media_info
 

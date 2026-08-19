@@ -2,7 +2,7 @@
 // lib/screens/attendance/widgets/attendance_history_section.dart
 
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/models/attendance_model.dart';
+import '../models/attendance_model.dart';
 import 'attendance_history_item.dart';
 import 'package:shared_ui/shared_ui.dart';
 

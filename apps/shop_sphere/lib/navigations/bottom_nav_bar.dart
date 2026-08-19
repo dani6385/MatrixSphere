@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:shared_navigations/shared_navigation.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 /// Widget yang berfungsi sebagai shell UI utama aplikasi.
 ///
 /// Ini membangun Scaffold dengan BottomNavigationBar dan menggunakan

@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_navigations/shared_navigation.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();

@@ -1,4 +1,4 @@
-import 'package:shared_navigations/shared_navigation.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 import 'app_extractor.dart';
 import 'package:go_router/go_router.dart';
 

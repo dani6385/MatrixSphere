@@ -1,7 +1,6 @@
 library shared_models;
 
 //export 'src/user.dart';
-export 'src/shop.dart'; // <- Tambahkan ini
 export 'widgets/attendance_action_button_item.dart';
 export 'widgets/attendance_action_buttons.dart';
 export 'widgets/attendance_active_scanner.dart';
@@ -12,4 +11,7 @@ export 'widgets/attendance_history_section.dart';
 export 'widgets/attendance_permission_request.dart';
 export 'widgets/attendance_scanner_widget.dart';
 export 'widgets/status_chip.dart';
-
+export 'models/attendance_model.dart';
+export 'models/shop_model.dart';
+export 'models/transaction.dart';
+export 'models/violation_model.dart';

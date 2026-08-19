@@ -3,7 +3,6 @@
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/models/attendance_model.dart';
 import 'package:shared_models/shared_models.dart';
 import 'package:shared_ui/shared_ui.dart';
 

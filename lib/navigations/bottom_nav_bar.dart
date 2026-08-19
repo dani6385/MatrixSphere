@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:shared_navigations/shared_navigation.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 
 /// Custom Bottom Navigation Bar for the main application shell.
 ///
