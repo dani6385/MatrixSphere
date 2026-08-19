@@ -15,3 +15,4 @@ export 'models/attendance_model.dart';
 export 'models/shop_model.dart';
 export 'models/transaction.dart';
 export 'models/violation_model.dart';
+export 'models/app_viewmodel.dart';

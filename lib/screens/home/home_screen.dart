@@ -1,7 +1,11 @@
+// lib/screens/home_screen.dart
+
 import 'package:flutter/material.dart';
+import 'components/home_appbar.dart';
+import 'components/home_body.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 import 'widgets/home_drawer_items.dart';
 import 'widgets/home_end_drawer_items.dart';
-import 'package:shared_navigations/shared_navigations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,9 +13,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Screen'),
-      ),
+      // Scaffold itself will have a transparent background by default
+      appBar: const HomeAppBar(),
+      drawerEnableOpenDragGesture: false,
+      endDrawerEnableOpenDragGesture: false,
       drawer: SharedProjectDrawer(
         menuBuilder: (context, currentRoute) {
           // Panggil fungsi atau list item SideMenuItem yang ada di home_drawer_items.dart
@@ -24,9 +29,7 @@ class HomeScreen extends StatelessWidget {
           return getEndDrawerSideMenuItems(context, currentRoute);
         },
       ),
-      body: const Center(
-        child: Text('Apaka sekarang benar saya ingin tahu hasilnya'),
-      ),
+      body: const HomeBody(),
     );
   }
 }
