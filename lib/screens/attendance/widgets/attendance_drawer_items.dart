@@ -1,7 +1,6 @@
 // lib/navigation/widgets/app_drawer_items.dart[cite: 9]
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_ui/shared_ui.dart';
@@ -26,14 +25,17 @@ class MenuDrawer {
 }
 
 // Daftar rekomendasi item menu Drawer khusus saat berada di Halaman Attendance
-List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
+List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
   return [
     MenuDrawer(
       title: 'Home / Beranda',
       icon: Icons.home,
       label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
       route: AppRoutes.home,
-      onTap: () => context.go(AppRoutes.home),
+      onTap: () {
+        logger.i('Navigasi ke Home');
+        AppNavigation.goToTab(context, AppRoutes.caseOScreen);
+      },
     ),
     MenuDrawer(
       title: 'Attendance History / Riwayat Kehadiran',
@@ -56,7 +58,8 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
     MenuDrawer(
       title: 'Tasks / Tugas Harian',
       icon: Icons.task,
-      label: 'Melihat daftar tugas atau target kerja harian yang harus diselesaikan.',
+      label:
+          'Melihat daftar tugas atau target kerja harian yang harus diselesaikan.',
       route: '',
       onTap: () {
         logger.i('Menu Tasks diklik!');
@@ -65,7 +68,8 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
     MenuDrawer(
       title: 'Calendar / Kalender',
       icon: Icons.event,
-      label: 'Melihat agenda kegiatan atau acara operasional secara keseluruhan.',
+      label:
+          'Melihat agenda kegiatan atau acara operasional secara keseluruhan.',
       route: '',
       onTap: () {
         logger.i('Menu Calendar diklik!');
@@ -75,16 +79,17 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Profile / Profil',
       icon: Icons.person,
       label: 'Melihat dan mengubah informasi profil akun staf atau karyawan.',
-      route: '/user-prfile',
+      route: AppRoutes.userProfile,
       onTap: () {
         logger.i('Navigasi ke User Profile');
-        context.push(AppRoutes.userProfile);
+        AppNavigation.pushToUserProfile(context);
       },
     ),
   ];
 }
 
-List<SideMenuItem> getDrawerSideMenuItems(BuildContext context, String currentRoute) {
+List<SideMenuItem> getDrawerSideMenuItems(
+    BuildContext context, String currentRoute) {
   final drawerItems = getDrawerItems(context, currentRoute);
 
   return drawerItems.map((item) {
@@ -94,7 +99,8 @@ List<SideMenuItem> getDrawerSideMenuItems(BuildContext context, String currentRo
       label: item.label,
       route: '', // Sesuaikan rute jika diperlukan
       isSelected: false,
-      onTap: item.onTap ?? () {}, // Provide an empty function if item.onTap is null
+      onTap: item.onTap ??
+          () {}, // Provide an empty function if item.onTap is null
     );
   }).toList();
 }

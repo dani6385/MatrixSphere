@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'app_navigator.dart';
 import 'app_branches.dart';
 import 'package:shared_services/shared_services.dart';
@@ -69,5 +70,6 @@ final GoRouter appRouter = GoRouter(
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
     ),
+      ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );

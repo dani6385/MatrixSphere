@@ -14,13 +14,13 @@ class MenuDrawer {
   final IconData icon;
   final String label;
 
-  final VoidCallback? ontap;
+  final VoidCallback? onTap;
 
   MenuDrawer({
     required this.title,
     required this.icon,
     required this.label,
-    this.ontap,
+    this.onTap,
   });
 }
 
@@ -32,25 +32,25 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       icon: Icons.people,
       label:
           'Menampilkan ringkasan statistik penjualan, grafik, dan performa toko.',
-      ontap: () {
-        logger.i('Navigasi ke Scanner Absensi');
-        context.push(AppRoutes.scanFace);
+      onTap: () {
+        logger.i('Navigasi ke User Profile');
+        AppNavigation.pushToScannerFace(context);
       },
     ),
     MenuDrawer(
       title: 'Scan QR',
       icon: Icons.analytics,
       label: '',
-      ontap: () {
-        logger.i('Navigasi ke Scanner Produk');
-        context.push(AppRoutes.scanQr);
+      onTap: () {
+        logger.i('Navigasi ke User Profile');
+        AppNavigation.pushToScannerQr(context);
       },
     ),
     MenuDrawer(
       title: 'Integrations',
       icon: Icons.extension,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -59,7 +59,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Support',
       icon: Icons.support_agent,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -68,7 +68,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Feedback',
       icon: Icons.feedback,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -77,7 +77,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Profile',
       icon: Icons.person,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -86,7 +86,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Messages',
       icon: Icons.message,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -95,7 +95,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Notifications',
       icon: Icons.notifications,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -104,7 +104,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Team',
       icon: Icons.group,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -113,7 +113,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Files',
       icon: Icons.folder,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -122,7 +122,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Tasks',
       icon: Icons.task,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -131,7 +131,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Calendar',
       icon: Icons.calendar_today,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -140,7 +140,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Contacts',
       icon: Icons.contacts,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -149,7 +149,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Returns',
       icon: Icons.assignment_return,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -158,7 +158,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Vendors',
       icon: Icons.store,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -167,7 +167,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Reviews',
       icon: Icons.reviews,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -176,7 +176,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Marketing',
       icon: Icons.campaign,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -185,7 +185,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Subscription',
       icon: Icons.subscriptions,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -194,7 +194,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Billing',
       icon: Icons.credit_card,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -203,7 +203,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'API Keys',
       icon: Icons.vpn_key,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -212,7 +212,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Audit Log',
       icon: Icons.history,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -221,7 +221,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Webhooks',
       icon: Icons.webhook,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -230,7 +230,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Templates',
       icon: Icons.copy,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -239,7 +239,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Assets',
       icon: Icons.image,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -248,7 +248,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Users',
       icon: Icons.people_alt,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -257,7 +257,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Roles',
       icon: Icons.assignment_ind,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -266,7 +266,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Permissions',
       icon: Icons.lock_open,
       label: '',
-      ontap: () {
+      onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
         context.push(AppRoutes.simulation);
       },
@@ -285,7 +285,7 @@ List<SideMenuItem> getDrawerSideMenuItems(
       label: item.label,
       route: '', // Sesuaikan rute jika diperlukan
       isSelected: false,
-      onTap: item.ontap ??
+      onTap: item.onTap ??
           () {}, // Provide an empty function if item.onTap is null
     );
   }).toList();
