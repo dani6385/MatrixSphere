@@ -97,4 +97,8 @@ class AppNavigation {
   static void pushToScannerFace(BuildContext context) {
     context.push('${AppRoutes.scanFace}?isAttendance=true');
   }
+  static void pushToScannerProduct(BuildContext context) {
+    context.push('${AppRoutes.scanQr}?isAttendance=false');
+  }
+  
 }
