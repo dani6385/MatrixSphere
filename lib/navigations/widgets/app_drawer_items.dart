@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'package:shared_screens/shared_screens.dart';
 
 final Logger logger = Logger();
 
