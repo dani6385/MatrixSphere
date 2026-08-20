@@ -52,7 +52,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       label: '',
       onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
-        context.push(AppRoutes.simulation);
+        AppNavigation.pushToSimulation(context);
       },
     ),
     MenuDrawer(
@@ -61,7 +61,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       label: '',
       onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
-        context.push(AppRoutes.simulation);
+        AppNavigation.pushToSupport(context);
       },
     ),
     MenuDrawer(
@@ -70,7 +70,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       label: '',
       onTap: () {
         logger.i('Memasuki Halaman Simulasi!');
-        context.push(AppRoutes.simulation);
+        AppNavigation.pushToFeedBack(context);
       },
     ),
     MenuDrawer(
