@@ -1,36 +1,46 @@
-// lib/routes/fullscreen_routes.dart
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_screens/shared_screens.dart';
-
-// Impor layar-layar terkait (pastikan jalurnya sesuai project-mu)
+import 'app_routes.dart';
 
 List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     GoRoute(
-      path: '/login',
+      path: AppRoutes.login,
+      parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
-      path: '/forgot-password',
+      path: AppRoutes.forgotPassword,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
-      path: '/user-profile',
+      path: AppRoutes.userRegistration,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const UserRegistrationScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.shopRegistration,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ShopRegistrationScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.userProfile,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const UserProfileScreen(),
     ),
     GoRoute(
-      path: '/shop-profile',
+      path: AppRoutes.shopProfile,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ShopProfileScreen(),
     ),
     GoRoute(
-      path: '/scan-qr',
+      path: AppRoutes.scanQr,
+      parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ScannerScreen(),
     ),
   ];
 }
+

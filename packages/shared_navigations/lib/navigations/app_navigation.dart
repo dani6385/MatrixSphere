@@ -14,11 +14,41 @@ class AppNavigation {
   }
 
   static void goToLogin(BuildContext context) {
-  context.go(AppRoutes.login);
+    context.go(AppRoutes.login);
   }
-static void goToHome(BuildContext context) {
-  context.go(AppRoutes.caseOScreen);
+
+  static void pushToLogin(BuildContext context) {
+    context.push(AppRoutes.login);
   }
+
+  static void goToForgotPassword(BuildContext context) {
+    context.go(AppRoutes.forgotPassword);
+  }
+
+  static void pushToForgotPassword(BuildContext context) {
+    context.push(AppRoutes.forgotPassword);
+  }
+
+  static void goToUserRegistration(BuildContext context) {
+    context.go(AppRoutes.userRegistration);
+  }
+
+  static void pushToUserRegistration(BuildContext context) {
+    context.push(AppRoutes.userRegistration);
+  }
+
+  static void goToShopRegistration(BuildContext context) {
+    context.go(AppRoutes.shopRegistration);
+  }
+
+  static void pushToShopRegistration(BuildContext context) {
+    context.push(AppRoutes.shopRegistration);
+  }
+
+  static void goToHome(BuildContext context) {
+    context.go(AppRoutes.caseOScreen);
+  }
+
 
   /// Navigates to the Profile screen.
   /// This uses `push` to stack the screen on top of the current one.

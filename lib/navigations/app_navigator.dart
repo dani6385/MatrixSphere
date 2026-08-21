@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-//import 'package:provider/provider.dart';
-//import 'app_extractor.dart';
-//import '../providers/app_viewmodel.dart';
-//import 'package:shared_components/shared_components.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 import 'bottom_nav_bar.dart';
 import 'widgets/app_drawer_items.dart';
@@ -26,15 +22,10 @@ class _AppNavigatorState extends State<AppNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    return /*MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
-        ChangeNotifierProvider(create: (_) => AppViewModel()),
-      ],
-      child: */Scaffold(
-        extendBody: true,
-        body: widget.navigationShell,
-        drawer: SharedProjectDrawer(
+    return Scaffold(
+      extendBody: true,
+      body: widget.navigationShell,
+      drawer: SharedProjectDrawer(
         menuBuilder: (context, currentRoute) {
           // Panggil fungsi atau list item SideMenuItem yang ada di home_drawer_items.dart
           return getDrawerSideMenuItems(context, currentRoute);
@@ -46,11 +37,11 @@ class _AppNavigatorState extends State<AppNavigator> {
           return getEndDrawerSideMenuItems(context, currentRoute);
         },
       ),
-        bottomNavigationBar: BottomNavBar(
-          currentIndex: widget.navigationShell.currentIndex,
-          onTap: _onItemTapped, navigationShell: widget.navigationShell,
-        ),
-      //),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: widget.navigationShell.currentIndex,
+        onTap: _onItemTapped,
+        navigationShell: widget.navigationShell,
+      ),
     );
   }
-}
+}

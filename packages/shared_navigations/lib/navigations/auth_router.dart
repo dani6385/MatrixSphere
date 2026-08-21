@@ -1,42 +1,59 @@
-// Disimpan di packages/shared_navigation/lib/routes/app_shell_branches.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_screens/shared_screens.dart';
+import 'app_routes.dart';
 
+/// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
+List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
+  return [
+    GoRoute(
+      path: AppRoutes.login,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.forgotPassword,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.userRegistration,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const UserRegistrationScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.shopRegistration,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ShopRegistrationScreen(),
+    ),
+  ];
+}
+
+/// Membangun branch shell untuk navigasi otentikasi.
 List<StatefulShellBranch> authShellBranches({
-  required Widget onboardScreen,
-  required Widget loginScreen, // Contoh: Home / Beranda
-  required Widget regitrationScreen, // Contoh: Approvals (Matrix) atau Financial (Seller)
-  required Widget forgotScreen, // Contoh: Analytics (Matrix) atau Management (Seller)
+  Widget? onboardScreen,
+  Widget? loginScreen,
+  Widget? registrationScreen,
+  Widget? forgotScreen,
   GlobalKey<NavigatorState>? homeNavigatorKey,
-  
 }) {
   return [
+    if (onboardScreen != null)
+      StatefulShellBranch(
+        navigatorKey: homeNavigatorKey,
+        routes: [
+          GoRoute(
+            path: '/onboard',
+            builder: (context, state) => onboardScreen,
+          ),
+        ],
+      ),
     StatefulShellBranch(
       navigatorKey: homeNavigatorKey,
       routes: [
         GoRoute(
-          path: '/onboard',
-          builder: (context, state) => onboardScreen,
-        ),
-      ],
-    ),
-    
-    // Branch untuk Tab Home
-    StatefulShellBranch(
-      navigatorKey: homeNavigatorKey,
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => loginScreen,
-        ),
-      ],
-    ),
-    StatefulShellBranch(
-      navigatorKey: homeNavigatorKey,
-      routes: [
-        GoRoute(
-          path: '/regitration',
-          builder: (context, state) => regitrationScreen,
+          path: AppRoutes.login,
+          builder: (context, state) => loginScreen ?? const LoginScreen(),
         ),
       ],
     ),
@@ -44,10 +61,22 @@ List<StatefulShellBranch> authShellBranches({
       navigatorKey: homeNavigatorKey,
       routes: [
         GoRoute(
-          path: '/forgot',
-          builder: (context, state) => forgotScreen,
+          path: AppRoutes.userRegistration,
+          builder: (context, state) =>
+              registrationScreen ?? const UserRegistrationScreen(),
+        ),
+      ],
+    ),
+    StatefulShellBranch(
+      navigatorKey: homeNavigatorKey,
+      routes: [
+        GoRoute(
+          path: AppRoutes.forgotPassword,
+          builder: (context, state) =>
+              forgotScreen ?? const ForgotPasswordScreen(),
         ),
       ],
     ),
   ];
 }
+
