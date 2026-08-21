@@ -46,7 +46,7 @@ class AppNavigation {
   }
 
   static void goToHome(BuildContext context) {
-    context.go(AppRoutes.caseOScreen);
+    context.go(AppRoutes.home);
   }
 
 
@@ -189,6 +189,7 @@ class AppNavigation {
   static void goToTab(BuildContext context, String route) {
     // Ensure the route is a valid main tab route
     final validTabs = [
+      AppRoutes.home,
       AppRoutes.caseOScreen,
       AppRoutes.case1Screen,
       AppRoutes.case2Screen,
@@ -196,7 +197,8 @@ class AppNavigation {
       AppRoutes.case4Screen
     ];
     if (validTabs.contains(route)) {
-      GoRouter.of(context).go(route);
+      final targetRoute = route == AppRoutes.caseOScreen ? AppRoutes.home : route;
+      GoRouter.of(context).go(targetRoute);
     } else {
       // Log an error in debug mode if a non-tab route is passed
       debugPrint(
