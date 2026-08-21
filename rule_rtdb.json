@@ -17,6 +17,13 @@
       }
     },
 
+    "matrix_members": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth.token.isAdmin === true"
+      }
+    },
+
     "approval": {
       ".read": "auth.token.isAdmin === true",
       ".write": "auth.token.isAdmin === true"

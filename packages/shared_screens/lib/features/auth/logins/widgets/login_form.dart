@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -81,7 +82,7 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  /// Menangani proses Login dengan validasi dan penanganan error Firebase
+  /// Menangani proses Login dengan validasi kredensial & verifikasi izin anggota Matrix
   Future<void> _handleLogin() async {
     setState(() => _errorMessage = null);
 
@@ -99,23 +100,59 @@ class _LoginFormState extends State<LoginForm> {
         password: password,
       );
 
-      // Simpan token sesi jika ada
-      if (userCredential.user != null) {
-        final token = await userCredential.user!.getIdToken();
-        final prefs = await SharedPreferences.getInstance();
-        if (token != null) {
-          await prefs.setString('user_token', token);
-        }
+      final user = userCredential.user;
+      if (user == null) {
+        throw FirebaseAuthException(
+          code: 'user-not-found',
+          message: 'Pengguna tidak ditemukan.',
+        );
       }
 
-      // 2. Simpan atau hapus kredensial jika Remember Me aktif
+      // 2. Verifikasi Izin Akses Anggota Matrix Sphere di Realtime Database
+      try {
+        final memberSnapshot = await FirebaseDatabase.instance
+            .ref('matrix_members/${user.uid}')
+            .get();
+
+        if (memberSnapshot.exists) {
+          final memberData = memberSnapshot.value as Map?;
+          final isAllowed = memberData?['isAllowed'];
+          if (isAllowed == false) {
+            await FirebaseAuth.instance.signOut();
+            throw FirebaseAuthException(
+              code: 'access-denied',
+              message: 'Izin akses akun Anda telah dinonaktifkan oleh Administrator.',
+            );
+          }
+        } else {
+          // Jika node matrix_members belum ada data untuk UID ini
+          await FirebaseAuth.instance.signOut();
+          throw FirebaseAuthException(
+            code: 'access-denied',
+            message: 'Akun Anda tidak terdaftar sebagai anggota Matrix Sphere. Hubungi Administrator.',
+          );
+        }
+      } on FirebaseException catch (dbError) {
+        if (dbError is FirebaseAuthException) rethrow;
+        // Jika ada masalah koneksi atau permission DB, tangani secara aman
+        debugPrint('Verifikasi database: ${dbError.message}');
+      }
+
+      // 3. Simpan token sesi jika ada
+      final token = await user.getIdToken();
+      final prefs = await SharedPreferences.getInstance();
+      if (token != null) {
+        await prefs.setString('user_token', token);
+      }
+
+      // 4. Simpan atau hapus kredensial jika Remember Me aktif
       await _saveOrClearCredentials();
 
       if (!mounted) return;
 
       setState(() => _isLoading = false);
 
-      // 3. Navigasi ke halaman beranda
+      // 5. Navigasi ke halaman beranda (Home / case0)
       context.go('/');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -123,6 +160,9 @@ class _LoginFormState extends State<LoginForm> {
 
       String message;
       switch (e.code) {
+        case 'access-denied':
+          message = e.message ?? 'Akun Anda tidak memiliki izin akses ke aplikasi Matrix Sphere.';
+          break;
         case 'user-not-found':
           message = 'Akun dengan email ini tidak ditemukan.';
           break;
@@ -306,4 +346,3 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 }
-
