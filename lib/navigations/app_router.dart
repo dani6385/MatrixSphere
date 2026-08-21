@@ -12,7 +12,7 @@ import 'package:shared_navigations/shared_navigations.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: AppRoutes.login,
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   //refreshListenable: AuthRedirectNotifier(),
@@ -51,8 +51,8 @@ final GoRouter appRouter = GoRouter(
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => AppNavigation.goToHome(context), //, // Arahkan kembali ke halaman utama
-                child: const Text('Kembali ke Home'),
+                onPressed: () => AppNavigation.goToLogin(context),
+                child: const Text('Kembali ke Login'),
               ),
             ],
           ),
@@ -61,6 +61,10 @@ final GoRouter appRouter = GoRouter(
     );
   },
   routes: [
+    // 1. Rute Otentikasi (Auth) terlebih dahulu menggunakan shared_screens
+    ...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
+
+    // 2. Rute Shell Utama Aplikasi (Bottom Navigation)
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
         // shellBuilder harus mengembalikan widget shell UI.
@@ -69,6 +73,9 @@ final GoRouter appRouter = GoRouter(
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
     ),
-      ...buildFullscreenRoutes(_rootNavigatorKey),
+
+    // 3. Rute Fullscreen lainnya (Profil, Scan QR, dll)
+    ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );
+

@@ -7,26 +7,6 @@ List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {
   return [
     GoRoute(
-      path: AppRoutes.login,
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const LoginScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.forgotPassword,
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const ForgotPasswordScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.userRegistration,
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const UserRegistrationScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.shopRegistration,
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const ShopRegistrationScreen(),
-    ),
-    GoRoute(
       path: AppRoutes.userProfile,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const UserProfileScreen(),
@@ -43,4 +23,5 @@ List<RouteBase> buildFullscreenRoutes(
     ),
   ];
 }
+
 
