@@ -16,6 +16,9 @@ class AppNavigation {
   static void goToLogin(BuildContext context) {
   context.go(AppRoutes.login);
   }
+static void goToHome(BuildContext context) {
+  context.go(AppRoutes.caseOScreen);
+  }
 
   /// Navigates to the Profile screen.
   /// This uses `push` to stack the screen on top of the current one.

@@ -51,7 +51,7 @@ final GoRouter appRouter = GoRouter(
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => AppNavigation.goBack(context), //, // Arahkan kembali ke halaman utama
+                onPressed: () => AppNavigation.goToHome(context), //, // Arahkan kembali ke halaman utama
                 child: const Text('Kembali ke Home'),
               ),
             ],
