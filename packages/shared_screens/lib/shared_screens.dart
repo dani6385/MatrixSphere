@@ -6,7 +6,7 @@ export 'features/auth/user_registration.dart';
 export 'features/auth/shop_registration.dart';
 export 'features/profile/user/user_profile_screen.dart';
 export 'features/profile/shop/shop_profile_screen.dart';
-
+export 'features/scanner/face_overlay.dart';
 /*export 'features/map/windows_map_view.dart';
 export 'features/order/order_screen.dart';
 export 'features/public_product/public_product_screen.dart';

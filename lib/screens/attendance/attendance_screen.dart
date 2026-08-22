@@ -1,137 +1,188 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_navigations/shared_navigations.dart';
-
+import 'package:camera/camera.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:shared_services/shared_services.dart';
+import 'package:shared_models/shared_models.dart';
 import 'package:shared_providers/shared_providers.dart';
-import 'package:matrix_sphere/screens/attendance/components/attendance_appbar.dart';
-import 'package:matrix_sphere/screens/attendance/components/attendance_body.dart';
-//import 'package:matrix_sphere/features/settings/setting_screen.dart';
+import 'widgets/attendance_app_bar.dart';
 import 'package:shared_utils/shared_utils.dart';
-import 'widgets/attendance_drawer_items.dart';
-import 'widgets/attendance_end_drawer_items.dart';
+import 'package:shared_screens/shared_screens.dart';
 
-/// The main screen for the Attendance feature.
-///
-/// This widget acts as the root for the attendance feature, providing the [AttendanceViewModel]
-/// to its children and housing the main UI structure.
-class AttendanceScreen extends StatelessWidget {
-  const AttendanceScreen({super.key});
+
+
+class AttendanceScreen extends StatefulWidget {
+  const AttendanceScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      // Inisialisasi ViewModel dan panggil metode untuk memuat data awal.
-      create: (_) => AttendanceViewModel()
-        ..initCamera()
-        ..pullAttendanceFromRtdb(),
-      child: const AttendanceView(),
-    );
-  }
+  State<AttendanceScreen> createState() => _AttendanceScreenState();
 }
 
-/// The main view for the Attendance screen.
-///
-/// This widget is responsible for the overall structure of the screen,
-/// including the AppBar, Drawer, and the main body content which is
-/// driven by the [AttendanceViewModel].
-class AttendanceView extends StatefulWidget {
-  const AttendanceView({super.key});
+class _AttendanceScreenState extends State<AttendanceScreen> {
+  final AttendanceService _attendanceService = AttendanceService();
+  CameraController? _cameraController;
+  List<CameraDescription>? _cameras;
 
-  @override
-  State<AttendanceView> createState() => _AttendanceViewState();
-}
+  // LOKASI ADMIN (Dapat dimuat melalui API di kemudian hari)
+  final OfficeLocationModel _officeLocation = OfficeLocationModel(
+    latitude: -6.175392,
+    longitude: 106.827153,
+    allowedRadiusInMeters: 100.0,
+  );
 
-class _AttendanceViewState extends State<AttendanceView>
-    with TickerProviderStateMixin {
-  late AnimationController _laserAnimationController;
-  late Animation<double> _laserAnimation;
+  Position? _currentPosition;
+  double _distanceToOffice = 0.0;
+  bool _isInRange = false;
+  bool _isLoadingLocation = true;
+  bool _isCameraInitialized = false;
+  bool _isProcessing = false;
 
   @override
   void initState() {
     super.initState();
-    final viewModel = context.read<AttendanceViewModel>();
-    _laserAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-
-    _laserAnimation = Tween<double>(begin: 0.1, end: 0.9).animate(
-      CurvedAnimation(
-          parent: _laserAnimationController, curve: Curves.easeInOut),
-    );
-
-    // Listen to one-time events from the ViewModel to show dialogs.
-    viewModel.addListener(_handleViewModelEvents);
+    _initializeCamera();
+    _checkLocationAndPermission();
   }
 
-  void _handleViewModelEvents() {
-    final viewModel = context.read<AttendanceViewModel>();
+  Future<void> _initializeCamera() async {
+    try {
+      _cameras = await availableCameras();
+      if (_cameras != null && _cameras!.isNotEmpty) {
+        final frontCamera = _cameras!.firstWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.front,
+          orElse: () => _cameras!.first,
+        );
 
-    // Handle location error dialog
-    if (viewModel.locationErrorEvent != null) {
-      final event = viewModel.locationErrorEvent!;
-      UiHelper.showLocationErrorDialog(context, event.title, event.message,
-          showSettingsButton: event.needsSettings);
-      viewModel.clearLocationErrorEvent(); // Clear the event after handling
+        _cameraController = CameraController(
+          frontCamera,
+          ResolutionPreset.medium,
+          enableAudio: false,
+        );
+
+        await _cameraController!.initialize();
+        if (mounted) {
+          setState(() {
+            _isCameraInitialized = true;
+          });
+        }
+      }
+    } catch (e) {
+      AttendanceDialogs.showSnackBar(context, "Gagal menginisialisasi kamera: $e");
+    }
+  }
+
+  Future<void> _checkLocationAndPermission() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoadingLocation = true;
+    });
+
+    try {
+      Position position = await _attendanceService.getCurrentLocation();
+      double distance = _attendanceService.calculateDistance(position, _officeLocation);
+
+      if (mounted) {
+        setState(() {
+          _currentPosition = position;
+          _distanceToOffice = distance;
+          _isInRange = distance <= _officeLocation.allowedRadiusInMeters;
+          _isLoadingLocation = false;
+        });
+      }
+    } catch (e) {
+      AttendanceDialogs.showSnackBar(context, e.toString());
+      if (mounted) {
+        setState(() {
+          _isLoadingLocation = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _captureAndVerify() async {
+    if (!_isInRange) {
+      AttendanceDialogs.showSnackBar(context, "Anda berada di luar jangkauan kantor.");
+      return;
     }
 
-    // Handle scan success dialog
-    if (viewModel.scanSuccessEvent != null) {
-      final event = viewModel.scanSuccessEvent!;
-      UiHelper.showScanSuccessDialog(context, message: event.message);
-      viewModel.clearScanSuccessEvent(); // Clear the event after handling
+    if (_cameraController == null || !_cameraController!.value.isInitialized || _isProcessing) {
+      return;
     }
+
+    setState(() {
+      _isProcessing = true;
+    });
+
+    try {
+      XFile file = await _cameraController!.takePicture();
+
+      bool success = await _attendanceService.uploadAttendanceData(
+        imageFile: File(file.path),
+        latitude: _currentPosition!.latitude,
+        longitude: _currentPosition!.longitude,
+        employeeId: '12345', // ID Karyawan dinamis
+      );
+
+      if (success) {
+        _handleSuccess();
+      } else {
+        AttendanceDialogs.showSnackBar(context, "Verifikasi gagal. Silakan coba kembali.");
+      }
+    } catch (e) {
+      AttendanceDialogs.showSnackBar(context, "Terjadi kesalahan: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+      }
+    }
+  }
+
+  void _handleSuccess() {
+    AttendanceDialogs.showSuccess(
+      context: context,
+      onConfirm: () {
+        Navigator.of(context).pop(); // Tutup dialog
+        Navigator.of(context).pop(); // Kembali ke halaman utama
+      },
+    );
   }
 
   @override
   void dispose() {
-    context.read<AttendanceViewModel>().disposeCamera();
-    _laserAnimationController.dispose();
-    context.read<AttendanceViewModel>().removeListener(_handleViewModelEvents);
+    _cameraController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawerEnableOpenDragGesture: false,
-      endDrawerEnableOpenDragGesture: false,
-      appBar: const AttendanceAppBar(),
-      drawer: SharedProjectDrawer(
-        menuBuilder: (context, currentRoute) {
-          // Panggil fungsi atau list item SideMenuItem yang ada di home_drawer_items.dart
-          return getDrawerSideMenuItems(context, currentRoute);
-        },
+      appBar: AttendanceAppBar(
+        onRefreshLocation: _checkLocationAndPermission,
       ),
-      endDrawer: SharedProjectDrawer(
-        menuBuilder: (context, currentRoute) {
-          // Panggil fungsi atau list item SideMenuItem yang ada di home_drawer_items.dart
-          return getEndDrawerSideMenuItems(context, currentRoute);
-        },
-      ),
-      body: Consumer<AttendanceViewModel>(
-        builder: (context, viewModel, child) {
-          return AttendanceBody(
-            isScanning: viewModel.isScanning,
-            hasCameraPermission: viewModel.hasCameraPermission,
-            isCheckingLocation: viewModel.isCheckingLocation,
-            cameraController: viewModel.cameraController,
-            laserAnimation: _laserAnimation,
-            scanStatusMessage: viewModel.scanStatusMessage,
-            scanProgress: viewModel.scanProgress,
-            onCancelScan: viewModel.cancelScan,
-            onRequestPermission: viewModel.requestCameraPermission,
-            onClockIn: () => viewModel.startScan(isClockIn: true),
-            onClockOut: () => viewModel.startScan(isClockIn: false),
-            // Tambahkan pemanggilan untuk absensi kantor
-            onOfficeClockIn: () => viewModel.startOfficeScan(isClockIn: true),
-            onOfficeClockOut: () => viewModel.startOfficeScan(isClockIn: false),
-
-            attendanceHistory: viewModel.attendanceList,
-            onSync: viewModel.pullAttendanceFromRtdb,
-          );
-        },
-      ),
+      body: _isCameraInitialized
+          ? Stack(
+              children: [
+                // Live camera preview
+                Positioned.fill(
+                  child: CameraPreview(_cameraController!),
+                ),
+                // Overlay panduan wajah
+                const FaceOverlay(),
+                // Panel kontrol bawah
+                ControlPanel(
+                  isLoadingLocation: _isLoadingLocation,
+                  isInRange: _isInRange,
+                  distanceToOffice: _distanceToOffice,
+                  isProcessing: _isProcessing,
+                  onSubmit: (_isInRange && !_isLoadingLocation) ? _captureAndVerify : null,
+                ),
+              ],
+            )
+          : const Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }

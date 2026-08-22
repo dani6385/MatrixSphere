@@ -31,3 +31,4 @@ export 'constants/api_constants.dart';
 //export 'widgets/google_maps.dart';
 export 'src/app_initializer.dart';
 export 'src/config_service.dart';
+export 'services/attendance_service.dart';
