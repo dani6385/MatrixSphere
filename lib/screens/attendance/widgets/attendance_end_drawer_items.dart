@@ -1,7 +1,9 @@
 // lib/navigations/widgets/app_end_drawer_items.dart[cite: 9]
 
 import 'package:flutter/material.dart';
+import 'package:geolocator_platform_interface/src/models/position.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_models/models/office_location_model.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -80,7 +82,8 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
 }
 
 List<SideMenuItem> getEndDrawerSideMenuItems(
-    BuildContext context, String currentRoute) {
+    BuildContext context, String currentRoute,
+    {required OfficeLocationModel officeLocation, Position? currentPosition}) {
   final drawerItems = getEndDrawerItems(context, currentRoute);
 
   return drawerItems.map((item) {

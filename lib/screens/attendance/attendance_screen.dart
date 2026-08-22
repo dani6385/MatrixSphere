@@ -4,15 +4,18 @@ import 'package:camera/camera.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_models/shared_models.dart';
-import 'package:shared_providers/shared_providers.dart';
+
 import 'widgets/attendance_app_bar.dart';
 import 'package:shared_utils/shared_utils.dart';
-import 'package:shared_screens/shared_screens.dart';
-
-
+import 'widgets/attendance_body.dart';
+// lib/screens/attendance_screen.dart
+import 'package:shared_navigations/shared_navigations.dart'; // Menggunakan navigasi shared Anda
+// Import helper item menu sesuai pola Anda
+import 'widgets/attendance_drawer_items.dart';
+import 'widgets/attendance_end_drawer_items.dart';
 
 class AttendanceScreen extends StatefulWidget {
-  const AttendanceScreen({Key? key}) : super(key: key);
+  const AttendanceScreen({super.key});
 
   @override
   State<AttendanceScreen> createState() => _AttendanceScreenState();
@@ -20,10 +23,12 @@ class AttendanceScreen extends StatefulWidget {
 
 class _AttendanceScreenState extends State<AttendanceScreen> {
   final AttendanceService _attendanceService = AttendanceService();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
 
-  // LOKASI ADMIN (Dapat dimuat melalui API di kemudian hari)
+  // LOKASI KANTOR (Konfigurasi Admin)
   final OfficeLocationModel _officeLocation = OfficeLocationModel(
     latitude: -6.175392,
     longitude: 106.827153,
@@ -120,11 +125,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         imageFile: File(file.path),
         latitude: _currentPosition!.latitude,
         longitude: _currentPosition!.longitude,
-        employeeId: '12345', // ID Karyawan dinamis
+        employeeId: '12345',
       );
 
       if (success) {
-        _handleSuccess();
+        AttendanceDialogs.showSuccess(
+          context: context,
+          onConfirm: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          },
+        );
       } else {
         AttendanceDialogs.showSnackBar(context, "Verifikasi gagal. Silakan coba kembali.");
       }
@@ -139,16 +150,6 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     }
   }
 
-  void _handleSuccess() {
-    AttendanceDialogs.showSuccess(
-      context: context,
-      onConfirm: () {
-        Navigator.of(context).pop(); // Tutup dialog
-        Navigator.of(context).pop(); // Kembali ke halaman utama
-      },
-    );
-  }
-
   @override
   void dispose() {
     _cameraController?.dispose();
@@ -158,31 +159,45 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      // Menonaktifkan gesture geser sesuai kebutuhan Anda
+      drawerEnableOpenDragGesture: false,
+      endDrawerEnableOpenDragGesture: false,
+      
       appBar: AttendanceAppBar(
         onRefreshLocation: _checkLocationAndPermission,
+        onOpenDrawer: () => _scaffoldKey.currentState?.openDrawer(),
+        onOpenEndDrawer: () => _scaffoldKey.currentState?.openEndDrawer(),
       ),
-      body: _isCameraInitialized
-          ? Stack(
-              children: [
-                // Live camera preview
-                Positioned.fill(
-                  child: CameraPreview(_cameraController!),
-                ),
-                // Overlay panduan wajah
-                const FaceOverlay(),
-                // Panel kontrol bawah
-                ControlPanel(
-                  isLoadingLocation: _isLoadingLocation,
-                  isInRange: _isInRange,
-                  distanceToOffice: _distanceToOffice,
-                  isProcessing: _isProcessing,
-                  onSubmit: (_isInRange && !_isLoadingLocation) ? _captureAndVerify : null,
-                ),
-              ],
-            )
-          : const Center(
-              child: CircularProgressIndicator(),
-            ),
+
+      // DRAWER KIRI (Menggunakan helper items)
+      drawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getDrawerSideMenuItems(context, currentRoute);
+        },
+      ),
+
+      // END DRAWER KANAN (Mengirimkan data GPS untuk ditampilkan di helper items)
+      endDrawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getEndDrawerSideMenuItems(
+            context,
+            currentRoute,
+            officeLocation: _officeLocation,
+            currentPosition: _currentPosition,
+          );
+        },
+      ),
+
+      body: AttendanceBody(
+        isCameraInitialized: _isCameraInitialized,
+        cameraController: _cameraController,
+        isLoadingLocation: _isLoadingLocation,
+        isInRange: _isInRange,
+        distanceToOffice: _distanceToOffice,
+        isProcessing: _isProcessing,
+        onSubmit: (_isInRange && !_isLoadingLocation) ? _captureAndVerify : null,
+      ),
     );
   }
 }

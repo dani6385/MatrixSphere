@@ -7,6 +7,23 @@ import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();
 
+List<SideMenuItem> getDrawerSideMenuItems(
+    BuildContext context, String currentRoute) {
+  final drawerItems = getDrawerItems(context, currentRoute);
+
+  return drawerItems.map((item) {
+    return SideMenuItem(
+      title: item.title,
+      icon: item.icon,
+      label: item.label,
+      route: '', // Sesuaikan rute jika diperlukan
+      isSelected: false,
+      onTap: item.onTap ??
+          () {}, // Provide an empty function if item.onTap is null
+    );
+  }).toList();
+}
+
 // Definisi struktur data untuk item menu dengan tambahan properti 'label'
 class MenuDrawer {
   final String title;
@@ -86,21 +103,4 @@ List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
       },
     ),
   ];
-}
-
-List<SideMenuItem> getDrawerSideMenuItems(
-    BuildContext context, String currentRoute) {
-  final drawerItems = getDrawerItems(context, currentRoute);
-
-  return drawerItems.map((item) {
-    return SideMenuItem(
-      title: item.title,
-      icon: item.icon,
-      label: item.label,
-      route: '', // Sesuaikan rute jika diperlukan
-      isSelected: false,
-      onTap: item.onTap ??
-          () {}, // Provide an empty function if item.onTap is null
-    );
-  }).toList();
 }
