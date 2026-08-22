@@ -1,14 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Tambahan untuk memori lokal
+import 'package:shared_logics/shared_logics.dart';
+import 'package:shared_utils/shared_utils.dart';
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuthController _authController = AuthController();
 
-  // Stream untuk memantau perubahan status otentikasi pengguna
+  static const String prefRememberMeKey = 'auth_remember_me';
+  static const String prefSavedEmailKey = 'auth_saved_email';
+  static const String prefSavedPasswordKey = 'auth_saved_password';
+
   Stream<User?> get authStateChanges => _auth.authStateChanges();
-
-  // Mendapatkan pengguna yang sedang login
   User? get currentUser => _auth.currentUser;
 
   // Cek status login
@@ -21,7 +25,7 @@ class AuthService extends ChangeNotifier {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      
+
       // Ambil dan simpan token ke SharedPreferences
       if (credential.user != null) {
         String? token = await credential.user!.getIdToken();
@@ -38,13 +42,34 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  Future<void> loginUser(
+      BuildContext context, String email, String password) async {
+    try {
+      // Memanggil logika dari AuthController
+      var result = await _authController.validateAndLogin(email, password);
+
+      if (result['success'] == true) {
+        String role = result['role'];
+        if (role == 'admin') {
+          // Navigasi atau penanganan admin
+        } else {
+          // Navigasi atau penanganan member
+        }
+      }
+    } catch (e) {
+      // Memanggil Dialog Helper untuk menampilkan pesan error ke UI
+      UiHelper.showSnackBar(
+          context, e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
   // Fungsi Register Akun yang Diperbarui dengan Penyimpanan Token[cite: 1]
   Future<UserCredential> createUserAccount(
       String email, String password) async {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      
+
       // Ambil dan simpan token untuk akun baru
       if (userCredential.user != null) {
         String? token = await userCredential.user!.getIdToken();
@@ -82,5 +107,41 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> registerShop({required User user, required String shopName}) async {}
+  Future<Map<String, dynamic>> loadSavedCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isRemembered = prefs.getBool(prefRememberMeKey) ?? false;
+
+      if (isRemembered) {
+        return {
+          'rememberMe': true,
+          'email': prefs.getString(prefSavedEmailKey) ?? '',
+          'password': prefs.getString(prefSavedPasswordKey) ?? '',
+        };
+      }
+    } catch (_) {}
+    return {'rememberMe': false, 'email': '', 'password': ''};
+  }
+
+  Future<void> saveOrClearCredentials(
+      bool rememberMe, String email, String password) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (rememberMe) {
+        await prefs.setBool(prefRememberMeKey, true);
+        await prefs.setString(prefSavedEmailKey, email.trim());
+        await prefs.setString(prefSavedPasswordKey, password);
+      } else {
+        await prefs.setBool(prefRememberMeKey, false);
+        await prefs.remove(prefSavedEmailKey);
+        await prefs.remove(prefSavedPasswordKey);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> registerShop(
+      {required User user, required String shopName}) async {}
+  String handleAuthError(FirebaseAuthException e) {
+    return _authController.handleAuthError(e);
+  }
 }

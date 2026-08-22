@@ -177,6 +177,12 @@
       "name": "Nama Anggota",
       "role": "member",
       "isAllowed": true
+    },
+    "IeHXtVx5OMW2VnCkprXvouEPKYh1": {
+      "email": "dani6385@gmail.com",
+      "name": "Dani Nurjaman",
+      "role": "admin",
+      "isAllowed": true
     }
   }
 }

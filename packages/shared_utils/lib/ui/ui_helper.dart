@@ -61,4 +61,15 @@ class UiHelper {
       ),
     );
   }
+  static void showSnackBar(BuildContext context, String message, {bool isError = true}) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 }

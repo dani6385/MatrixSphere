@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+//import 'package:shared_logics/shared_logics.dart';
+import 'package:shared_services/shared_services.dart'; // Impor service yang baru dibuat
 import 'login_error_banner.dart';
 import 'login_remember_me.dart';
 
@@ -15,9 +14,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  static const String _prefRememberMeKey = 'auth_remember_me';
-  static const String _prefSavedEmailKey = 'auth_saved_email';
-  static const String _prefSavedPasswordKey = 'auth_saved_password';
+  final AuthService _authService = AuthService(); // Inisialisasi service
 
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -31,7 +28,7 @@ class _LoginFormState extends State<LoginForm> {
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
+    _loadCredentials();
   }
 
   @override
@@ -41,169 +38,53 @@ class _LoginFormState extends State<LoginForm> {
     super.dispose();
   }
 
-  /// Memuat kredensial tersimpan saat halaman pertama kali dibuka
-  Future<void> _loadSavedCredentials() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final isRemembered = prefs.getBool(_prefRememberMeKey) ?? false;
-
-      if (isRemembered) {
-        final savedEmail = prefs.getString(_prefSavedEmailKey) ?? '';
-        final savedPassword = prefs.getString(_prefSavedPasswordKey) ?? '';
-
-        if (mounted) {
-          setState(() {
-            _rememberMe = true;
-            _emailController.text = savedEmail;
-            _passwordController.text = savedPassword;
-          });
-        }
-      }
-    } catch (_) {
-      // Abaikan error saat membaca preferences
+  Future<void> _loadCredentials() async {
+    final credentials = await _authService.loadSavedCredentials();
+    if (mounted && credentials['rememberMe'] == true) {
+      setState(() {
+        _rememberMe = true;
+        _emailController.text = credentials['email'];
+        _passwordController.text = credentials['password'];
+      });
     }
   }
 
-  /// Menyimpan atau menghapus kredensial berdasarkan status 'Remember Me'
-  Future<void> _saveOrClearCredentials() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      if (_rememberMe) {
-        await prefs.setBool(_prefRememberMeKey, true);
-        await prefs.setString(_prefSavedEmailKey, _emailController.text.trim());
-        await prefs.setString(_prefSavedPasswordKey, _passwordController.text);
-      } else {
-        await prefs.setBool(_prefRememberMeKey, false);
-        await prefs.remove(_prefSavedEmailKey);
-        await prefs.remove(_prefSavedPasswordKey);
-      }
-    } catch (_) {
-      // Abaikan error saat menulis preferences
-    }
-  }
-
-  /// Menangani proses Login dengan validasi kredensial & verifikasi izin anggota Matrix
   Future<void> _handleLogin() async {
     setState(() => _errorMessage = null);
 
     if (!_formKey.currentState!.validate()) return;
 
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
     setState(() => _isLoading = true);
 
     try {
-      // 1. Eksekusi Firebase Authentication
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      // Panggil fungsi login dari AuthService
+      await _authService.loginUser(
+        context,
+        email,
+        password,
       );
 
-      final user = userCredential.user;
-      if (user == null) {
-        throw FirebaseAuthException(
-          code: 'user-not-found',
-          message: 'Pengguna tidak ditemukan.',
-        );
-      }
-
-      // 2. Verifikasi Izin Akses Anggota Matrix Sphere di Realtime Database
-      try {
-        final memberSnapshot = await FirebaseDatabase.instance
-            .ref('matrix_members/${user.uid}')
-            .get();
-
-        if (memberSnapshot.exists) {
-          final memberData = memberSnapshot.value as Map?;
-          final isAllowed = memberData?['isAllowed'];
-          if (isAllowed == false) {
-            await FirebaseAuth.instance.signOut();
-            throw FirebaseAuthException(
-              code: 'access-denied',
-              message: 'Izin akses akun Anda telah dinonaktifkan oleh Administrator.',
-            );
-          }
-        } else {
-          // Jika node matrix_members belum ada data untuk UID ini
-          await FirebaseAuth.instance.signOut();
-          throw FirebaseAuthException(
-            code: 'access-denied',
-            message: 'Akun Anda tidak terdaftar sebagai anggota Matrix Sphere. Hubungi Administrator.',
-          );
-        }
-      } on FirebaseException catch (dbError) {
-        if (dbError is FirebaseAuthException) rethrow;
-        // Jika ada masalah koneksi atau permission DB, tangani secara aman
-        debugPrint('Verifikasi database: ${dbError.message}');
-      }
-
-      // 3. Simpan token sesi jika ada
-      final token = await user.getIdToken();
-      final prefs = await SharedPreferences.getInstance();
-      if (token != null) {
-        await prefs.setString('user_token', token);
-      }
-
-      // 4. Simpan atau hapus kredensial jika Remember Me aktif
-      await _saveOrClearCredentials();
-
       if (!mounted) return;
-
       setState(() => _isLoading = false);
 
-      // 5. Navigasi ke halaman beranda (Home / case0)
+      // Navigasi ke halaman beranda (Home / case0)[cite: 7]
       context.go('/');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-
-      String message;
-      switch (e.code) {
-        case 'access-denied':
-          message = e.message ?? 'Akun Anda tidak memiliki izin akses ke aplikasi Matrix Sphere.';
-          break;
-        case 'user-not-found':
-          message = 'Akun dengan email ini tidak ditemukan.';
-          break;
-        case 'wrong-password':
-          message = 'Kata sandi yang Anda masukkan salah.';
-          break;
-        case 'invalid-credential':
-          message = 'Email atau kata sandi salah. Silakan periksa kembali.';
-          break;
-        case 'invalid-email':
-          message = 'Format alamat email tidak valid.';
-          break;
-        case 'user-disabled':
-          message = 'Akun pengguna ini telah dinonaktifkan oleh administrator.';
-          break;
-        case 'too-many-requests':
-          message = 'Terlalu banyak percobaan gagal. Silakan coba lagi beberapa saat.';
-          break;
-        case 'network-request-failed':
-          message = 'Koneksi internet bermasalah. Pastikan perangkat terhubung ke internet.';
-          break;
-        case 'channel-error':
-          message = 'Mohon lengkapi email dan kata sandi Anda.';
-          break;
-        default:
-          message = e.message ?? 'Autentikasi gagal. Silakan coba lagi.';
-      }
-
-      _displayError(message);
+      _displayError(_authService.handleAuthError(e));
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-
       _displayError('Terjadi kesalahan saat masuk: ${e.toString()}');
     }
   }
 
   void _displayError(String message) {
-    setState(() {
-      _errorMessage = message;
-    });
+    setState(() => _errorMessage = message);
 
     if (mounted) {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -232,14 +113,11 @@ class _LoginFormState extends State<LoginForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // --- Error Banner Widget ---
           if (_errorMessage != null)
             LoginErrorBanner(
               message: _errorMessage!,
               onDismiss: () => setState(() => _errorMessage = null),
             ),
-
-          // --- Email Field ---
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
@@ -248,9 +126,8 @@ class _LoginFormState extends State<LoginForm> {
               labelText: 'Email',
               hintText: 'nama@example.com',
               prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -263,8 +140,6 @@ class _LoginFormState extends State<LoginForm> {
             },
           ),
           const SizedBox(height: 16),
-
-          // --- Password Field ---
           TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
@@ -279,15 +154,11 @@ class _LoginFormState extends State<LoginForm> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                 ),
-                onPressed: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
+                onPressed: () =>
+                    setState(() => _obscurePassword = !_obscurePassword),
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -300,46 +171,31 @@ class _LoginFormState extends State<LoginForm> {
             },
           ),
           const SizedBox(height: 8),
-
-          // --- Remember Me Checkbox ---
           Align(
             alignment: Alignment.centerLeft,
             child: LoginRememberMe(
               value: _rememberMe,
-              onChanged: (val) {
-                setState(() {
-                  _rememberMe = val ?? false;
-                });
-              },
+              onChanged: (val) => setState(() => _rememberMe = val ?? false),
             ),
           ),
           const SizedBox(height: 16),
-
-          // --- Login Button ---
           FilledButton(
             onPressed: _isLoading ? null : _handleLogin,
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+                  borderRadius: BorderRadius.circular(12)),
             ),
             child: _isLoading
                 ? const SizedBox(
                     height: 20,
                     width: 20,
                     child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                        strokeWidth: 2, color: Colors.white),
                   )
-                : const Text(
-                    'Masuk',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                : const Text('Masuk',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

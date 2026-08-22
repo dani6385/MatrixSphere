@@ -5,7 +5,7 @@ import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_utils/shared_utils.dart';
 
 // Import komponen lokal
-import 'package:shared_logic/shared_logics.dart';
+import 'package:shared_logics/shared_logics.dart';
 import 'widgets/attendance_app_bar.dart';
 import 'widgets/attendance_body.dart';
 import 'widgets/attendance_drawer_items.dart';
