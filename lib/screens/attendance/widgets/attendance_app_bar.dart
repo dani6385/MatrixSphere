@@ -5,7 +5,9 @@ class AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const AttendanceAppBar({
     Key? key,
-    required this.onRefreshLocation, required void Function() onOpenDrawer, required void Function() onOpenEndDrawer,
+    required this.onRefreshLocation,
+    required void Function() onOpenDrawer,
+    required void Function() onOpenEndDrawer,
   }) : super(key: key);
 
   @override

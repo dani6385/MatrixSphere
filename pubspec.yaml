@@ -61,7 +61,7 @@ workspace:
   - packages/shared_components
   #- packages/shared_core
   #- packages/shared_contents
-  #- packages/shared_logics
+  - packages/shared_logics
   - packages/shared_models
   - packages/shared_navigations
   - packages/shared_providers
