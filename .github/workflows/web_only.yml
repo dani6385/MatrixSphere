@@ -1,0 +1,154 @@
+name: Consolidated Monorepo Web Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+jobs:
+  # 1. JOB UNTUK MENDETEKSI PERUBAHAN BERKAS (Sama seperti Android)
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Paths Filter
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            seller_sphere:
+              - 'apps/seller_sphere/**'
+            shop_sphere:
+              - 'apps/shop_sphere/**'
+            admin_mikrotik:
+              - 'apps/admin_mikrotik/**'
+            client_connectivity:
+              - 'apps/client_connectivity/**'
+            matrix_sphere:
+              - 'lib/**'
+
+      - name: Generate Dynamic Matrix JSON
+        id: set-matrix
+        run: |
+          MATRIX="[]"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MATRIX='["seller_sphere", "shop_sphere", "admin_mikrotik", "client_connectivity", "matrix_sphere"]'
+          else
+            SELLER="${{ steps.filter.outputs.seller_sphere }}"
+            SHOP="${{ steps.filter.outputs.shop_sphere }}"
+            ADMIN="${{ steps.filter.outputs.admin_mikrotik }}"
+            CLIENT="${{ steps.filter.outputs.client_connectivity }}"
+            MATRIX_SPHERE="${{ steps.filter.outputs.matrix_sphere }}"
+
+            LIST=()
+            [ "$SELLER" = "true" ] && LIST+=('"seller_sphere"')
+            [ "$SHOP" = "true" ] && LIST+=('"shop_sphere"')
+            [ "$ADMIN" = "true" ] && LIST+=('"admin_mikrotik"')
+            [ "$CLIENT" = "true" ] && LIST+=('"client_connectivity"')
+            [ "$MATRIX_SPHERE" = "true" ] && LIST+=('"matrix_sphere"')
+
+            if [ ${#LIST[@]} -gt 0 ]; then
+              IFS=,
+              MATRIX="[${LIST[*]}]"
+            fi
+          fi
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+
+  # 2. JOB UNTUK MEMBANGUN FLUTTER WEB
+  build:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.matrix != '[]' && needs.detect-changes.outputs.matrix != ''
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Resolve Project Variables
+        id: vars
+        shell: bash
+        run: |
+          PROJECT="${{ matrix.project }}"
+          
+          if [ "$PROJECT" = "seller_sphere" ]; then
+            DIR="apps/seller_sphere"
+            echo "dir=$DIR" >> $GITHUB_OUTPUT
+            echo "site_id=ss-seller-sph" >> $GITHUB_OUTPUT
+          elif [ "$PROJECT" = "shop_sphere" ]; then
+            DIR="apps/shop_sphere"
+            echo "dir=apps/shop_sphere" >> $GITHUB_OUTPUT
+            echo "site_id=ss-shop-sph" >> $GITHUB_OUTPUT
+          elif [ "$PROJECT" = "admin_mikrotik" ]; then
+            DIR="apps/admin_mikrotik"
+            echo "dir=apps/admin_mikrotik" >> $GITHUB_OUTPUT
+            echo "site_id=admin-mikrotik" >> $GITHUB_OUTPUT
+          elif [ "$PROJECT" = "client_connectivity" ]; then
+            DIR="apps/client_connectivity"
+            echo "dir=apps/client_connectivity" >> $GITHUB_OUTPUT
+            echo "site_id=cc-client-connect" >> $GITHUB_OUTPUT
+          elif [ "$PROJECT" = "matrix_sphere" ]; then
+            DIR="."
+            echo "dir=$DIR" >> $GITHUB_OUTPUT
+            echo "site_id=ms-matrix-sphere" >> $GITHUB_OUTPUT
+          fi
+
+      # --- ENVIRONMENT SETUP ---
+      # Java SDK tidak diperlukan untuk kompilasi Web, langsung set up Flutter
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      # --- BUILD PROCESS ---
+      - name: Get Dependencies
+        shell: bash
+        run: |
+          cd ${{ steps.vars.outputs.dir }}
+          flutter pub get
+
+      - name: Build Flutter Web Release
+        shell: bash
+        run: |
+          cd ${{ steps.vars.outputs.dir }}
+          flutter build web --release
+
+      # --- DEPLOYMENT & ARTIFACT ---
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: 'projects/359008687014/locations/global/workloadIdentityPools/github-matrixsphere-pool/providers/github-provider'
+          service_account: 'github-actions-deployer@matrixsphere-c3de9.iam.gserviceaccount.com'
+
+      # Mengunggah hasil build web ke Firebase Hosting menggunakan Google Cloud Auth
+      - name: Deploy to Firebase Hosting
+        shell: bash
+        run: |
+          cd ${{ steps.vars.outputs.dir }}
+          npx firebase-tools deploy \
+            --only hosting:${{ steps.vars.outputs.site_id }} \
+            --site "${{ steps.vars.outputs.site_id }}" \
+            --project "matrixsphere-c3de9"
+
+      # Mengunggah hasil kompilasi folder build/web ke Artifact GitHub
+      - name: Upload Web Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.project }}-web-build
+          path: ${{ steps.vars.outputs.dir }}/build/web/
