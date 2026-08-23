@@ -139,6 +139,8 @@ jobs:
       # Mengunggah hasil build web ke Firebase Hosting menggunakan Google Cloud Auth
       - name: Deploy to Firebase Hosting
         shell: bash
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           cd ${{ steps.vars.outputs.dir }}
           npx firebase-tools deploy \
