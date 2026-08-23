@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 
 class RegisterOption extends StatelessWidget {
   const RegisterOption({super.key});
@@ -11,7 +12,7 @@ class RegisterOption extends StatelessWidget {
         const Text('Belum memiliki akun? '),
         GestureDetector(
           onTap: () {
-            // Arahkan ke halaman pendaftaran/registrasi
+            NavigationService.navigateTo(AppRoutes.register);
           },
           child: const Text(
             'Daftar Sekarang',
