@@ -46,27 +46,28 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Text(
                   'Masuk Aplikasi ${widget.appType.name.toUpperCase()}',
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Form Login Utama
                 LoginForm(controller: _controller),
                 const SizedBox(height: 24),
-                
+
                 // Tombol Login Utama
                 ElevatedButton(
                   onPressed: () {
-                    _controller.performLogin(context, () {
-                      // Logika sukses login (pindah halaman)
-                    });
+                    _controller.performLogin(
+                        context); // Cukup panggil tanpa perlu callback manual
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 48),
                   ),
                   child: const Text('Login'),
                 ),
+
                 const SizedBox(height: 24),
 
                 // Tampilkan Google Login & Opsi Daftar jika bukan proyek Matrix
