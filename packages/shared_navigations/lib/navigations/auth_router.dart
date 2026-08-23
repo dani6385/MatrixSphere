@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_screens/shared_screens.dart';
+import 'package:shared_services/shared_services.dart';
 import 'app_routes.dart';
 
 /// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
 List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
   return [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const AuthGate(),
+    ),
     GoRoute(
       path: AppRoutes.login,
       parentNavigatorKey: rootNavigatorKey,

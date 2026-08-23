@@ -12,7 +12,7 @@ import 'package:shared_navigations/shared_navigations.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutes.login,
+  initialLocation: '/',
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   //refreshListenable: AuthRedirectNotifier(),

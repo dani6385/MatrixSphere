@@ -6,6 +6,34 @@ import 'app_routes.dart';
 /// A helper class for navigating between screens.
 /// This abstracts the GoRouter calls into more readable methods.
 class AppNavigation {
+  
+  /// A more robust way to navigate to a specific tab in the BottomNavBar.
+  /// It finds the GoRouter and uses `go` on the correct path.
+  static void goToTab(BuildContext context, String route) {
+    // Ensure the route is a valid main tab route
+    final validTabs = [
+      AppRoutes.caseOScreen,
+      AppRoutes.case1Screen,
+      AppRoutes.case2Screen,
+      AppRoutes.case3Screen,
+      AppRoutes.case4Screen
+    ];
+    if (validTabs.contains(route)) {
+      final targetRoute = route == AppRoutes.caseOScreen ? AppRoutes.home : route;
+      GoRouter.of(context).go(targetRoute);
+    } else {
+      // Log an error in debug mode if a non-tab route is passed
+      debugPrint(
+          'Error: Attempted to navigate to a non-tab route "$route" using goToTab.');
+    }
+  }
+
+  /// Goes back to the previous screen in the navigation stack.
+  static void goBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+    }
+  }
 
   /// Navigates to the Streaming screen.
   /// This uses `go` which is suitable for top-level navigation.
@@ -183,35 +211,6 @@ class AppNavigation {
     context.push(AppRoutes.permissions);
   }
 
-  
-  /// A more robust way to navigate to a specific tab in the BottomNavBar.
-  /// It finds the GoRouter and uses `go` on the correct path.
-  static void goToTab(BuildContext context, String route) {
-    // Ensure the route is a valid main tab route
-    final validTabs = [
-      AppRoutes.home,
-      AppRoutes.caseOScreen,
-      AppRoutes.case1Screen,
-      AppRoutes.case2Screen,
-      AppRoutes.case3Screen,
-      AppRoutes.case4Screen
-    ];
-    if (validTabs.contains(route)) {
-      final targetRoute = route == AppRoutes.caseOScreen ? AppRoutes.home : route;
-      GoRouter.of(context).go(targetRoute);
-    } else {
-      // Log an error in debug mode if a non-tab route is passed
-      debugPrint(
-          'Error: Attempted to navigate to a non-tab route "$route" using goToTab.');
-    }
-  }
-
-  /// Goes back to the previous screen in the navigation stack.
-  static void goBack(BuildContext context) {
-    if (context.canPop()) {
-      context.pop();
-    }
-  }
 
   static void goToShopRegister(BuildContext context) {
     context.go(AppRoutes.shopRegistration);
