@@ -12,7 +12,7 @@ class RegisterOption extends StatelessWidget {
         const Text('Belum memiliki akun? '),
         GestureDetector(
           onTap: () {
-            NavigationService.navigateTo(AppRoutes.register);
+            AppNavigation.goToUserRegistration(context);
           },
           child: const Text(
             'Daftar Sekarang',

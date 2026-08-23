@@ -38,7 +38,7 @@ class LoginController {
           passwordController.text,
         );
 
-        if (sukses) {
+        if (sukses == true) {
           final prefs = await SharedPreferences.getInstance();
           if (rememberMe) {
             await prefs.setBool('remember_me', true);
