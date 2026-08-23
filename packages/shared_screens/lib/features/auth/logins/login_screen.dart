@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -38,7 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       final prefs = await SharedPreferences.getInstance();
-      
+      AppDialogs.showLoading(context, 'Sedang memproses masuk...');
+
       if (_rememberMe) {
         await prefs.setBool('remember_me', true);
         await prefs.setString('saved_email', _emailController.text);
@@ -57,6 +59,49 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Proses Login...')),
       );
+      try {
+        // Menyimulasikan proses request ke server selama 2 detik
+        await Future.delayed(const Duration(seconds: 2));
+
+        // Simulasi kondisi (Ganti dengan logika autentikasi asli Anda)
+        bool loginSukses = _emailController.text == "admin@mail.com" &&
+            _passwordController.text == "123456";
+
+        // 2. Tutup Loading Dialog terlebih dahulu
+        if (!mounted) return;
+        AppDialogs.dismiss(context);
+
+        if (loginSukses) {
+          // 3. Tampilkan Dialog Sukses jika kredensial benar
+          AppDialogs.showSuccess(
+            context: context,
+            title: 'Login Berhasil',
+            message: 'Selamat datang kembali di Matrix Sphere!',
+            onConfirm: () {
+              // Arahkan ke halaman utama setelah user menekan 'OK'
+              // Navigator.pushReplacement(...);
+            },
+          );
+        } else {
+          // 4. Tampilkan Dialog Error jika kredensial salah
+          AppDialogs.showError(
+            context: context,
+            title: 'Login Gagal',
+            message:
+                'Email atau password yang Anda masukkan salah. Silakan coba lagi.',
+          );
+        }
+      } catch (e) {
+        // 5. Tutup Loading dan tampilkan dialog jika terjadi gangguan koneksi/error sistem
+        if (!mounted) return;
+        AppDialogs.dismiss(context);
+
+        AppDialogs.showError(
+          context: context,
+          title: 'Gangguan Koneksi',
+          message: 'Gagal terhubung ke server. Pastikan internet Anda aktif.',
+        );
+      }
     }
   }
 
@@ -85,7 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const Text(
                       'Selamat Datang',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
@@ -94,7 +140,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      autofillHints: const [AutofillHints.email], // Hint untuk Google Autofill
+                      autofillHints: const [
+                        AutofillHints.email
+                      ], // Hint untuk Google Autofill
                       decoration: const InputDecoration(
                         labelText: 'Email',
                         border: OutlineInputBorder(),
@@ -113,14 +161,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      autofillHints: const [AutofillHints.password], // Hint untuk Google Autofill
+                      autofillHints: const [
+                        AutofillHints.password
+                      ], // Hint untuk Google Autofill
                       decoration: InputDecoration(
                         labelText: 'Password',
                         border: const OutlineInputBorder(),
                         prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                            _obscurePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {
@@ -160,7 +212,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text('Login', style: TextStyle(fontSize: 16)),
+                      child:
+                          const Text('Login', style: TextStyle(fontSize: 16)),
                     ),
                   ],
                 ),

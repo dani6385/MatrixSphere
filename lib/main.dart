@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/features/auth/logins/login_screen.dart';
+import 'package:shared_screens/shared_screens.dart';
 //import 'package:matrix_sphere/navigations/app_router.dart';
 // BaseApp tidak digunakan untuk sementara
 //import 'screens/attendance/attendance_screen.dart';
@@ -37,4 +37,3 @@ class MatrixSphere extends StatelessWidget {
     );
   }
 }
-
