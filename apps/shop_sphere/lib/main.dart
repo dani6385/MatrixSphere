@@ -33,7 +33,7 @@ class ShopSphere extends StatelessWidget {
         useMaterial3: true, // Menggunakan desain Material 3 terbaru
       ),
       // Memanggil LoginScreen sebagai halaman pertama yang muncul
-      home: const LoginScreen(appType: AppType.matrix),
+      home: const LoginScreen(appType: AppType.shop),
     );
   }
 }
