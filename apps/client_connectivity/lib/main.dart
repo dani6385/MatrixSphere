@@ -8,11 +8,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   /*await AppInitializer.initializeFirebase(
       DefaultFirebaseOptions.currentPlatform);*/
-  runApp(const MatrixSphere());
+  runApp(const ClientConnect());
 }
 
-class MatrixSphere extends StatelessWidget {
-  const MatrixSphere({super.key});
+class ClientConnect extends StatelessWidget {
+  const ClientConnect({super.key});
 
   @override
   Widget build(BuildContext context) {

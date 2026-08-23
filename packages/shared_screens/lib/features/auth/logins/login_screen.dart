@@ -1,223 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_logics/shared_logics.dart';
+import 'package:shared_models/shared_models.dart';
+import 'package:shared_components/shared_components.dart';
+
+enum AppType { seller, shop, client, admin, matrix }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  final AppType appType;
+
+  const LoginScreen({super.key, required this.appType});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _rememberMe = false;
-  bool _obscurePassword = true;
+  final _controller = LoginController();
 
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
-  }
-
-  // Memuat kredensial yang tersimpan jika "Remember Me" aktif sebelumnya
-  Future<void> _loadSavedCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _rememberMe = prefs.getBool('remember_me') ?? false;
-      if (_rememberMe) {
-        _emailController.text = prefs.getString('saved_email') ?? '';
-        _passwordController.text = prefs.getString('saved_password') ?? '';
-      }
-    });
-  }
-
-  // Menyimpan atau menghapus kredensial berdasarkan pilihan "Remember Me"
-  Future<void> _handleLogin() async {
-    if (_formKey.currentState!.validate()) {
-      final prefs = await SharedPreferences.getInstance();
-      AppDialogs.showLoading(context, 'Sedang memproses masuk...');
-
-      if (_rememberMe) {
-        await prefs.setBool('remember_me', true);
-        await prefs.setString('saved_email', _emailController.text);
-        await prefs.setString('saved_password', _passwordController.text);
-      } else {
-        await prefs.remove('remember_me');
-        await prefs.remove('saved_email');
-        await prefs.remove('saved_password');
-      }
-
-      // Memberitahu sistem operasi bahwa proses autentikasi selesai
-      // Ini memicu Google/iOS untuk menawarkan opsi "Simpan Sandi"
-      TextInput.finishAutofillContext();
-
-      // Logika login Anda (misalnya memanggil API) diletakkan di sini
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Proses Login...')),
-      );
-      try {
-        // Menyimulasikan proses request ke server selama 2 detik
-        await Future.delayed(const Duration(seconds: 2));
-
-        // Simulasi kondisi (Ganti dengan logika autentikasi asli Anda)
-        bool loginSukses = _emailController.text == "admin@mail.com" &&
-            _passwordController.text == "123456";
-
-        // 2. Tutup Loading Dialog terlebih dahulu
-        if (!mounted) return;
-        AppDialogs.dismiss(context);
-
-        if (loginSukses) {
-          // 3. Tampilkan Dialog Sukses jika kredensial benar
-          AppDialogs.showSuccess(
-            context: context,
-            title: 'Login Berhasil',
-            message: 'Selamat datang kembali di Matrix Sphere!',
-            onConfirm: () {
-              // Arahkan ke halaman utama setelah user menekan 'OK'
-              // Navigator.pushReplacement(...);
-            },
-          );
-        } else {
-          // 4. Tampilkan Dialog Error jika kredensial salah
-          AppDialogs.showError(
-            context: context,
-            title: 'Login Gagal',
-            message:
-                'Email atau password yang Anda masukkan salah. Silakan coba lagi.',
-          );
-        }
-      } catch (e) {
-        // 5. Tutup Loading dan tampilkan dialog jika terjadi gangguan koneksi/error sistem
-        if (!mounted) return;
-        AppDialogs.dismiss(context);
-
-        AppDialogs.showError(
-          context: context,
-          title: 'Gangguan Koneksi',
-          message: 'Gagal terhubung ke server. Pastikan internet Anda aktif.',
-        );
-      }
-    }
+    _controller.loadSavedCredentials(() => setState(() {}));
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Logika Bersyarat: Tampilkan opsi tambahan jika BUKAN aplikasi Matrix
+    final showExtras = widget.appType != AppType.matrix;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SingleChildScrollView(
-            // AutofillGroup membungkus form agar autofill OS bekerja secara grup
-            child: AutofillGroup(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Selamat Datang',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Field Email
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      autofillHints: const [
-                        AutofillHints.email
-                      ], // Hint untuk Google Autofill
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.email),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Email tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Field Password
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      autofillHints: const [
-                        AutofillHints.password
-                      ], // Hint untuk Google Autofill
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        border: const OutlineInputBorder(),
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password tidak boleh kosong';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Checkbox Remember Me
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _rememberMe,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              _rememberMe = value ?? false;
-                            });
-                          },
-                        ),
-                        const Text('Ingat Saya (Remember Me)'),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Tombol Login
-                    ElevatedButton(
-                      onPressed: _handleLogin,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child:
-                          const Text('Login', style: TextStyle(fontSize: 16)),
-                    ),
-                  ],
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Masuk Aplikasi ${widget.appType.name.toUpperCase()}',
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
-              ),
+                const SizedBox(height: 32),
+                
+                // Form Login Utama
+                LoginForm(controller: _controller),
+                const SizedBox(height: 24),
+                
+                // Tombol Login Utama
+                ElevatedButton(
+                  onPressed: () {
+                    _controller.performLogin(context, () {
+                      // Logika sukses login (pindah halaman)
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                  child: const Text('Login'),
+                ),
+                const SizedBox(height: 24),
+
+                // Tampilkan Google Login & Opsi Daftar jika bukan proyek Matrix
+                if (showExtras) ...[
+                  const OptionsButtons(),
+                  const SizedBox(height: 32),
+                  const RegisterOption(),
+                ],
+              ],
             ),
           ),
         ),
