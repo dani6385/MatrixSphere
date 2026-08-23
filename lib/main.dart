@@ -24,16 +24,16 @@ class MatrixSphere extends StatelessWidget {
         //routerConfig: appRouter,
         themeMode: ThemeMode.system,
       ),*/
-      MaterialApp(
+        MaterialApp(
       title: 'Aplikasi Login',
-      debugShowCheckedModeBanner: false, // Menghilangkan banner debug di kanan atas
+      debugShowCheckedModeBanner:
+          false, // Menghilangkan banner debug di kanan atas
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true, // Menggunakan desain Material 3 terbaru
       ),
       // Memanggil LoginScreen sebagai halaman pertama yang muncul
-      home: const LoginScreen(), 
+      home: const LoginScreen(),
     );
   }
 }
-

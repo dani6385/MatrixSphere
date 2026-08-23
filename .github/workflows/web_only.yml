@@ -142,8 +142,7 @@ jobs:
         run: |
           cd ${{ steps.vars.outputs.dir }}
           npx firebase-tools deploy \
-            --only hosting:${{ steps.vars.outputs.site_id }} \
-            --site "${{ steps.vars.outputs.site_id }}" \
+            --only hosting \
             --project "matrixsphere-c3de9"
 
       # Mengunggah hasil kompilasi folder build/web ke Artifact GitHub
