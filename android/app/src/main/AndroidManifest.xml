@@ -8,6 +8,9 @@
         android:label="MS Matrix Sphere"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <meta-data 
+        android:name="asset_statements" 
+        android:resource="@string/asset_statements" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
