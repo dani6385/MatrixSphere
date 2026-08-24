@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shared_screens/shared_screens.dart';
-import 'package:shared_ui/shared_ui.dart';
-//import 'package:matrix_sphere/navigations/app_router.dart';
-// BaseApp tidak digunakan untuk sementara
-//import 'screens/attendance/attendance_screen.dart';
+import 'package:shop_sphere/navigations/app_router.dart';
+import 'package:shared_services/shared_services.dart';
+// import 'package:shared_ui/shared_ui.dart'; // BaseApp tidak digunakan untuk sementara
+import 'services/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  /*await AppInitializer.initializeFirebase(
-      DefaultFirebaseOptions.currentPlatform);*/
+  await AppInitializer.initializeFirebase(
+      DefaultFirebaseOptions.currentPlatform);
   runApp(const ShopSphere());
 }
 
@@ -17,24 +16,14 @@ class ShopSphere extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Anda bisa membungkus dengan BlocProvider di sini
-    return /*ChangeNotifierProvider(
-      create: (_) => AppViewModel(),
-      child: BaseApp(
-        title: 'Matrix Sphere',
-        //routerConfig: appRouter,
-        themeMode: ThemeMode.system,
-      ),*/
-        MaterialApp(
-      title: 'Aplikasi Login',
-      debugShowCheckedModeBanner:
-          false, // Menghilangkan banner debug di kanan atas
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true, // Menggunakan desain Material 3 terbaru
-      ),
-      // Memanggil LoginScreen sebagai halaman pertama yang muncul
-      home: const LoginScreen(appType: AppType.shopSphere),
+    // Menggunakan MaterialApp.router secara langsung untuk melewati BaseApp
+    return MaterialApp.router(
+      title: 'Shop Sphere',
+      routerConfig: appRouter,
+      themeMode: ThemeMode.system,
+      // Mungkin perlu menambahkan theme data di sini jika BaseApp melakukannya
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
     );
   }
 }
