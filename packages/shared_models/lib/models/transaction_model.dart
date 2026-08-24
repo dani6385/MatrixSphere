@@ -1,9 +1,9 @@
 
-// lib/screens/transaction_screen.dart
+// lib/screens/TransactionModel_screen.dart
 // Import service ekspor
 
-// Asumsikan model Transaction ada di sini atau diimport dari file model
-class Transaction {
+// Asumsikan model TransactionModel ada di sini atau diimport dari file model
+class TransactionModel {
   final String id;
   final DateTime date;
   final String type;
@@ -12,7 +12,7 @@ class Transaction {
   final String status;
   final List<dynamic>? items; // Menggunakan dynamic karena item bisa berupa Map
   final DateTime timestamp; // Mengganti 'date' menjadi
-  Transaction({
+  TransactionModel({
     required this.id,
     required this.timestamp,
     required this.type,
@@ -23,8 +23,8 @@ class Transaction {
     required this.date,
   });
 
-  factory Transaction.fromJson(Map<String, dynamic> json) {
-    return Transaction(
+  factory TransactionModel.fromJson(Map<String, dynamic> json) {
+    return TransactionModel(
       id: json['id'],
       timestamp: DateTime.parse(json['timestamp']),
       type: json['type'],
@@ -35,9 +35,9 @@ class Transaction {
       date: json['date'],
     );
   }
-  factory Transaction.fromSnapshot(snapshot) {
+  factory TransactionModel.fromSnapshot(snapshot) {
     final data = snapshot.value as Map<String, dynamic>;
-    return Transaction(
+    return TransactionModel(
       id: snapshot.key!,
       timestamp: DateTime.parse(data['timestamp']),
       type: data['type'],
@@ -60,7 +60,7 @@ class Transaction {
       'date': date.toIso8601String(),
     };
   }
-  Transaction copyWith({
+  TransactionModel copyWith({
     String? id,
     DateTime? timestamp,
     String? type,
@@ -70,7 +70,7 @@ class Transaction {
     List<dynamic>? items,
     DateTime? date,
   }) {
-    return Transaction(
+    return TransactionModel(
       id: id ?? this.id,
       timestamp: timestamp ?? this.timestamp,
       type: type ?? this.type,
@@ -83,13 +83,13 @@ class Transaction {
   }
   @override
   String toString() {
-    return 'Transaction(id: $id, timestamp: $timestamp, type: $type, amount: $amount, description: $description, status: $status, items: $items, date: $date)';
+    return 'TransactionModel(id: $id, timestamp: $timestamp, type: $type, amount: $amount, description: $description, status: $status, items: $items, date: $date)';
   }
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Transaction &&
+    return other is TransactionModel &&
         other.id == id &&
         other.timestamp == timestamp &&
         other.type == type &&

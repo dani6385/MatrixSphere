@@ -13,7 +13,7 @@ export 'widgets/attendance_scanner_widget.dart';
 export 'widgets/status_chip.dart';
 export 'models/attendance_model.dart';
 export 'models/shop_model.dart';
-export 'models/transaction.dart';
+export 'models/transaction_model.dart';
 export 'models/violation_model.dart';
 export 'models/app_viewmodel.dart';
 export 'models/office_location_model.dart';

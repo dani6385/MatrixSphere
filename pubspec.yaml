@@ -51,6 +51,9 @@ dependencies:
   equatable: ^2.1.0
   shared_navigations: ^0.0.1
   shared_screens: ^0.0.1
+  firebase_analytics: ^12.4.6
+  flutter_image_compress: ^2.5.1
+  flutter_secure_storage: ^11.0.0
   
   csv: ^8.0.0
   pdf: ^3.13.0

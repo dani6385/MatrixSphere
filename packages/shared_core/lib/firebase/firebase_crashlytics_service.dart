@@ -1,4 +1,4 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:shared_core/shared_core.dart';
 import 'package:flutter/foundation.dart';
 
 /// A centralized service for handling Firebase Crashlytics reporting.

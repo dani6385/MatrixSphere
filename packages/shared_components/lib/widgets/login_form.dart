@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_logics/shared_logics.dart';
+import 'package:shared_core/shared_core.dart';
 
 class LoginForm extends StatefulWidget {
   final LoginController controller;

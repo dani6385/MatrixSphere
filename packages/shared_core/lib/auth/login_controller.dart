@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shared_ui/shared_ui.dart';
-import 'package:shared_services/shared_services.dart';
-import 'package:shared_screens/shared_screens.dart';
+import 'package:shared_core/shared_core.dart';
 
 class LoginController {
   final formKey = GlobalKey<FormState>();

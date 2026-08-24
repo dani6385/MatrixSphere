@@ -1,7 +1,4 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/foundation.dart';
 import 'package:shared_core/shared_core.dart';
-import 'package:shared_models/shared_models.dart' hide Transaction;
 
 /// A service class for interacting with the Firebase Realtime Database.
 class FirebaseRtdbService {
