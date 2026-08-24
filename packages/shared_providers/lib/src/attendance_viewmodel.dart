@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geodesy/geodesy.dart';
 
-import 'package:shared_models/shared_models.dart';
+import 'package:shared_models/shared_models.dart' hide Shop;
 import 'package:shared_services/shared_services.dart';
 
 
@@ -28,7 +28,7 @@ class AttendanceViewModel extends ChangeNotifier {
   String _scanStatusMessage = 'Menunggu absensi...';
   double _scanProgress = 0.0;
   List<AttendanceRecord> _attendanceList = [];
-  ShopPacking? _currentShop;
+  Shop? _currentShop;
 
   // State for one-time events (dialogs)
   LocationErrorEvent? _locationErrorEvent;
@@ -44,7 +44,7 @@ class AttendanceViewModel extends ChangeNotifier {
   List<AttendanceRecord> get attendanceList => _attendanceList;
   LocationErrorEvent? get locationErrorEvent => _locationErrorEvent;
   ScanSuccessEvent? get scanSuccessEvent => _scanSuccessEvent;
-  ShopPacking? get currentShop => _currentShop;
+  Shop? get currentShop => _currentShop;
 
   void clearLocationErrorEvent() {
     _locationErrorEvent = null;

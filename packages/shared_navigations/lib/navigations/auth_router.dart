@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_screens/shared_screens.dart';
 import 'package:shared_services/shared_services.dart';
 import 'app_routes.dart';
-import 'package:shared_ui/shared_ui.dart';
 
 /// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
 List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
@@ -15,7 +14,7 @@ List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
     GoRoute(
       path: AppRoutes.login,
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const LoginScreen(appType: AppType.sellerSphere),
+      builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
       path: AppRoutes.forgotPassword,
@@ -59,7 +58,7 @@ List<StatefulShellBranch> authShellBranches({
       routes: [
         GoRoute(
           path: AppRoutes.login,
-          builder: (context, state) => loginScreen ?? const LoginScreen(appType: AppType.sellerSphere),
+          builder: (context, state) => loginScreen ?? const LoginScreen(),
         ),
       ],
     ),

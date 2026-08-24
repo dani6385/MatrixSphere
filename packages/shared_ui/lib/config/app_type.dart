@@ -5,4 +5,3 @@ enum AppType {
   adminMikrotik,
   shopSphere
 }
-

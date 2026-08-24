@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'package:shared_models/shared_models.dart';
 
 class ShopRealtimeScreen extends StatefulWidget {
   // ID toko yang ingin ditampilkan. Bisa didapat dari halaman sebelumnya.
@@ -16,7 +15,7 @@ class ShopRealtimeScreen extends StatefulWidget {
 class _ShopRealtimeScreenState extends State<ShopRealtimeScreen> {
   // Buat instance dari service Anda.
   final FirebaseRtdbService _rtdbService = FirebaseRtdbService();
-  late final Stream<ShopPacking?> _shopStream;
+  late final Stream<Shop?> _shopStream;
 
   @override
   void initState() {
@@ -31,7 +30,7 @@ class _ShopRealtimeScreenState extends State<ShopRealtimeScreen> {
       appBar: AppBar(
         title: Text('Detail Toko (Real-time)'),
       ),
-      body: StreamBuilder<ShopPacking?>(
+      body: StreamBuilder<Shop?>(
         stream: _shopStream,
         builder: (context, snapshot) {
           // 1. Handle state saat loading
@@ -84,6 +83,39 @@ class _ShopRealtimeScreenState extends State<ShopRealtimeScreen> {
           );
         },
       ),
+    );
+  }
+}
+
+class Shop {
+  final String id;
+  final Map<String, dynamic> products;
+  final double? latitude;
+  final double? longitude;
+
+  Shop({
+    required this.id,
+    this.products = const {},
+    this.latitude,
+    this.longitude,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'produk': products,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
+
+  static Shop? fromJson(String id, Map<String, dynamic> json) {
+    return Shop(
+      id: id,
+      products: json['produk'] != null
+          ? Map<String, dynamic>.from(json['produk'])
+          : {},
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
   }
 }

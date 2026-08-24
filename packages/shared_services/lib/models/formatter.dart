@@ -1,4 +1,4 @@
-import 'package:shared_core/shared_core.dart';
+import 'package:intl/intl.dart';
 
 /// Memformat angka menjadi string mata uang Rupiah (IDR).
 ///

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_ui/config/app_type.dart';
 
 import 'widgets/login_form.dart';
 import 'widgets/login_header.dart';
@@ -12,7 +11,7 @@ import 'widgets/login_header.dart';
 /// - `LoginErrorBanner`: Banner pesan kesalahan interaktif.
 /// - `LoginRememberMe`: Widget checkbox opsi ingat akun.
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key, required AppType appType});
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

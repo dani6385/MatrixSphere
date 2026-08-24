@@ -2,9 +2,13 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:camera/camera.dart';
+import 'package:geolocator/geolocator.dart';
 
 // Import dari paket bersama (shared packages) Anda
+import 'package:shared_services/shared_services.dart';
+import 'package:shared_models/shared_models.dart';
+import 'package:shared_utils/shared_utils.dart';
 
 class AttendanceController extends ChangeNotifier {
   final AttendanceService _attendanceService = AttendanceService();

@@ -1,4 +1,4 @@
-import 'package:shared_core/shared_core.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LocalAuthStorage {
   // Membuat instance secure storage

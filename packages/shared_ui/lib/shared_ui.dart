@@ -23,4 +23,3 @@ export 'config/app_type.dart';
 export 'config/page_type.dart';
 export 'widgets/bottom/bottom.dart';
 export 'widgets/bottom/action_bottom.dart';
-export 'app_dialogs.dart';

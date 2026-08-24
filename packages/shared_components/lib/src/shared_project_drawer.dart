@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_ui/shared_ui.dart';
+import 'package:go_router/go_router.dart';
+
 // Definisi tipe fungsi untuk meminta data menu dari project
 typedef ProjectMenuBuilder = List<SideMenuItem> Function(BuildContext context, String currentRoute);
 

@@ -1,7 +1,8 @@
 // lib/features/presentations/products/widgets/product_dialog_helper.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_models/shared_models.dart';
+import 'package:shared_services/shared_services.dart';
+
 class ProductDialogHelper {
   /// Menampilkan dialog untuk memperbarui stok produk[cite: 8].
   /// Mengembalikan nilai `true` jika pembaruan berhasil, atau `false` jika dibatalkan[cite: 8].

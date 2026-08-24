@@ -1,7 +1,8 @@
 // lib/services/order_service.dart
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:shared_models/shared_models.dart';
+import 'package:shared_services/shared_services.dart';
+
 /// Layanan untuk mengelola pesanan dan transaksi stok.
 class OrderService {
   final DatabaseReference _productsRef =

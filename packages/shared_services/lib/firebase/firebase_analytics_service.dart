@@ -1,4 +1,5 @@
-import 'package:shared_core/shared_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 
 /// A centralized service for handling Firebase Analytics.
 ///
