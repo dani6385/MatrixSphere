@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 @immutable
-class Shop {
+class ShopOrder {
   final String id;
   final String ownerId;
   final String name;
@@ -10,7 +10,7 @@ class Shop {
   final String? logoUrl;
   final String? address;
 
-  const Shop({
+  const ShopOrder({
     required this.id,
     required this.ownerId,
     required this.name,
@@ -21,8 +21,8 @@ class Shop {
   });
 
   // Konversi dari Map (data dari Firebase) ke objek Shop
-  factory Shop.fromMap(Map<String, dynamic> map) {
-    return Shop(
+  factory ShopOrder.fromMap(Map<String, dynamic> map) {
+    return ShopOrder(
       id: map['id'] as String,
       ownerId: map['ownerId'] as String,
       name: map['name'] as String,
@@ -44,5 +44,38 @@ class Shop {
       'logoUrl': logoUrl,
       'address': address,
     };
+  }
+}
+
+class ShopPacking {
+  final String id;
+  final Map<String, dynamic> products;
+  final double? latitude;
+  final double? longitude;
+
+  ShopPacking({
+    required this.id,
+    this.products = const {},
+    this.latitude,
+    this.longitude,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'produk': products,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
+
+  static ShopPacking? fromJson(String id, Map<String, dynamic> json) {
+    return ShopPacking(
+      id: id,
+      products: json['produk'] != null
+          ? Map<String, dynamic>.from(json['produk'])
+          : {},
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+    );
   }
 }

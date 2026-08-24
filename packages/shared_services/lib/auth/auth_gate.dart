@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_navigations/shared_navigations.dart'; // Ganti dengan halaman utama/dashboard Anda
 import 'package:shared_screens/shared_screens.dart'; // Ganti dengan halaman utama/dashboard Anda
-
+import 'package:shared_ui/shared_ui.dart';
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
@@ -33,7 +33,7 @@ class AuthGate extends StatelessWidget {
           );
         }
         // 3. Jika belum login atau sudah logout, arahkan ke halaman Login
-        return const LoginScreen();
+        return const LoginScreen(appType: AppType.sellerSphere,);
       },
     );
   }

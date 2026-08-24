@@ -80,7 +80,7 @@ workspace:
   - apps/seller_sphere
   - apps/shop_sphere
   - packages/shared_components
-  #- packages/shared_core
+  - packages/shared_core
   #- packages/shared_contents
   - packages/shared_logics
   - packages/shared_models

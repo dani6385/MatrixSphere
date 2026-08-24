@@ -1,9 +1,9 @@
 // packages/shared_services/lib/src/app_initializer.dart
 import 'dart:ui';
-
+import 'package:shared_core/shared_core.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_services/shared_services.dart';
+
 
 class AppInitializer {
   static Future<void> initializeFirebase(FirebaseOptions options) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_screens/shared_screens.dart';
+import 'package:shared_ui/shared_ui.dart';
 //import 'package:matrix_sphere/navigations/app_router.dart';
 // BaseApp tidak digunakan untuk sementara
 //import 'screens/attendance/attendance_screen.dart';
@@ -33,7 +34,7 @@ class ShopSphere extends StatelessWidget {
         useMaterial3: true, // Menggunakan desain Material 3 terbaru
       ),
       // Memanggil LoginScreen sebagai halaman pertama yang muncul
-      home: const LoginScreen(appType: AppType.shop),
+      home: const LoginScreen(appType: AppType.shopSphere),
     );
   }
 }

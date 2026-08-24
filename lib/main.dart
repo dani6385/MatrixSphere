@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_screens/shared_screens.dart';
+import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 
 // BaseApp tidak digunakan untuk sementara
 //import 'screens/attendance/attendance_screen.dart';
@@ -36,10 +38,8 @@ class MatrixSphere extends StatelessWidget {
       // Memanggil LoginScreen sebagai halaman pertama yang muncul
       routes: {
         AppRoutes.login: (context) =>
-            const LoginScreen(appType: AppType.seller),
+            const LoginScreen(appType: AppType.sellerSphere),
         AppRoutes.home: (context) => const HomeScreen(),
-        AppRoutes.register: (context) =>
-            const UserRegistration(), // <-- Daftarkan di sini
       },
     );
   }

@@ -1,11 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_services/data/shop_realtime_screen.dart';
-import 'package:shared_services/firebase/firebase_crashlytics_service.dart';
-import 'package:shared_services/models/order_model.dart';
-import 'package:shared_services/models/cart_item_model.dart';
-
-import 'package:shared_services/models/product_model.dart';
+import 'package:shared_core/shared_core.dart';
+import 'package:shared_models/shared_models.dart' hide Transaction;
 
 /// A service class for interacting with the Firebase Realtime Database.
 class FirebaseRtdbService {
@@ -51,7 +47,7 @@ class FirebaseRtdbService {
     }
   }
 
-  Future<bool> writeShop(Shop shop, String uid) async {
+  Future<bool> writeShop(ShopPacking shop, String uid) async {
     try {
       return await writeData('seller_sphere/$uid', shop.toJson());
     } catch (e, stackTrace) {
@@ -99,7 +95,7 @@ class FirebaseRtdbService {
     }
   }
 
-  Stream<Shop?> getShopStreamByUid(String uid) {
+  Stream<ShopPacking?> getShopStreamByUid(String uid) {
     final path = 'seller_sphere/$uid';
     try {
       final ref = _database.ref(path);
@@ -108,7 +104,7 @@ class FirebaseRtdbService {
         if (snapshot.exists && snapshot.value != null) {
           final shopData = Map<String, dynamic>.from((snapshot.value as Map)
               .map((key, value) => MapEntry(key.toString(), value)));
-          return Shop.fromJson(snapshot.key!, shopData);
+          return ShopPacking.fromJson(snapshot.key!, shopData);
         } else {
           return null;
         }
@@ -119,8 +115,8 @@ class FirebaseRtdbService {
     }
   }
 
-  Future<List<Shop>> findShopsByProduct(String productName) async {
-    final List<Shop> matchingShops = [];
+  Future<List<ShopPacking>> findShopsByProduct(String productName) async {
+    final List<ShopPacking> matchingShops = [];
     const path = 'seller_sphere';
 
     try {
@@ -130,7 +126,7 @@ class FirebaseRtdbService {
         final allShopsData = Map<String, dynamic>.from(snapshot.value as Map);
 
         allShopsData.forEach((shopId, shopData) {
-          final shop = Shop.fromJson(shopId, shopData as Map<String, dynamic>);
+          final shop = ShopPacking.fromJson(shopId, shopData as Map<String, dynamic>);
           if (shop?.products.containsKey(productName) ?? false) {
             matchingShops.add(shop!);
           }

@@ -1,5 +1,4 @@
-import 'package:shared_services/models/product_model.dart';
-
+import 'package:shared_models/shared_models.dart';
 /// Model untuk item dalam keranjang belanja.
 ///
 /// Menyimpan referensi ke produk dan jumlah yang dibeli.

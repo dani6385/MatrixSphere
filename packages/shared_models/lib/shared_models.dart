@@ -17,3 +17,8 @@ export 'models/transaction.dart';
 export 'models/violation_model.dart';
 export 'models/app_viewmodel.dart';
 export 'models/office_location_model.dart';
+export 'models/cart_item_model.dart';
+export 'models/order_model.dart';
+export 'models/formatter.dart';
+export 'models/product_model.dart';
+
