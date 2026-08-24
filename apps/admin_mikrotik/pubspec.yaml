@@ -15,6 +15,7 @@ dependencies:
 
   flutter_launcher_icons: "^0.14.1"
   shared_screens: ^0.0.1
+  shared_ui: ^0.0.1
 
 dev_dependencies:
   flutter_test:

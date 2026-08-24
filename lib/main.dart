@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_screens/shared_screens.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'package:shared_navigations/shared_navigations.dart';
+
 
 // BaseApp tidak digunakan untuk sementara
 //import 'screens/attendance/attendance_screen.dart';
