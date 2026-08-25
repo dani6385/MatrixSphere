@@ -4,7 +4,6 @@ import 'package:shared_services/shared_services.dart';
 // import 'package:shared_ui/shared_ui.dart'; // BaseApp tidak digunakan untuk sementara
 import 'services/firebase_options.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppInitializer.initializeFirebase(

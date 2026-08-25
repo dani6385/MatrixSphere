@@ -55,7 +55,6 @@ class _LoginFormState extends State<LoginForm> {
     setState(() => _errorMessage = null);
 
     if (!_formKey.currentState!.validate()) {
-      // LOG 2: Jika validasi email/password gagal
       debugPrint("=== [LOG] 2. Validasi Form Gagal ===");
       return;
     }
@@ -68,22 +67,23 @@ class _LoginFormState extends State<LoginForm> {
 
       await _authController.loginUser(context, email, password);
       debugPrint("=== [LOG] 5. Autentikasi Firebase Berhasil ===");
+
       await _authService.saveOrClearCredentials(_rememberMe, email, password);
-      debugPrint("=== [LOG] 6. Mencoba Navigasi ke '/' ===");
+      debugPrint("=== [LOG] 6. Login berhasil, AuthGate akan menangani navigasi.");
+
+      // Setelah login berhasil, tidak perlu melakukan navigasi manual.
+      // AuthGate akan mendeteksi perubahan status otentikasi dan
+      // mengarahkan pengguna secara otomatis.
+      // Cukup pastikan state loading dihentikan jika widget masih ter-mount.
       if (!mounted) return;
       setState(() => _isLoading = false);
 
-      Navigator.pushReplacementNamed(context, '/');
     } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
       debugPrint("=== [LOG] ERROR FIREBASE: ${e.code} - ${e.message} ===");
       if (!mounted) return;
       setState(() => _isLoading = false);
       _displayError(_authService.handleAuthError(e));
     } catch (e) {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
       debugPrint("=== [LOG] ERROR UMUM: ${e.toString()} ===");
       if (!mounted) return;
       setState(() => _isLoading = false);
