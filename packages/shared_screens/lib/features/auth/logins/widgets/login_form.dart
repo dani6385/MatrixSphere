@@ -2,12 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_logics/shared_logics.dart';
-import 'package:shared_services/shared_services.dart'; 
+import 'package:shared_services/shared_services.dart';
 import 'login_error_banner.dart';
 import 'login_remember_me.dart';
-import 'email_input_field.dart';          // Impor komponen baru
-import 'password_input_field.dart';       // Impor komponen baru
-import 'login_submit_button.dart';        // Impor komponen baru
+import 'email_input_field.dart'; // Impor komponen baru
+import 'password_input_field.dart'; // Impor komponen baru
+import 'login_submit_button.dart'; // Impor komponen baru
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -17,7 +17,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final AuthService _authService = AuthService(); 
+  final AuthService _authService = AuthService();
   final AuthController _authController = AuthController();
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -52,10 +52,15 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<void> _handleLogin() async {
+    debugPrint("=== [LOG] 1. Tombol Masuk Diketuk ===");
     setState(() => _errorMessage = null);
 
-    if (!_formKey.currentState!.validate()) return;
-
+    if (!_formKey.currentState!.validate()) {
+      // LOG 2: Jika validasi email/password gagal
+      debugPrint("=== [LOG] 2. Validasi Form Gagal ===");
+      return;
+    }
+    debugPrint("=== [LOG] 3. Validasi Form Berhasil ===");
     setState(() => _isLoading = true);
 
     try {
@@ -63,8 +68,9 @@ class _LoginFormState extends State<LoginForm> {
       final password = _passwordController.text;
 
       await _authController.loginUser(context, email, password);
+      debugPrint("=== [LOG] 5. Autentikasi Firebase Berhasil ===");
       await _authService.saveOrClearCredentials(_rememberMe, email, password);
-      
+      debugPrint("=== [LOG] 6. Mencoba Navigasi ke '/' ===");
       if (!mounted) return;
       setState(() => _isLoading = false);
 
@@ -72,8 +78,14 @@ class _LoginFormState extends State<LoginForm> {
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
+      debugPrint("=== [LOG] ERROR FIREBASE: ${e.code} - ${e.message} ===");
+      if (!mounted) return;
+      setState(() => _isLoading = false);
       _displayError(_authService.handleAuthError(e));
     } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      debugPrint("=== [LOG] ERROR UMUM: ${e.toString()} ===");
       if (!mounted) return;
       setState(() => _isLoading = false);
       _displayError('Terjadi kesalahan saat masuk: ${e.toString()}');
