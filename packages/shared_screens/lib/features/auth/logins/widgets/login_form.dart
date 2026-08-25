@@ -74,7 +74,7 @@ class _LoginFormState extends State<LoginForm> {
       if (!mounted) return;
       setState(() => _isLoading = false);
 
-      context.go('/');
+      Navigator.pushReplacementNamed(context, '/');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
@@ -143,9 +143,29 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 16),
-          LoginSubmitButton(
-            isLoading: _isLoading,
-            onPressed: _handleLogin,
+          FilledButton(
+            onPressed: _isLoading
+                ? null
+                : () {
+                    debugPrint(
+                        "=== [KLIK UTAMA] Event sentuhan terdeteksi ===");
+                    _handleLogin();
+                  },
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
+                  )
+                : const Text('Masuk',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
