@@ -2,9 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_logics/shared_logics.dart';
-import 'package:shared_services/shared_services.dart'; // Impor service yang baru dibuat
+import 'package:shared_services/shared_services.dart'; 
 import 'login_error_banner.dart';
 import 'login_remember_me.dart';
+import 'email_input_field.dart';          // Impor komponen baru
+import 'password_input_field.dart';       // Impor komponen baru
+import 'login_submit_button.dart';        // Impor komponen baru
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -14,13 +17,12 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final AuthService _authService = AuthService(); // Inisialisasi service
+  final AuthService _authService = AuthService(); 
   final AuthController _authController = AuthController();
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  bool _obscurePassword = true;
   bool _isLoading = false;
   bool _rememberMe = false;
   String? _errorMessage;
@@ -60,13 +62,12 @@ class _LoginFormState extends State<LoginForm> {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      // Panggil fungsi login dari AuthService
       await _authController.loginUser(context, email, password);
       await _authService.saveOrClearCredentials(_rememberMe, email, password);
+      
       if (!mounted) return;
       setState(() => _isLoading = false);
 
-      // Navigasi ke halaman beranda (Home / case0)[cite: 7]
       context.go('/');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -114,57 +115,12 @@ class _LoginFormState extends State<LoginForm> {
               message: _errorMessage!,
               onDismiss: () => setState(() => _errorMessage = null),
             ),
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              labelText: 'Email',
-              hintText: 'nama@example.com',
-              prefixIcon: const Icon(Icons.email_outlined),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Silakan masukkan email Anda';
-              }
-              if (!value.contains('@') || !value.contains('.')) {
-                return 'Format email tidak valid (contoh: nama@domain.com)';
-              }
-              return null;
-            },
-          ),
           const SizedBox(height: 16),
-          TextFormField(
+          EmailInputField(controller: _emailController),
+          const SizedBox(height: 16),
+          PasswordInputField(
             controller: _passwordController,
-            obscureText: _obscurePassword,
-            textInputAction: TextInputAction.done,
-            onFieldSubmitted: (_) => _handleLogin(),
-            decoration: InputDecoration(
-              labelText: 'Kata Sandi',
-              prefixIcon: const Icon(Icons.lock_outline),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                ),
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
-              ),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Silakan masukkan kata sandi Anda';
-              }
-              if (value.length < 6) {
-                return 'Kata sandi minimal harus 6 karakter';
-              }
-              return null;
-            },
+            onSubmitted: _handleLogin,
           ),
           const SizedBox(height: 8),
           Align(
@@ -175,23 +131,9 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 16),
-          FilledButton(
-            onPressed: _isLoading ? null : _handleLogin,
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            child: _isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Text('Masuk',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          LoginSubmitButton(
+            isLoading: _isLoading,
+            onPressed: _handleLogin,
           ),
         ],
       ),
