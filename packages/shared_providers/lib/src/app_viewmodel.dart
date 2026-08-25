@@ -5,12 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geodesy/geodesy.dart';
 
-import 'package:shared_models/shared_models.dart' hide Shop;
+import 'package:shared_models/shared_models.dart';
 import 'package:shared_services/shared_services.dart';
 
 
 
-class AttendanceViewModel extends ChangeNotifier {
+class AppViewModel extends ChangeNotifier {
   final CameraService _cameraService = CameraService();
   final LocationService _locationService = LocationService();
   final DatabaseService _databaseService = DatabaseService();

@@ -1,4 +1,4 @@
-import 'package:shared_services/models/product_model.dart';
+import 'product_model.dart';
 
 /// Model untuk item dalam keranjang belanja.
 ///

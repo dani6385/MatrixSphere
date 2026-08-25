@@ -1,7 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_services/firebase/firebase_rtdb.dart';
-import 'package:shared_services/models/product_model.dart';
+import 'package:shared_models/shared_models.dart';
+
 
 class SellerRealtimeScreen extends StatefulWidget {
   final String shopUid; // UID dari toko yang ingin ditampilkan

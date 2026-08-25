@@ -9,6 +9,9 @@ class Shop {
   final DateTime createdAt;
   final String? logoUrl;
   final String? address;
+  final Map<String, dynamic> products;
+  final double? latitude;
+  final double? longitude;
 
   const Shop({
     required this.id,
@@ -18,6 +21,9 @@ class Shop {
     required this.createdAt,
     this.logoUrl,
     this.address,
+    this.products = const {},
+    this.latitude,
+    this.longitude,
   });
 
   // Konversi dari Map (data dari Firebase) ke objek Shop
@@ -30,6 +36,9 @@ class Shop {
       createdAt: DateTime.parse(map['createdAt'] as String),
       logoUrl: map['logoUrl'] as String?,
       address: map['address'] as String?,
+      products: Map<String, dynamic>.from(map['products'] ?? {}),
+      latitude: (map['latitude'] as num?)?.toDouble(),
+      longitude: (map['longitude'] as num?)?.toDouble(),
     );
   }
 
@@ -43,6 +52,15 @@ class Shop {
       'createdAt': createdAt.toIso8601String(),
       'logoUrl': logoUrl,
       'address': address,
+      'products': products,
+      'latitude': latitude,
+      'longitude': longitude,
     };
+  }
+
+  Map<String, dynamic> toJson() => toMap();
+
+  static Shop? fromJson(String s, Map<String, dynamic> shopData) {
+    return null;
   }
 }

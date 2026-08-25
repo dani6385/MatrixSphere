@@ -1,11 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_services/data/shop_realtime_screen.dart';
 import 'package:shared_services/firebase/firebase_crashlytics_service.dart';
-import 'package:shared_services/models/order_model.dart';
-import 'package:shared_services/models/cart_item_model.dart';
-
-import 'package:shared_services/models/product_model.dart';
+import 'package:shared_models/shared_models.dart';
 
 /// A service class for interacting with the Firebase Realtime Database.
 class FirebaseRtdbService {
