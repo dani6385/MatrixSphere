@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shared_logics/shared_logics.dart';
 import 'package:shared_services/shared_services.dart';
 import 'login_error_banner.dart';
@@ -143,29 +142,9 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 16),
-          FilledButton(
-            onPressed: _isLoading
-                ? null
-                : () {
-                    debugPrint(
-                        "=== [KLIK UTAMA] Event sentuhan terdeteksi ===");
-                    _handleLogin();
-                  },
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            child: _isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Text('Masuk',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          LoginSubmitButton(
+            isLoading: _isLoading,
+            onPressed: _handleLogin,
           ),
         ],
       ),
