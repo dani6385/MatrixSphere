@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import 'app_navigator.dart';
 import 'app_branches.dart';
 import 'package:shared_services/shared_services.dart';
@@ -16,21 +15,15 @@ final GoRouter appRouter = GoRouter(
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   //refreshListenable: AuthRedirectNotifier(),
-
-  // 1. Tambahkan observer analitik di sini. Ini adalah lokasi yang benar.
   observers: [
     analyticsService.analitycsObserver,
   ],
-  // Redirect tidak lagi diperlukan, karena '/' akan menjadi rute yang valid.
   errorBuilder: (context, state) {
-    // 2. Gunakan layanan terpusat untuk melaporkan error navigasi
     crashlyticsService.recordError(
       state.error ?? 'GoRouter Navigation Error',
       StackTrace.current,
       reason: 'Kesalahan Navigasi GoRouter di path: ${state.uri.toString()}',
     );
-
-    // Tampilkan halaman error yang informatif kepada pengguna
     return Scaffold(
       appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
       body: Center(
@@ -61,20 +54,13 @@ final GoRouter appRouter = GoRouter(
     );
   },
   routes: [
-    // 1. Rute Otentikasi (Auth) terlebih dahulu menggunakan shared_screens
     ...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
-
-    // 2. Rute Shell Utama Aplikasi (Bottom Navigation)
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        // shellBuilder harus mengembalikan widget shell UI.
-        // Widget BottomNavBar sudah berisi Scaffold dan akan menampilkan navigationShell.
         return AppNavigator(navigationShell: navigationShell);
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
     ),
-
-    // 3. Rute Fullscreen lainnya (Profil, Scan QR, dll)
     ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );
