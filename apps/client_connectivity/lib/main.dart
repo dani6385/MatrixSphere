@@ -3,7 +3,6 @@ import 'package:shared_screens/shared_screens.dart';
 //import 'package:matrix_sphere/navigations/app_router.dart';
 // BaseApp tidak digunakan untuk sementara
 //import 'screens/attendance/attendance_screen.dart';
-import 'package:shared_ui/shared_ui.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   /*await AppInitializer.initializeFirebase(
@@ -33,7 +32,7 @@ class ClientConnect extends StatelessWidget {
         useMaterial3: true, // Menggunakan desain Material 3 terbaru
       ),
       // Memanggil LoginScreen sebagai halaman pertama yang muncul
-      home: const LoginScreen(appType: AppType.clientConnectivity),
+      home: const LoginScreen(),
     );
   }
 }
