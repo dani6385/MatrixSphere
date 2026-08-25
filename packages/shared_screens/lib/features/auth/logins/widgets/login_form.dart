@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-//import 'package:shared_logics/shared_logics.dart';
+import 'package:shared_logics/shared_logics.dart';
 import 'package:shared_services/shared_services.dart'; // Impor service yang baru dibuat
 import 'login_error_banner.dart';
 import 'login_remember_me.dart';
@@ -15,7 +15,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final AuthService _authService = AuthService(); // Inisialisasi service
-
+  final AuthController _authController = AuthController();
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -61,12 +61,8 @@ class _LoginFormState extends State<LoginForm> {
       final password = _passwordController.text;
 
       // Panggil fungsi login dari AuthService
-      await _authService.loginUser(
-        context,
-        email,
-        password,
-      );
-
+      await _authController.loginUser(context, email, password);
+      await _authService.saveOrClearCredentials(_rememberMe, email, password);
       if (!mounted) return;
       setState(() => _isLoading = false);
 

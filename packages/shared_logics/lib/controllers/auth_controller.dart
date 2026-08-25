@@ -1,6 +1,7 @@
 // Disimpan di direktori: lib/controllers/auth_controller.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 
 class AuthController {
@@ -75,4 +76,6 @@ class AuthController {
         return e.message ?? 'Autentikasi gagal. Silakan coba lagi.';
     }
   }
+
+  Future<void> loginUser(BuildContext context, String email, String password) async {}
 }

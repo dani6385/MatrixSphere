@@ -1,95 +1,67 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Tambahan untuk memori lokal
-import 'package:shared_logics/shared_logics.dart';
-import 'package:shared_utils/shared_utils.dart';
+import 'auth_storage.dart'; // Impor file penyimpanan di atas
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final AuthController _authController = AuthController();
-
-  static const String prefRememberMeKey = 'auth_remember_me';
-  static const String prefSavedEmailKey = 'auth_saved_email';
-  static const String prefSavedPasswordKey = 'auth_saved_password';
+  final AuthStorage _storage = AuthStorage(); // Panggil instance AuthStorage
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
   User? get currentUser => _auth.currentUser;
 
-  // Cek status login
   bool isLoggedIn() {
     return _auth.currentUser != null;
   }
 
-  // Fungsi Login yang Diperbarui dengan Penyimpanan Token
+  // Login ke Firebase
   Future<UserCredential> login(String email, String password) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+          email: email.trim(), password: password);
 
-      // Ambil dan simpan token ke SharedPreferences
       if (credential.user != null) {
         String? token = await credential.user!.getIdToken();
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_token', token ?? '');
+        if (token != null) {
+          await _storage.saveToken(token); // Simpan token via AuthStorage
+        }
       }
 
       notifyListeners();
       return credential;
     } on FirebaseAuthException catch (e) {
-      throw Exception('Login gagal: ${e.message}');
+      throw Exception(e.message ?? 'Login gagal.');
     } catch (e) {
       throw Exception('Terjadi kesalahan saat login.');
     }
   }
 
-  Future<void> loginUser(
-      BuildContext context, String email, String password) async {
-    try {
-      // Memanggil logika dari AuthController
-      var result = await _authController.validateAndLogin(email, password);
-
-      if (result['success'] == true) {
-        String role = result['role'];
-        if (role == 'admin') {
-          // Navigasi atau penanganan admin
-        } else {
-          // Navigasi atau penanganan member
-        }
-      }
-    } catch (e) {
-      // Memanggil Dialog Helper untuk menampilkan pesan error ke UI
-      UiHelper.showSnackBar(
-          context, e.toString().replaceAll('Exception: ', ''));
-    }
-  }
-
-  // Fungsi Register Akun yang Diperbarui dengan Penyimpanan Token[cite: 1]
+  // Daftar Akun Baru
   Future<UserCredential> createUserAccount(
       String email, String password) async {
     try {
       final userCredential = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+          email: email.trim(), password: password);
 
-      // Ambil dan simpan token untuk akun baru
       if (userCredential.user != null) {
         String? token = await userCredential.user!.getIdToken();
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_token', token ?? '');
+        if (token != null) {
+          await _storage.saveToken(token); // Simpan token via AuthStorage
+        }
       }
 
       notifyListeners();
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      throw Exception('Registrasi gagal: ${e.message}');
+      throw Exception(e.message ?? 'Registrasi gagal.');
     } catch (e) {
       throw Exception('Terjadi kesalahan saat registrasi.');
     }
   }
 
-  // Fungsi Kirim Email Reset Password
+  // Reset Password
   Future<void> sendPasswordResetEmail(String email) async {
     try {
-      await _auth.sendPasswordResetEmail(email: email);
+      await _auth.sendPasswordResetEmail(email: email.trim());
     } on FirebaseAuthException catch (e) {
       throw Exception('Gagal mengirim email: ${e.message}');
     } catch (e) {
@@ -97,51 +69,42 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  // Fungsi Logout yang Diperbarui (Menghapus Token)[cite: 1]
+  // Logout
   Future<void> logout() async {
-    // Hapus token dari memori lokal saat logout
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('user_token');
-
+    await _storage.clearToken(); // Hapus token via AuthStorage
     await _auth.signOut();
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> loadSavedCredentials() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final isRemembered = prefs.getBool(prefRememberMeKey) ?? false;
-
-      if (isRemembered) {
-        return {
-          'rememberMe': true,
-          'email': prefs.getString(prefSavedEmailKey) ?? '',
-          'password': prefs.getString(prefSavedPasswordKey) ?? '',
-        };
-      }
-    } catch (_) {}
-    return {'rememberMe': false, 'email': '', 'password': ''};
-  }
-
+  // Delegasi fungsi remember me agar luar kelas tetap bisa memanggil lewat AuthService
+  Future<Map<String, dynamic>> loadSavedCredentials() =>
+      _storage.loadSavedCredentials();
   Future<void> saveOrClearCredentials(
-      bool rememberMe, String email, String password) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      if (rememberMe) {
-        await prefs.setBool(prefRememberMeKey, true);
-        await prefs.setString(prefSavedEmailKey, email.trim());
-        await prefs.setString(prefSavedPasswordKey, password);
-      } else {
-        await prefs.setBool(prefRememberMeKey, false);
-        await prefs.remove(prefSavedEmailKey);
-        await prefs.remove(prefSavedPasswordKey);
-      }
-    } catch (_) {}
-  }
+          bool rememberMe, String email, String password) =>
+      _storage.saveOrClearCredentials(rememberMe, email, password);
 
-  Future<void> registerShop(
-      {required User user, required String shopName}) async {}
   String handleAuthError(FirebaseAuthException e) {
-    return _authController.handleAuthError(e);
+    switch (e.code) {
+      case 'user-not-found':
+        return 'Akun tidak ditemukan.';
+      case 'wrong-password':
+        return 'Password salah.';
+      case 'email-already-in-use':
+        return 'Email sudah terdaftar.';
+      case 'weak-password':
+        return 'Password terlalu lemah.';
+      case 'invalid-email':
+        return 'Format email tidak valid.';
+      case 'user-disabled':
+        return 'Akun dinonaktifkan.';
+      case 'too-many-requests':
+        return 'Terlalu banyak percobaan. Coba lagi nanti.';
+      case 'operation-not-allowed':
+        return 'Operasi login/registrasi tidak diizinkan.';
+      case 'requires-recent-login':
+        return 'Silakan login kembali dan coba lagi.';
+      default:
+        return e.message ?? 'Terjadi kesalahan autentikasi.';
+    }
   }
 }
