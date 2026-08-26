@@ -1,7 +1,6 @@
 // lib/features/auth/login/widgets/login_social_buttons.dart
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_core/shared_core.dart';
 
 class LoginSocialButtons extends StatelessWidget {
   const LoginSocialButtons({super.key});

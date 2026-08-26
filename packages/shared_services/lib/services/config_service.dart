@@ -1,6 +1,5 @@
-import 'package:firebase_database/firebase_database.dart';
-import 'package:geodesy/geodesy.dart';
 
+import 'package:shared_core/shared_core.dart';
 /// A service to fetch application-wide configurations.
 ///
 /// This service can be used to get dynamic values like feature flags,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_core/shared_core.dart';
 
 /// Menampilkan dialog standar untuk pesan kesalahan.
 ///

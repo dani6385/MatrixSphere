@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_core/shared_core.dart';
 
 /// A screen to display a list of notifications.
 class NotificationScreen extends StatelessWidget {

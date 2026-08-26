@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_services/shared_services.dart';
-import 'package:shared_ui/shared_ui.dart';
-import 'package:shared_models/shared_models.dart';
+import 'package:shared_core/shared_core.dart';
 
 class ShopRealtimeScreen extends StatefulWidget {
   // ID toko yang ingin ditampilkan. Bisa didapat dari halaman sebelumnya.

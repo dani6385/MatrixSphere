@@ -1,5 +1,6 @@
 
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:shared_core/shared_core.dart';
 class SharedPrefsService {
   static late SharedPreferences _prefs;
 

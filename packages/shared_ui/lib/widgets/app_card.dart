@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_ui/theme/app_spacing.dart';
-import 'package:shared_ui/theme/app_style.dart';
-import 'package:shared_ui/theme/app_theme.dart';
+import 'package:shared_core/shared_core.dart';
 
 enum AppCardVariant {
   elevated,

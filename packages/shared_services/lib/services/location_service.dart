@@ -1,8 +1,5 @@
 import 'dart:async';
-
-import 'package:geolocator/geolocator.dart';
-import 'package:geodesy/geodesy.dart';
-
+import 'package:shared_core/shared_core.dart';
 /// A data class to hold the result of a location check.
 class LocationCheckResult {
   final bool isWithinRadius;

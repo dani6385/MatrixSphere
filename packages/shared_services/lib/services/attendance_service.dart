@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_models/shared_models.dart';
-
+import 'package:shared_core/shared_core.dart';
 class AttendanceService {
   // Memeriksa izin lokasi GPS pengguna
   Future<Position> getCurrentLocation() async {
