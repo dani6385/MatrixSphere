@@ -11,6 +11,7 @@ class MatrixSphere extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const AppType currentApp = AppType.matrixSphere;
     return MaterialApp(
       title: 'Matrix Sphere',
       debugShowCheckedModeBanner: false,
@@ -19,10 +20,9 @@ class MatrixSphere extends StatelessWidget {
       ),
       // KITA GUNAKAN SEBAGAI TITIK AWAL RUTE:
       // Saat ini kita arahkan ke PageType.login sebagai gerbang awal aplikasi
-      home: const MainScreen(
-        currentApp: AppType.matrixSphere,
-        currentPage: PageType.login, 
-      ),
+        home: const LoginScreen(
+        currentApp: currentApp,
+        ),
     );
   }
 }
