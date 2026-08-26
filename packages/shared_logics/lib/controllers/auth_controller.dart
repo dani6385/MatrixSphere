@@ -25,7 +25,7 @@ class AuthController {
       DatabaseEvent event = await _database.ref("matrix_members/$uid").once();
 
       if (event.snapshot.exists) {
-        Map<dynamic, dynamic> memberData = event.snapshot.value as Map<dynamic, dynamic>;
+        Map<String, dynamic> memberData = Map<String, dynamic>.from(event.snapshot.value as Map);
 
         bool isAllowed = memberData['isAllowed'] ?? false;
         String role = memberData['role'] ?? 'member';

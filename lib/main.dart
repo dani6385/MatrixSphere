@@ -3,6 +3,7 @@ import 'package:matrix_sphere/navigations/app_router.dart';
 import 'package:shared_services/shared_services.dart';
 import 'services/firebase_options.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
@@ -24,7 +25,7 @@ class MatrixSphere extends StatelessWidget {
       darkTheme: ThemeData.dark(), // Tema gelap Anda
       themeMode: ThemeMode.system, // Atau sesuai preferensi Anda
       // Konfigurasi router yang sudah diperbarui
-      routerConfig: appRouter, 
+      routerConfig: appRouter,
     );
   }
 }
