@@ -1,9 +1,7 @@
-name: shared_core
+name: shared_navigations
 description: "A new Flutter project."
 version: 1.0.0+1
 resolution: workspace
-
-
 
 environment:
   sdk: ^3.12.2
@@ -11,8 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_navigations: ^1.0.0+1
-  shared_screens: ^1.0.0+1
+  shared_core: ^1.0.0+1
 
 dev_dependencies:
   flutter_test:

@@ -91,3 +91,4 @@ flutter:
 workspace:
   - packages/shared_core
   - packages/shared_screens
+  - packages/shared_navigations
