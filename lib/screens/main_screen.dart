@@ -9,7 +9,7 @@ class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({
     super.key,
     required this.currentApp,
-    this.initialPage,
+    this.initialPage, required extra,
   });
 
   @override

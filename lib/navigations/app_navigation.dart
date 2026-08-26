@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/main_screen.dart';
-import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_core/shared_core.dart';
 
 class AppNavigation {
   static void goToSetting(BuildContext context, AppType appType) {
@@ -9,7 +9,7 @@ class AppNavigation {
       MaterialPageRoute(
         builder: (context) => MainNavigationScreen(
           currentApp: appType,
-          initialPage: PageType.settings, // Memberitahu screen untuk buka hal. settings
+          initialPage: PageType.settings, extra: AppConfig.currentApp
         ),
       ),
     );
