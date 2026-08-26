@@ -1,9 +1,6 @@
 
 import 'package:flutter/material.dart';
-import '../models/attendance_model.dart';
-import 'status_chip.dart';
-import 'package:shared_ui/shared_ui.dart';
-import 'package:intl/intl.dart';
+import 'package:shared_core/shared_core.dart';
 
 /// A widget that displays a single attendance record in a card.
 ///

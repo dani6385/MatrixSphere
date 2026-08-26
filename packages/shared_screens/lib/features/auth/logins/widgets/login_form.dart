@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
-import 'package:shared_logics/shared_logics.dart';
-import 'package:shared_services/shared_services.dart';
+import 'package:shared_core/shared_core.dart';
 import 'login_error_banner.dart';
 import 'login_remember_me.dart';
 import 'email_input_field.dart'; // Impor komponen baru
@@ -65,7 +64,7 @@ class _LoginFormState extends State<LoginForm> {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      await _authController.loginUser(context, email, password);
+      await _authController.loginUser(context as BuildContext, email, password);
       debugPrint("=== [LOG] 5. Autentikasi Firebase Berhasil ===");
 
       await _authService.saveOrClearCredentials(_rememberMe, email, password);
@@ -95,8 +94,8 @@ class _LoginFormState extends State<LoginForm> {
     setState(() => _errorMessage = message);
 
     if (mounted) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context as BuildContext).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context as BuildContext).showSnackBar(
         SnackBar(
           content: Row(
             children: [
@@ -105,7 +104,7 @@ class _LoginFormState extends State<LoginForm> {
               Expanded(child: Text(message)),
             ],
           ),
-          backgroundColor: Theme.of(context).colorScheme.error,
+          backgroundColor: Theme.of(context as BuildContext).colorScheme.error,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
         ),

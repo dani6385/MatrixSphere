@@ -1,7 +1,7 @@
 // lib/features/presentations/products/widgets/product_dialog_helper.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_models/shared_models.dart';
+import 'package:shared_core/shared_core.dart';
 
 class ProductDialogHelper {
   /// Menampilkan dialog untuk memperbarui stok produk[cite: 8].

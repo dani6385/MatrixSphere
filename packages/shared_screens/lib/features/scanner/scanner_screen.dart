@@ -1,15 +1,16 @@
 // Disimpan di d:/matrixsphere/packages/shared_screens/lib/features/scanner_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:logger/logger.dart';
+import 'package:shared_core/shared_core.dart' hide context;
 
 class ScannerScreen extends StatefulWidget {
-  final bool isAttendance; // Menentukan apakah ini untuk absensi (true) atau produk/kasir (false)
+  final bool
+      isAttendance; // Menentukan apakah ini untuk absensi (true) atau produk/kasir (false)
 
   const ScannerScreen({
     super.key,
-    this.isAttendance = false, // Default ke false (kamera belakang / produk / kasir)
+    this.isAttendance =
+        false, // Default ke false (kamera belakang / produk / kasir)
   });
 
   @override
@@ -24,7 +25,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     // Inisialisasi controller scanner dengan posisi kamera berdasarkan parameter
     // Jika isAttendance true -> Kamera Depan (Front)
     // Jika isAttendance false -> Kamera Belakang (Back)
@@ -44,7 +45,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isAttendance ? 'Pemindai Absensi (Wajah)' : 'Pemindai Produk / Kasir'),
+        title: Text(widget.isAttendance
+            ? 'Pemindai Absensi (Wajah)'
+            : 'Pemindai Produk / Kasir'),
         actions: [
           // Tombol untuk menyalakan/mematikan lampu flash menggunakan value dari controller
           ValueListenableBuilder<MobileScannerState>(
@@ -53,8 +56,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
               final torchState = state.torchState;
               return IconButton(
                 icon: Icon(
-                  torchState == TorchState.on ? Icons.flash_on : Icons.flash_off,
-                  color: torchState == TorchState.on ? Colors.yellow : Colors.grey,
+                  torchState == TorchState.on
+                      ? Icons.flash_on
+                      : Icons.flash_off,
+                  color:
+                      torchState == TorchState.on ? Colors.yellow : Colors.grey,
                 ),
                 onPressed: () => _controller.toggleTorch(),
               );
@@ -67,7 +73,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
               final cameraFacing = state.cameraDirection;
               return IconButton(
                 icon: Icon(
-                  cameraFacing == CameraFacing.front ? Icons.camera_front : Icons.camera_rear,
+                  cameraFacing == CameraFacing.front
+                      ? Icons.camera_front
+                      : Icons.camera_rear,
                 ),
                 onPressed: () => _controller.switchCamera(),
               );
@@ -97,7 +105,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
               }
             },
           ),
-          
+
           // Bingkai panduan visual di tengah layar
           Center(
             child: Container(
@@ -109,15 +117,15 @@ class _ScannerScreenState extends State<ScannerScreen> {
               ),
             ),
           ),
-          
+
           // Teks instruksi di bagian bawah
           Positioned(
             bottom: 40,
             left: 0,
             right: 0,
             child: Text(
-              widget.isAttendance 
-                  ? 'Arahkan wajah ke dalam kotak untuk absen' 
+              widget.isAttendance
+                  ? 'Arahkan wajah ke dalam kotak untuk absen'
                   : 'Arahkan barcode produk ke dalam kotak',
               textAlign: TextAlign.center,
               style: const TextStyle(

@@ -57,7 +57,7 @@ class AttendanceController extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      AttendanceDialogs.showSnackBar(context, "Gagal menginisialisasi kamera: $e");
+      AppDialogs.showSnackBar(context, "Gagal menginisialisasi kamera: $e");
     }
   }
 
@@ -76,7 +76,7 @@ class AttendanceController extends ChangeNotifier {
       isLoadingLocation = false;
       notifyListeners();
     } catch (e) {
-      AttendanceDialogs.showSnackBar(context, e.toString());
+      AppDialogs.showSnackBar(context, e.toString());
       isLoadingLocation = false;
       notifyListeners();
     }
@@ -85,7 +85,7 @@ class AttendanceController extends ChangeNotifier {
   // Logika pengambilan foto dan pengiriman data absensi
   Future<void> captureAndVerify(BuildContext context, VoidCallback onSuccess) async {
     if (!isInRange) {
-      AttendanceDialogs.showSnackBar(context, "Anda berada di luar jangkauan kantor.");
+      AppDialogs.showSnackBar(context, "Anda berada di luar jangkauan kantor.");
       return;
     }
 
@@ -109,10 +109,10 @@ class AttendanceController extends ChangeNotifier {
       if (success) {
         onSuccess();
       } else {
-        AttendanceDialogs.showSnackBar(context, "Verifikasi gagal. Silakan coba kembali.");
+        AppDialogs.showSnackBar(context, "Verifikasi gagal. Silakan coba kembali.");
       }
     } catch (e) {
-      AttendanceDialogs.showSnackBar(context, "Terjadi kesalahan: $e");
+      AppDialogs.showSnackBar(context, "Terjadi kesalahan: $e");
     } finally {
       isProcessing = false;
       notifyListeners();

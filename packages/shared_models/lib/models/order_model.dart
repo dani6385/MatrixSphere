@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_core/shared_core.dart';
 
 /// Enum untuk status pesanan.
 enum OrderStatus {
@@ -55,12 +55,12 @@ class OrderItem {
   }
 }
 
-/// Model untuk pesanan.
-class Order {
+/// Model untuk pesanan (Sudah diubah menjadi OrderModel).
+class OrderModel {
   final String id; // ID unik dari Firebase (push key)
   final String shopId;
   final String buyerId;
-  // Ubah nama 'orderId' menjadi 'displayId' agar lebih jelas
+  // Nama 'orderId' dipertahankan di sini (atau diganti jika Anda mau)
   final String orderId;
   final String customerName;
   final String customerEmail;
@@ -71,7 +71,8 @@ class Order {
   final OrderStatus status;
   final String paymentMethod;
 
-  Order({
+  // 1. Ubah nama konstruktor utama menjadi OrderModel
+  OrderModel({
     required this.id,
     required this.shopId,
     required this.buyerId,
@@ -86,8 +87,8 @@ class Order {
     required this.paymentMethod,
   });
 
-  /// Factory constructor untuk membuat instance Order dari Map (data RTDB).
-  factory Order.fromMap(Map<String, dynamic> data, String id) {
+  /// 2. Ubah nama Factory constructor menjadi OrderModel.fromMap
+  factory OrderModel.fromMap(Map<String, dynamic> data, String id) {
     // Fungsi helper untuk parsing tanggal yang aman
     DateTime parseOrderDate(dynamic dateValue) {
       if (dateValue is int) {
@@ -101,7 +102,8 @@ class Order {
       return DateTime.now();
     }
 
-    return Order(
+    // 3. Ubah instansiasi pengembalian menjadi OrderModel
+    return OrderModel(
       id: id, // Simpan Firebase push key sebagai 'id'
       // Gunakan parsing yang aman dengan nilai default
       shopId: data['shopId'] as String? ?? 'unknown_shop',
@@ -121,17 +123,16 @@ class Order {
     );
   }
 
-  /// Mengonversi instance Order menjadi Map untuk disimpan di RTDB.
+  /// Mengonversi instance OrderModel menjadi Map untuk disimpan di RTDB.
   Map<String, dynamic> toMap() {
     return {
       'shopId': shopId,
       'buyerId': buyerId,
-      'orderId': orderId, // <-- PENTING: Tambahkan ini ke map
+      'orderId': orderId, 
       'customerName': customerName,
       'customerEmail': customerEmail,
       'customerPhone': customerPhone,
-      'orderDate':
-          orderDate.toIso8601String(), // Menyimpan tanggal sebagai string
+      'orderDate': orderDate.toIso8601String(), // Menyimpan tanggal sebagai string
       'items': items.map((item) => item.toMap()).toList(),
       'totalAmount': totalAmount,
       'status': status.name,

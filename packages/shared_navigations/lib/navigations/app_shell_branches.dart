@@ -1,6 +1,6 @@
 // Disimpan di packages/shared_navigation/lib/routes/app_shell_branches.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:shared_core/shared_core.dart';
 
 List<StatefulShellBranch> appShellBranches({
   required Widget case0Screen, // Contoh: Home / Beranda

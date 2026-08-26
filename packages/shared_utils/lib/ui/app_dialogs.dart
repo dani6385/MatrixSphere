@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class AttendanceDialogs {
+class AppDialogs {
   static void showSuccess({
     required BuildContext context,
     required VoidCallback onConfirm,

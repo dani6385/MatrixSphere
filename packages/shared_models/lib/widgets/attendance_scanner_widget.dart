@@ -1,9 +1,7 @@
-// lib/screens/attendance/widgets/attendance_scanner_widget.dart
 
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'attendance_active_scanner.dart';
-import 'attendance_permission_request.dart';
+import 'package:shared_core/shared_core.dart';
+
 
 class AttendanceScannerWidget extends StatelessWidget {
   final bool isScanning;

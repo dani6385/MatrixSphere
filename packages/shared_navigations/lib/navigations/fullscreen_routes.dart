@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shared_screens/shared_screens.dart';
-import 'app_routes.dart';
+import 'package:shared_core/shared_core.dart';
 
 List<RouteBase> buildFullscreenRoutes(
     GlobalKey<NavigatorState> rootNavigatorKey) {

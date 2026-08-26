@@ -84,7 +84,7 @@ class ProductService {
     throw UnimplementedError('uploadImageToImgBB not yet implemented');
   }
 
-  Future<String?> createOrder(Order newOrder) async {
+  Future<String?> createOrder(OrderModel newOrder) async {
     return null;
   }
 

@@ -1,8 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_models/shared_models.dart';
-import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_core/shared_core.dart';
 
 class AttendanceHeaderCard extends StatelessWidget {
   const AttendanceHeaderCard({super.key});

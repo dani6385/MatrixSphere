@@ -36,7 +36,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   }
 
   void _handleSuccess() {
-    AttendanceDialogs.showSuccess(
+    AppDialogs.showSuccess(
       context: context,
       onConfirm: () {
         Navigator.of(context).pop(); // Tutup dialog sukses

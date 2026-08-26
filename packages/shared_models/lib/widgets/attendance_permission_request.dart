@@ -1,8 +1,6 @@
 
-// lib/screens/attendance/widgets/attendance_permission_request.dart
-
 import 'package:flutter/material.dart';
-import 'package:shared_ui/shared_ui.dart';
+import 'package:shared_core/shared_core.dart';
 
 class AttendancePermissionRequest extends StatelessWidget {
   final VoidCallback onRequestPermission;

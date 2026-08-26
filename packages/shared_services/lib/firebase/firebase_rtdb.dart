@@ -233,7 +233,7 @@ class FirebaseRtdbService {
   }
 
   Future<bool> createPosOrderAndUpdateStock({
-    required Order order,
+    required OrderModel order,
     required List<CartItem> cartItems,
   }) async {
     try {
@@ -266,18 +266,18 @@ class FirebaseRtdbService {
     }
   }
 
-  Stream<List<Order>> getOrdersStreamForShop(String shopId) {
+  Stream<List<OrderModel>> getOrdersStreamForShop(String shopId) {
     try {
       final query = ordersRef.orderByChild('shopId').equalTo(shopId);
 
       return query.onValue.map((event) {
-        final List<Order> orders = [];
+        final List<OrderModel> orders = [];
         final snapshot = event.snapshot;
 
         if (snapshot.exists && snapshot.value != null) {
           final data = Map<String, dynamic>.from(snapshot.value as Map);
           data.forEach((orderId, orderData) {
-            orders.add(Order.fromMap(orderData as Map<String, dynamic>, orderId));
+            orders.add(OrderModel.fromMap(orderData as Map<String, dynamic>, orderId));
           });
         }
         return orders;

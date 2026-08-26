@@ -4,7 +4,7 @@
 //export 'ui/loading_helper.dart';
 //export 'ui/permission_helper.dart';
 //export 'ui/snackbar_helper.dart';
-export 'ui/attendance_dialogs.dart';
+export 'ui/app_dialogs.dart';
 export 'ui/constants.dart';
 export 'ui/product_dialog_helper.dart';
 export 'ui/qr_code_util.dart';

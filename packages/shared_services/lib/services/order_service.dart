@@ -9,7 +9,7 @@ class OrderService {
       FirebaseDatabase.instance.ref().child('products');
 
   /// Membuat pesanan baru ke database Firebase pada node 'orders'[cite: 9]
-  Future<String?> createOrder(Order order) async {
+  Future<String?> createOrder(OrderModel order) async {
     try {
       final DatabaseReference ordersRef =
           FirebaseDatabase.instance.ref().child('orders');
@@ -17,7 +17,7 @@ class OrderService {
       final newOrderRef = ordersRef.push();
       final String newOrderId = newOrderRef.key ?? '';
 
-      final orderWithId = Order(
+      final orderWithId = OrderModel(
         buyerId: '',
         id: '',
         customerEmail: order.customerEmail,
