@@ -53,9 +53,9 @@ class MainScreen extends StatelessWidget {
   Widget _buildPageContent(BuildContext context) {
     switch (currentPage) {
       case PageType.login:
-        return const Text('Ini adalah Halaman Masuk (Login)');
+        return LoginContent(currentApp: currentApp);
       case PageType.userRegistration:
-        return const Text('Ini adalah Halaman Pendaftaran Pengguna');
+        return Text('Ini adalah Halaman Pendaftaran Pengguna Aplikasi aktif: $currentApp');
       case PageType.shopRegistration:
         return const Text('Ini adalah Halaman Pendaftaran Toko');
       case PageType.resetPassword:
