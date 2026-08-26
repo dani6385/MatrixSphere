@@ -11,7 +11,7 @@ class SharedBottomNavBar extends StatelessWidget {
     super.key,
     required this.tabs,
     required this.selectedIndex,
-    required this.onItemTapped,
+    required this.onItemTapped, required IconData icon, required String label,
   });
 
   @override

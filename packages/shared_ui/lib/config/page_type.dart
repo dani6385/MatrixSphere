@@ -15,5 +15,9 @@ enum PageType {
   financial,
   management,
   seller,
+  status,
+  members,
+  activity,
+  settings,
 }
 

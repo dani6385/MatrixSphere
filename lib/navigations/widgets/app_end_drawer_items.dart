@@ -1,77 +1,83 @@
-
 // lib/navigations/widgets/app_end_drawer_items.dart
 
 import 'package:flutter/material.dart';
-//import 'package:go_router/go_router.dart';
-// ignore: unused_import
 import 'package:shared_ui/shared_ui.dart';
-//import 'package:seller_sphere/navigations/app_routes.dart';
+
 
 // Definisi struktur data untuk item menu EndDrawer
 class MenuDrawer {
   final String title;
   final IconData icon;
   final String label;
+  final String route; // Tambahkan route agar bisa navigasi
   final VoidCallback? onTap;
 
   MenuDrawer({
     required this.title,
     required this.icon,
     required this.label,
+    this.route = '',
     this.onTap,
   });
 }
 
-// Daftar seluruh item menu pengaturan (EndDrawer) yang sudah dibersihkan dari duplikasi
-List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
-  return [
-    
-    
-    
+// Fungsi untuk mendapatkan daftar menu mentah berdasarkan AppType
+List<MenuDrawer> getEndDrawerMenuItems(
+    BuildContext context, String currentRoute, AppType appType) {
+  
+  // 1. Menu Dasar yang ada di semua aplikasi
+  List<MenuDrawer> items = [
     MenuDrawer(title: 'Preferences', icon: Icons.tune, label: ''),
     MenuDrawer(title: 'Themes', icon: Icons.color_lens, label: ''),
-    MenuDrawer(title: 'Language', icon: Icons.language, label: ''),
-    
-    
-    
-    MenuDrawer(title: 'Privacy Policy', icon: Icons.privacy_tip, label: ''),
-    MenuDrawer(title: 'Terms of Service', icon: Icons.description, label: ''),
-    MenuDrawer(title: 'Licenses', icon: Icons.article, label: ''),
-    MenuDrawer(title: 'Version', icon: Icons.info, label: ''),
-    MenuDrawer(title: 'Check for Updates', icon: Icons.update, label: ''),
-    MenuDrawer(title: 'Debug Info', icon: Icons.bug_report, label: ''),
-    MenuDrawer(title: 'Send Feedback', icon: Icons.feedback, label: ''),
-    MenuDrawer(title: 'Rate App', icon: Icons.star, label: ''),
-    MenuDrawer(title: 'Share App', icon: Icons.share, label: ''),
-    MenuDrawer(title: 'Contact Us', icon: Icons.contact_mail, label: ''),
-    MenuDrawer(title: 'FAQ', icon: Icons.question_answer, label: ''),
-    MenuDrawer(title: 'Tutorial', icon: Icons.school, label: ''),
-    MenuDrawer(title: 'Backup & Restore', icon: Icons.backup, label: ''),
-    MenuDrawer(title: 'Data Management', icon: Icons.data_usage, label: ''),
-    
-    MenuDrawer(title: 'Account Management', icon: Icons.manage_accounts, label: ''),
-    MenuDrawer(title: 'Subscription Details', icon: Icons.subscriptions, label: ''),
-    
-    MenuDrawer(title: 'Order History', icon: Icons.history, label: ''),
-    MenuDrawer(title: 'Wishlist', icon: Icons.favorite, label: ''),
-    MenuDrawer(title: 'Addresses', icon: Icons.location_on, label: ''),
-    MenuDrawer(title: 'Coupons', icon: Icons.card_giftcard, label: ''),
-    MenuDrawer(title: 'Referral Program', icon: Icons.group_add, label: ''),
-    
   ];
+
+  // 2. Tambahkan menu spesifik berdasarkan AppType
+  if (appType == AppType.matrixSphere) {
+    items.addAll([
+      MenuDrawer(title: 'Backup & Restore', icon: Icons.backup, label: ''),
+      MenuDrawer(title: 'Debug Info', icon: Icons.bug_report, label: ''),
+    ]);
+  } else if (appType == AppType.shopSphere) {
+    items.addAll([
+      MenuDrawer(title: 'Order History', icon: Icons.history, label: ''),
+      MenuDrawer(title: 'Addresses', icon: Icons.location_on, label: ''),
+      MenuDrawer(title: 'Coupons', icon: Icons.card_giftcard, label: ''),
+    ]);
+  } else if (appType == AppType.sellerSphere) {
+    items.addAll([
+      MenuDrawer(title: 'Data Management', icon: Icons.data_usage, label: ''),
+      MenuDrawer(title: 'Subscription Details', icon: Icons.subscriptions, label: ''),
+    ]);
+  }
+
+  // 3. Menu penutup (Footer menu)
+  items.addAll([
+    MenuDrawer(title: 'Privacy Policy', icon: Icons.privacy_tip, label: ''),
+    MenuDrawer(title: 'Version', icon: Icons.info, label: '1.0.0'),
+  ]);
+
+  return items;
 }
 
-List<SideMenuItem> getEndDrawerSideMenuItems(BuildContext context, String currentRoute) {
-  final drawerItems = getEndDrawerItems(context, currentRoute);
+// Fungsi utama yang dipanggil oleh AppNavigator
+List<SideMenuItem> getEndDrawerSideMenuItems(
+    BuildContext context, String currentRoute, AppType appType) {
+  
+  // Ambil data menu berdasarkan AppType
+  final drawerItems = getEndDrawerMenuItems(context, currentRoute, appType);
 
   return drawerItems.map((item) {
     return SideMenuItem(
       title: item.title,
       icon: item.icon,
       label: item.label,
-      route: '', // Sesuaikan rute jika diperlukan
-      isSelected: false,
-      onTap: item.onTap ?? () {}, // Provide an empty function if item.onTap is null
+      route: item.route, 
+      // Logika agar menu terlihat "terpilih" jika routenya sama
+      isSelected: currentRoute == item.route, 
+      onTap: item.onTap ?? () {
+        // Logika default jika onTap tidak diisi
+        print("Membuka halaman ${item.title} untuk aplikasi ${appType.name}");
+      },
     );
   }).toList();
 }

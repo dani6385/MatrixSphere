@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // <-- Tambahkan import ini
+import 'package:shared_ui/config/app_type.dart';
 import 'app_navigator.dart';
 import 'app_branches.dart';
 import 'package:shared_services/shared_services.dart';
@@ -84,7 +85,7 @@ final GoRouter appRouter = GoRouter(
       shellBuilder: (context, state, navigationShell) {
         // Shell ini sekarang hanya akan dibangun jika pengguna sudah login,
         // berkat logic di `redirect`.
-        return AppNavigator(navigationShell: navigationShell);
+        return AppNavigator(navigationShell: navigationShell, appType: AppType.matrixSphere,);
       },
       branches: appBranches, // Daftar cabang rute khusus Matrix
     ),
