@@ -1,16 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
-        android:label="MS Matrix Sphere"
+        android:label="matrixsphere"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
-        <meta-data 
-        android:name="asset_statements" 
-        android:resource="@string/asset_statements" />
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:exported="true"
