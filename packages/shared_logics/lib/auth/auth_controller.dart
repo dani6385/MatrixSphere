@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
+import 'package:go_router/go_router.dart';
 
 class AuthController {
   final AuthService _authService = AuthService();
@@ -48,11 +49,9 @@ class AuthController {
             // 3. Navigasi berdasarkan role jika widget masih aktif (mounted)
             if (context.mounted) {
               if (role == 'admin') {
-                // TODO: Tambahkan navigasi admin Anda di sini
-                // context.go('/admin-home');
+                context.go('/admin-home');
               } else {
-                // TODO: Tambahkan navigasi member Anda di sini
-                // context.go('/');
+                context.go('/');
               }
             }
           } else {
