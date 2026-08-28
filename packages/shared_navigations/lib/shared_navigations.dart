@@ -1,6 +1,5 @@
 //export 'app_router.dart';
 //export 'auth/app_routes.dart';
-export 'drawer/shared_project_drawer.dart';
 export 'navigations/app_navigation.dart';
 export 'navigations/app_routes.dart';
 export 'navigations/app_shell_branches.dart';

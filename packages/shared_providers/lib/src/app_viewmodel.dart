@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+
 
 
 class AppViewModel extends ChangeNotifier {

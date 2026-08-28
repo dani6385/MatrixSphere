@@ -1,8 +1,8 @@
-
 // lib/screens/attendance/widgets/attendance_active_scanner.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:camera/camera.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class AttendanceActiveScanner extends StatelessWidget {
   final CameraController? cameraController;
@@ -65,13 +65,15 @@ class AttendanceActiveScanner extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                Text(scanStatusMessage, style: const TextStyle(color: Colors.white)),
+                Text(scanStatusMessage,
+                    style: const TextStyle(color: Colors.white)),
                 const SizedBox(height: 8),
                 LinearProgressIndicator(value: scanProgress),
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: onCancelScan,
-                  child: const Text('Batalkan', style: TextStyle(color: Colors.redAccent)),
+                  child: const Text('Batalkan',
+                      style: TextStyle(color: Colors.redAccent)),
                 ),
               ],
             ),

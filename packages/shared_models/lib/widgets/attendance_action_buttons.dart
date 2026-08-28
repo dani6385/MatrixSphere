@@ -1,7 +1,8 @@
 // lib/screens/attendance/widgets/attendance_action_buttons.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_models/widgets/attendance_action_button_item.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class AttendanceActionButtons extends StatelessWidget {
   final bool isCheckingLocation;

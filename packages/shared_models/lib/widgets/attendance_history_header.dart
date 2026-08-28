@@ -2,7 +2,7 @@
 // lib/screens/attendance/widgets/attendance_history_header.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class AttendanceHistoryHeader extends StatelessWidget {
   final VoidCallback onSync;

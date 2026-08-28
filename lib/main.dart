@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_router.dart';
 import 'services/firebase_options.dart';
-import 'package:shared_core/shared_core.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

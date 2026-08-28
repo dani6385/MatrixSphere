@@ -2,7 +2,8 @@
 // lib/screens/attendance/widgets/attendance_history_section.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_models/shared_models.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class AttendanceHistorySection extends StatelessWidget {
   final List<AttendanceRecord> attendanceHistory;

@@ -1,4 +1,4 @@
-export 'package:bloc/bloc.dart';
+/*export 'package:bloc/bloc.dart';
 export 'package:camera/camera.dart';
 export 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 export 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -29,4 +29,4 @@ export 'package:shared_screens/shared_screens.dart';
 export 'package:shared_services/shared_services.dart';
 export 'package:shared_ui/shared_ui.dart';
 export 'package:font_awesome_flutter/font_awesome_flutter.dart';
-export 'app_config.dart';
+export 'app_config.dart';*/

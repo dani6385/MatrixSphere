@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_models/shared_models.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 /// A widget that displays a single attendance record in a card.
 ///

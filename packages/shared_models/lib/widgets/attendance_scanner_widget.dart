@@ -1,6 +1,8 @@
-
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_models/widgets/attendance_active_scanner.dart';
+import 'package:shared_models/widgets/attendance_permission_request.dart';
+
 
 
 class AttendanceScannerWidget extends StatelessWidget {

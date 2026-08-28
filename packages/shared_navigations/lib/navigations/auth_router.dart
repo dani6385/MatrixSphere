@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_navigations/navigations/app_routes.dart';
 
 
 /// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
