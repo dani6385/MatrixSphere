@@ -3,13 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
+
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseDatabase _database = FirebaseDatabase.instance;
 
   // Logika login dengan validasi matrix members
-  Future<Map<String, dynamic>> validateAndLogin(
-      String email, String password) async {
+  Future<Map<String, dynamic>> validateAndLogin(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -18,19 +18,14 @@ class AuthController {
 
       String? uid = userCredential.user?.uid;
       if (uid == null) {
-        throw FirebaseAuthException(
-            code: 'user-not-found', message: 'Pengguna tidak ditemukan.');
+        throw FirebaseAuthException(code: 'user-not-found', message: 'Pengguna tidak ditemukan.');
       }
 
       // Periksa izin akses di database matrix_members
       DatabaseEvent event = await _database.ref("matrix_members/$uid").once();
-      
+
       if (event.snapshot.exists) {
-        final rawValue = event.snapshot.value;
-        final memberData = rawValue is Map
-            ? Map<String, dynamic>.from(
-                rawValue.map((key, value) => MapEntry(key.toString(), value)))
-            : <String, dynamic>{};
+        Map<String, dynamic> memberData = Map<String, dynamic>.from(event.snapshot.value as Map);
 
         bool isAllowed = memberData['isAllowed'] ?? false;
         String role = memberData['role'] ?? 'member';
@@ -61,8 +56,7 @@ class AuthController {
   String handleAuthError(FirebaseAuthException e) {
     switch (e.code) {
       case 'access-denied':
-        return e.message ??
-            'Akun Anda tidak memiliki izin akses ke aplikasi Matrix Sphere.';
+        return e.message ?? 'Akun Anda tidak memiliki izin akses ke aplikasi Matrix Sphere.';
       case 'user-not-found':
         return 'Akun dengan email ini tidak ditemukan.';
       case 'wrong-password':
@@ -83,6 +77,5 @@ class AuthController {
     }
   }
 
-  Future<void> loginUser(
-      BuildContext context, String email, String password) async {}
+  Future<void> loginUser(BuildContext context, String email, String password) async {}
 }

@@ -1,62 +1,101 @@
-import 'package:flutter/material.dart';
-import 'package:shared_ui/shared_ui.dart';
+// lib/screens/attendance/attendance_screen.dart
 
-class AttendanceScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:shared_navigations/shared_navigations.dart';
+import 'package:shared_utils/shared_utils.dart';
+
+// Import komponen lokal
+import 'package:shared_logics/shared_logics.dart';
+import 'widgets/attendance_app_bar.dart';
+import 'widgets/attendance_body.dart';
+import 'widgets/attendance_drawer_items.dart';
+import 'widgets/attendance_end_drawer_items.dart';
+
+class AttendanceScreen extends StatefulWidget {
   const AttendanceScreen({super.key});
 
   @override
+  State<AttendanceScreen> createState() => _AttendanceScreenState();
+}
+
+class _AttendanceScreenState extends State<AttendanceScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late final AttendanceController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AttendanceController();
+    _controller.initialize(context);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleSuccess() {
+    AppDialogs.showSuccess(
+      context: context,
+      onConfirm: () {
+        Navigator.of(context).pop(); // Tutup dialog sukses
+        Navigator.of(context).pop(); // Kembali ke halaman sebelumnya
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Bagian atas aplikasi (AppBar standar)
-      appBar: AppBar(
-        title: const Text('Halaman Absensi'),
-        centerTitle: true,
-      ),
-      // Isi utama halaman beranda
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.home_rounded,
-                size: 80,
-                color: kNeonBlue,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Selamat Datang!',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Ini adalah halaman Home standar Flutter yang bersih dan tanpa AppType.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Contoh tombol interaktif sederhana
-              ElevatedButton.icon(
-                onPressed: () {
-                  // Aksi ketika tombol ditekan (misal: kembali atau memunculkan pesan)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Tombol Beranda ditekan!')),
-                  );
-                },
-                icon: const Icon(Icons.info_outline),
-                label: const Text('Informasi Sistem'),
-              ),
-            ],
+    // ListenableBuilder digunakan untuk membangun kembali UI saat _controller memanggil notifyListeners()
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, _) {
+        return Scaffold(
+          key: _scaffoldKey,
+          drawerEnableOpenDragGesture: false,
+          endDrawerEnableOpenDragGesture: false,
+
+          // 1. APP BAR
+          appBar: AttendanceAppBar(
+            onRefreshLocation: () => _controller.checkLocationAndPermission(context),
+            onOpenDrawer: () => _scaffoldKey.currentState?.openDrawer(),
+            onOpenEndDrawer: () => _scaffoldKey.currentState?.openEndDrawer(),
           ),
-        ),
-      ),
+
+          // 2. DRAWER KIRI
+          drawer: SharedProjectDrawer(
+            menuBuilder: (context, currentRoute) {
+              return getDrawerSideMenuItems(context, currentRoute);
+            },
+          ),
+
+          // 3. END DRAWER KANAN
+          endDrawer: SharedProjectDrawer(
+            menuBuilder: (context, currentRoute) {
+              return getEndDrawerSideMenuItems(
+                context,
+                currentRoute,
+                officeLocation: _controller.officeLocation,
+                currentPosition: _controller.currentPosition,
+              );
+            },
+          ),
+
+          // 4. BODY UTAMA
+          body: AttendanceBody(
+            isCameraInitialized: _controller.isCameraInitialized,
+            cameraController: _controller.cameraController,
+            isLoadingLocation: _controller.isLoadingLocation,
+            isInRange: _controller.isInRange,
+            distanceToOffice: _controller.distanceToOffice,
+            isProcessing: _controller.isProcessing,
+            onSubmit: (_controller.isInRange && !_controller.isLoadingLocation)
+                ? () => _controller.captureAndVerify(context, _handleSuccess)
+                : null,
+          ),
+        );
+      },
     );
   }
 }

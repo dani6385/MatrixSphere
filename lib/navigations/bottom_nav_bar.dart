@@ -17,8 +17,6 @@ class BottomNavBar extends StatelessWidget {
     required this.navigationShell,
     required this.currentIndex,
     required this.onTap,
-    required int selectedIndex,
-    required tabs,
   });
 
   @override
@@ -28,18 +26,31 @@ class BottomNavBar extends StatelessWidget {
     // The order of these GButton items must match the order of StatefulShellBranch
     // in app_branches.dart.
     final List<GButton> tabs = [
-      const GButton(icon: Icons.home, text: 'Home'),
-      const GButton(icon: Icons.approval, text: 'Approvals'),
-      const GButton(icon: Icons.analytics, text: 'Analytics'),
-      const GButton(icon: Icons.receipt_long, text: 'Transactions'),
-      const GButton(icon: Icons.access_time, text: 'Attendance'),
+      const GButton(
+        icon: Icons.home,
+        text: 'Home',
+      ),
+      const GButton(
+        icon: Icons.approval,
+        text: 'Approvals',
+      ),
+      const GButton(
+        icon: Icons.analytics,
+        text: 'Analytics',
+      ),
+      const GButton(
+        icon: Icons.receipt_long,
+        text: 'Transactions',
+      ),
+      const GButton(
+        icon: Icons.access_time,
+        text: 'Attendance',
+      ),
     ];
 
-    return CustomBottomNavBar(
+    return SharedBottomNavBar(
       selectedIndex: currentIndex,
-      onItemTapped: onTap,
-      icon: Icons.home,
-      label: 'Home',
+      onTap: onTap,
       tabs: tabs,
     );
   }

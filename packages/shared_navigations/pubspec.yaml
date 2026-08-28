@@ -1,6 +1,6 @@
 name: shared_navigations
 description: A new Flutter package project.
-version: 1.0.0+1
+version: 0.0.1
 homepage:
 
 resolution: workspace
@@ -10,9 +10,10 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  
+  curved_navigation_bar: ^1.0.6
   flutter:
     sdk: flutter
-  shared_core: ^0.0.1
 
 dev_dependencies:
   flutter_test:

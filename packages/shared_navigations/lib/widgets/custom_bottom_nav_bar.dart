@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_core/shared_core.dart';
 
-class CustomBottomNavBar extends StatelessWidget {
+class SharedBottomNavBar extends StatelessWidget {
   final List<GButton> tabs;
   final int selectedIndex;
   final void Function(int) onItemTapped;
 
-  const CustomBottomNavBar({
+  const SharedBottomNavBar({
     super.key,
     required this.tabs,
     required this.selectedIndex,
@@ -25,7 +25,7 @@ class CustomBottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: kBrandPrimary.withValues(alpha: 0.3),
+            color: kBrandPrimary.withOpacity(0.3),
             spreadRadius: 5,
             blurRadius: 10,
             offset: const Offset(0, -3), // changes position of shadow

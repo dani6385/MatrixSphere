@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ganti https://domain-anda.com dengan domain web Anda -->
+    <string name="asset_statements" translatable="false">
+        [{
+            \"relation\": [\"delegate_permission/common.get_login_creds\"],
+            \"target\": {
+                \"namespace\": \"web\",
+                \"site\": \"https://ms-matrix-sphere.web.app\"
+            }
+        }]
+    </string>
+</resources>

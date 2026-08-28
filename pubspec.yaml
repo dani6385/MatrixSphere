@@ -13,49 +13,51 @@ dependencies:
     path: packages/shared_services
   shared_ui:
     path: packages/shared_ui
-  shared_navigations: 
-    path: packages/shared_navigations
-
-  apivideo_live_stream: ^1.2.0
-  bloc: ^9.2.1
-  camera: ^0.12.0+2
-  cloud_firestore: ^6.8.0
-  collection: ^1.19.1
-  csv: ^8.0.0
   cupertino_icons: ^1.0.6
-  curved_navigation_bar: ^1.0.6
-  dio: ^5.11.0
-  equatable: ^2.1.0
-  firebase_analytics: ^12.4.6
-  firebase_auth: ^6.5.6
-  firebase_core: ^4.13.0
+  
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  
+  #firebase_core: ^4.13.0
   firebase_crashlytics: ^5.2.7
-  firebase_database: ^12.4.7
+  firebase_auth: ^6.5.6
   flutter_bloc: ^9.1.1
-  flutter_dotenv: ^5.2.1
-  flutter_image_compress: ^2.5.1
-  flutter_riverpod: ^2.6.1
-  flutter_secure_storage: ^11.0.0
-  fluttertoast: ^10.0.0
-  font_awesome_flutter: ^11.0.0
-  geodesy: ^0.11.0
-  geolocator: ^14.0.3
-  go_router: ^17.5.0
-  google_maps_flutter: ^2.18.0
-  google_nav_bar: ^5.0.7
-  image_picker: ^1.2.3
-  intl: ^0.20.3
-  logger: ^2.7.0
-  mobile_scanner: ^7.4.0
-  pdf: ^3.13.0
-  permission_handler: ^12.0.3
   provider: ^6.1.5+1
-  qr_flutter: ^4.1.0
-  shared_preferences: ^2.5.5
-  shared_screens: ^0.0.1
+  go_router: ^17.5.0
   smooth_page_indicator: ^2.0.1
+  collection: ^1.19.1
+  dio: ^5.11.0
+  font_awesome_flutter: ^11.0.0
+  firebase_database: ^12.4.7
   url_launcher: ^6.3.2
+  apivideo_live_stream: ^1.2.0
+  cloud_firestore: ^6.8.0
+  flutter_riverpod: ^2.6.1
+  logger: ^2.7.0
+  google_maps_flutter: ^2.18.0
+  shared_preferences: ^2.5.5
+  qr_flutter: ^4.1.0
+  geolocator: ^14.0.3
+  intl: ^0.20.3
+  image_picker: ^1.2.3
+  camera: ^0.12.0+2
   uuid: ^4.6.0
+  permission_handler: ^12.0.3
+  flutter_dotenv: ^5.2.1
+  google_nav_bar: ^5.0.7
+  geodesy: ^0.11.0
+  mobile_scanner: ^7.4.0
+  bloc: ^9.2.1
+  equatable: ^2.1.0
+  shared_navigations: ^0.0.1
+  shared_screens: ^0.0.1
+  firebase_analytics: ^12.4.6
+  flutter_image_compress: ^2.5.1
+  flutter_secure_storage: ^11.0.0
+  
+  csv: ^8.0.0
+  pdf: ^3.13.0
+  fluttertoast: ^10.0.0
 
 dev_dependencies:
   flutter_test:
@@ -76,10 +78,10 @@ dependency_overrides:
   cli_util: ^0.5.0
 
 workspace:
-  #- apps/admin_mikrotik
-  #- apps/client_connectivity
-  #- apps/seller_sphere
-  #- apps/shop_sphere
+  - apps/admin_mikrotik
+  - apps/client_connectivity
+  - apps/seller_sphere
+  - apps/shop_sphere
   - packages/shared_components
   - packages/shared_core
   #- packages/shared_contents

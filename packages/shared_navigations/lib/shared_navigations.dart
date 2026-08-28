@@ -10,5 +10,5 @@ export 'navigations/go_router_refresh_stream.dart';
 export 'navigations/route_guard.dart';
 export 'navigations/shell_route_config.dart';
 export 'widgets/custom_transition_page.dart';
-export 'widgets/custom_bottom_nav_bar.dart';
-
+export 'widgets/shared_bottom_nav_bar.dart';
+export 'widgets/bottom_nav_bar.dart';
