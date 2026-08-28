@@ -57,7 +57,15 @@ class AuthController {
           );
         }
       }
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
+      print("DEBUG FIREBASE AUTH ERROR: ${e.code} - ${e.message}");
+      throw Exception(handleAuthError(e));
+    } catch (e, stackTrace) {
+      print("DEBUG ERROR MENTAH: $e");
+      print("DEBUG STACKTRACE: $stackTrace");
+      throw Exception('Terjadi kesalahan: $e'); 
+    }
+    /*catch (e) {
       // 4. Tampilkan pesan kesalahan di UI menggunakan SnackBar
       if (context.mounted) {
         String errorMessage = 'Terjadi kesalahan saat masuk.';
@@ -70,7 +78,7 @@ class AuthController {
 
         UiHelper.showSnackBar(context, errorMessage);
       }
-    }
+    }*/
   }
 
   // Fungsi untuk menerjemahkan error Firebase ke bahasa Indonesia
