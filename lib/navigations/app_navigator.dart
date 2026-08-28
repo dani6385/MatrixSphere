@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:matrix_sphere/navigations/bottom_nav_bar.dart';
 import 'package:shared_navigations/shared_navigations.dart';
-
-import 'package:shared_ui/shared_ui.dart';
 import 'widgets/app_drawer_items.dart';
 import 'widgets/app_end_drawer_items.dart';
 

@@ -1,16 +1,14 @@
 // Disimpan di direktori: packages/shared_logics/lib/src/auth_controller.dart (atau sesuaikan jalurnya)
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_utils/shared_utils.dart';
-import 'package:shared_services/shared_services.dart';
+import 'package:shared_core/shared_core.dart';
 
 class AuthController {
   final AuthService _authService = AuthService();
   final FirebaseDatabase _database = FirebaseDatabase.instance;
 
   // Menangani alur login, validasi database matrix_members, dan navigasi role
-  Future<void> loginUser(BuildContext context, String email, String password) async {
+  Future<void> loginUser(
+      BuildContext context, String email, String password) async {
     try {
       // 1. Jalankan proses login Firebase murni dari AuthService
       final credential = await _authService.login(email, password);
@@ -42,11 +40,9 @@ class AuthController {
             // 3. Navigasi berdasarkan role jika widget masih aktif (mounted)
             if (context.mounted) {
               if (role == 'admin') {
-                // TODO: Tambahkan navigasi admin Anda di sini
-                // context.go('/admin-home');
+                AppNavigation.goToHome(context);
               } else {
-                // TODO: Tambahkan navigasi member Anda di sini
-                // context.go('/');
+                AppNavigation.pushToUserProfile(context);
               }
             }
           } else {
@@ -65,7 +61,7 @@ class AuthController {
       // 4. Tampilkan pesan kesalahan di UI menggunakan SnackBar
       if (context.mounted) {
         String errorMessage = 'Terjadi kesalahan saat masuk.';
-        
+
         if (e is FirebaseAuthException) {
           errorMessage = handleAuthError(e);
         } else {
@@ -81,7 +77,8 @@ class AuthController {
   String handleAuthError(FirebaseAuthException e) {
     switch (e.code) {
       case 'access-denied':
-        return e.message ?? 'Akun Anda tidak memiliki izin akses ke aplikasi Matrix Sphere.';
+        return e.message ??
+            'Akun Anda tidak memiliki izin akses ke aplikasi Matrix Sphere.';
       case 'user-not-found':
         return 'Akun dengan email ini tidak ditemukan.';
       case 'wrong-password':

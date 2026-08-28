@@ -29,4 +29,5 @@ export 'package:shared_preferences/shared_preferences.dart';
 export 'package:shared_screens/shared_screens.dart';
 export 'package:shared_services/shared_services.dart';
 export 'package:shared_ui/shared_ui.dart';
+export 'package:shared_utils/shared_utils.dart';
 export 'package:flutter_secure_storage/flutter_secure_storage.dart';
