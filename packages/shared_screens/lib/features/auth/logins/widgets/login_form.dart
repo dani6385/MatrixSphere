@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_error_banner.dart';
 import 'login_remember_me.dart';
-import 'email_input_field.dart'; // Impor komponen baru
-import 'password_input_field.dart'; // Impor komponen baru
-import 'login_submit_button.dart'; // Impor komponen baru
+import 'email_input_field.dart';
+import 'password_input_field.dart';
+import 'login_submit_button.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_logics/shared_logics.dart';
 
@@ -41,13 +40,17 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Future<void> _loadCredentials() async {
-    final credentials = await _authService.loadSavedCredentials();
-    if (mounted && credentials['rememberMe'] == true) {
-      setState(() {
-        _rememberMe = true;
-        _emailController.text = credentials['email'];
-        _passwordController.text = credentials['password'];
-      });
+    try {
+      final credentials = await _authService.loadSavedCredentials();
+      if (mounted && credentials['rememberMe'] == true) {
+        setState(() {
+          _rememberMe = true;
+          _emailController.text = credentials['email'] ?? '';
+          _passwordController.text = credentials['password'] ?? '';
+        });
+      }
+    } catch (e) {
+      debugPrint("=== [LOG] Gagal memuat kredensial tersimpan: $e ===");
     }
   }
 
@@ -60,25 +63,24 @@ class _LoginFormState extends State<LoginForm> {
       return;
     }
     debugPrint("=== [LOG] 3. Validasi Form Berhasil ===");
+
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
+      // Panggil controller login
       await _authController.loginUser(context, email, password);
       debugPrint("=== [LOG] 5. Autentikasi Firebase Berhasil ===");
 
       await _authService.saveOrClearCredentials(_rememberMe, email, password);
-      debugPrint("=== [LOG] 6. Login berhasil, AuthGate akan menangani navigasi.");
+      debugPrint(
+          "=== [LOG] 6. Kredensial diperbarui sesuai opsi Remember Me ===");
 
-      // Setelah login berhasil, tidak perlu melakukan navigasi manual.
-      // AuthGate akan mendeteksi perubahan status otentikasi dan
-      // mengarahkan pengguna secara otomatis.
-      // Cukup pastikan state loading dihentikan jika widget masih ter-mount.
       if (!mounted) return;
       setState(() => _isLoading = false);
-
     } on FirebaseAuthException catch (e) {
       debugPrint("=== [LOG] ERROR FIREBASE: ${e.code} - ${e.message} ===");
       if (!mounted) return;
@@ -88,30 +90,31 @@ class _LoginFormState extends State<LoginForm> {
       debugPrint("=== [LOG] ERROR UMUM: ${e.toString()} ===");
       if (!mounted) return;
       setState(() => _isLoading = false);
-      _displayError('Terjadi kesalahan saat masuk: ${e.toString()}');
+      // Menampilkan pesan error yang lebih aman dari TypeError mentah
+      _displayError(
+          'Terjadi kesalahan saat masuk. Periksa kembali koneksi atau data Anda.');
     }
   }
 
   void _displayError(String message) {
+    if (!mounted) return;
     setState(() => _errorMessage = message);
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(child: Text(message)),
-            ],
-          ),
-          backgroundColor: Theme.of(context).colorScheme.error,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(child: Text(message)),
+          ],
         ),
-      );
-    }
+        backgroundColor: Theme.of(context).colorScheme.error,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+      ),
+    );
   }
 
   @override

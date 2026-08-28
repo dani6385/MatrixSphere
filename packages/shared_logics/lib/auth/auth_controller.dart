@@ -1,8 +1,7 @@
-// Disimpan di direktori: packages/shared_logics/lib/src/auth_controller.dart (atau sesuaikan jalurnya)
+// Disimpan di direktori: packages/shared_logics/lib/src/auth_controller.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_utils/shared_utils.dart';
 import 'package:shared_services/shared_services.dart';
 
 class AuthController {
@@ -23,13 +22,20 @@ class AuthController {
         DatabaseEvent event = await _database.ref("matrix_members/$uid").once();
 
         if (event.snapshot.exists) {
-          // Konversi aman untuk menghindari TypeError
+          // Konversi aman untuk menghindari TypeError saat mode minified/release
           final rawData = event.snapshot.value;
+          
           if (rawData is Map) {
-            Map<dynamic, dynamic> memberData = rawData;
+            // Ubah secara aman ke Map<String, dynamic> agar terhindar dari mismatch tipe minifikasi
+            final Map<String, dynamic> memberData = {};
+            rawData.forEach((key, value) {
+              if (key != null) {
+                memberData[key.toString()] = value;
+              }
+            });
 
-            bool isAllowed = memberData['isAllowed'] ?? false;
-            String role = memberData['role'] ?? 'member';
+            bool isAllowed = memberData['isAllowed'] == true;
+            String role = memberData['role']?.toString() ?? 'member';
 
             if (!isAllowed) {
               await _authService.logout();
@@ -50,6 +56,7 @@ class AuthController {
               }
             }
           } else {
+            await _authService.logout();
             throw Exception('Format data member di database tidak valid.');
           }
         } else {
@@ -62,17 +69,14 @@ class AuthController {
         }
       }
     } catch (e) {
-      // 4. Tampilkan pesan kesalahan di UI menggunakan SnackBar
-      if (context.mounted) {
-        String errorMessage = 'Terjadi kesalahan saat masuk.';
-        
-        if (e is FirebaseAuthException) {
-          errorMessage = handleAuthError(e);
-        } else {
-          errorMessage = e.toString().replaceAll('Exception: ', '');
-        }
-
-        UiHelper.showSnackBar(context, errorMessage);
+      // Pastikan exception diteruskan (rethrow) agar LoginForm / pemanggil 
+      // tahu bahwa login gagal dan bisa menghentikan status _isLoading = false.
+      if (e is FirebaseAuthException) {
+        rethrow;
+      } else if (e is Exception) {
+        rethrow;
+      } else {
+        throw Exception(e.toString());
       }
     }
   }
