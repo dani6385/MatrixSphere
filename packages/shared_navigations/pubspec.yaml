@@ -1,20 +1,22 @@
 name: shared_navigations
-description: "A new Flutter project."
+description: A new Flutter package project.
 version: 1.0.0+1
+homepage:
+
 resolution: workspace
 
 environment:
-  sdk: ^3.12.2
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: ">=1.17.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  shared_core: ^1.0.0+1
+  shared_core: ^0.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
+
 flutter:
   uses-material-design: true
-
