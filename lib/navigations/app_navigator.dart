@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:matrix_sphere/navigations/bottom_nav_bar.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 
 import 'package:shared_ui/shared_ui.dart';
@@ -8,13 +9,11 @@ import 'widgets/app_end_drawer_items.dart';
 
 class AppNavigator extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
-  
 
-  const AppNavigator(
-      {super.key,
-      required this.navigationShell,
-      
-      });
+  const AppNavigator({
+    super.key,
+    required this.navigationShell,
+  });
 
   @override
   State<AppNavigator> createState() => _AppNavigatorState();
@@ -27,7 +26,6 @@ class _AppNavigatorState extends State<AppNavigator> {
   @override
   Widget build(BuildContext context) {
     // Ambil secara global
-    
 
     return Scaffold(
       drawer: SharedProjectDrawer(
@@ -39,35 +37,38 @@ class _AppNavigatorState extends State<AppNavigator> {
         selectedIndex: widget.navigationShell.currentIndex,
         onTap: _onItemTapped,
         // Cukup panggil AppConfig.currentApp di sini
-        tabs: getBottomNavBarItems(currentApp),
+        tabs: getBottomNavBarItems(),
+        navigationShell: widget.navigationShell,
+        currentIndex: widget.navigationShell.currentIndex,
       ),
       body: widget.navigationShell,
     );
   }
+
+  getBottomNavBarItems() {}
 }
 
 Widget build(BuildContext context, dynamic widget) {
-  final void Function(int) _onItemTapped =
-      (index) => widget.navigationShell.goBranch(index);
   return Scaffold(
     extendBody: true,
     body: widget.navigationShell, // Ini adalah konten halaman yang aktif
     drawer: SharedProjectDrawer(
       menuBuilder: (context, currentRoute) {
         // Kirim appType ke drawer agar menu drawer bisa berubah sesuai aplikasi
-        return getDrawerSideMenuItems(context, currentRoute, widget.appType);
+        return getDrawerSideMenuItems(context, currentRoute);
       },
     ),
     endDrawer: SharedProjectDrawer(
       menuBuilder: (context, currentRoute) {
-        return getEndDrawerSideMenuItems(context, currentRoute, widget.appType);
+        return getEndDrawerSideMenuItems(context, currentRoute);
       },
     ),
-    bottomNavigationBar: SharedBottomNavBar(
-      selectedIndex: widget.navigationShell.currentIndex,
-      onTap: _onItemTapped,
-      tabs: getBottomNavBarItems(
-          widget.appType), // Fungsi ini sekarang mengembalikan List<GButton>
+    bottomNavigationBar: CustomBottomNavBar(
+      selectedIndex: widget.navigationShell.currentIndex, tabs: [],
+      onItemTapped: (int p1) {},
+      icon: Icons.menu,
+      label: '',
+      // Fungsi ini sekarang mengembalikan List<GButton>
     ),
   );
 }

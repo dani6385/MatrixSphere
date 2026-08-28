@@ -17,6 +17,8 @@ class BottomNavBar extends StatelessWidget {
     required this.navigationShell,
     required this.currentIndex,
     required this.onTap,
+    required int selectedIndex,
+    required tabs,
   });
 
   @override
