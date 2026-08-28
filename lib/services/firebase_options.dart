@@ -2,44 +2,8 @@
 // ignore_for_file: type=lint
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:firebase_core/firebase_core.dart';
 
-/// Firebase configuration values used by the platform-specific options below.
-class FirebaseOptions {
-  const FirebaseOptions({
-    required this.apiKey,
-    required this.appId,
-    required this.messagingSenderId,
-    required this.projectId,
-    this.authDomain,
-    this.databaseURL,
-    this.storageBucket,
-    this.measurementId,
-    this.iosClientId,
-    this.iosBundleId,
-  });
-
-  final String apiKey;
-  final String appId;
-  final String messagingSenderId;
-  final String projectId;
-  final String? authDomain;
-  final String? databaseURL;
-  final String? storageBucket;
-  final String? measurementId;
-  final String? iosClientId;
-  final String? iosBundleId;
-}
-
-/// Default [FirebaseOptions] for use with your Firebase apps.
-///
-/// Example:
-/// ```dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-/// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
