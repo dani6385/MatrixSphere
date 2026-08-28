@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 /// A chip-like button for quick actions on the home screen.
 class QuickActionChip extends StatelessWidget {

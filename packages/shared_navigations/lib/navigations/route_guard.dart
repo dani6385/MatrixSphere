@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_firestore/';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RouteGuard {
   /// Memeriksa akses berdasarkan peran (role)

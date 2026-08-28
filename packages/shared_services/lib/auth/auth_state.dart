@@ -1,9 +1,8 @@
 part of 'auth_bloc.dart';
 
-abstract class AuthState extends Equatable {
+abstract class AuthState {
   const AuthState();
 
-  @override
   List<Object> get props => [];
 
   Object? get status => null;
@@ -26,6 +25,7 @@ class AuthFailure extends AuthState {
   @override
   List<Object> get props => [error];
 }
+
 class AuthAuthenticated extends AuthState {
   const AuthAuthenticated();
   @override

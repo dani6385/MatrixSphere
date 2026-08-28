@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'shop_status.enum.dart'; // Impor enum yang sudah dipisah
 
 class ShopService extends ChangeNotifier {

@@ -48,10 +48,12 @@ class BottomNavBar extends StatelessWidget {
       ),
     ];
 
-    return SharedBottomNavBar(
+    return CustomBottomNavBar(
+      currentIndex: currentIndex,
       selectedIndex: currentIndex,
       onTap: onTap,
       tabs: tabs,
+      items: [],
     );
   }
 }

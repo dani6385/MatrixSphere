@@ -1,7 +1,9 @@
 // lib/services/auth_gate.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart'; // Ganti dengan halaman utama/dashboard Anda
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_navigations/shared_navigations.dart';
+import 'package:shared_screens/shared_screens.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});

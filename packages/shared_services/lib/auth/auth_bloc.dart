@@ -1,7 +1,9 @@
 import 'dart:core';
-import 'package:shared_core/shared_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_services/shared_services.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
+
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;

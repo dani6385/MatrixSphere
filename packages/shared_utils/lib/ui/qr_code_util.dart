@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 /// Widget pembantu untuk menampilkan QR Code berdasarkan data teks yang diberikan.
 class QrCodeUtil extends StatelessWidget {

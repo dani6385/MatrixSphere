@@ -1,5 +1,9 @@
 
-import 'package:shared_core/shared_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_models/shared_models.dart';
+
 /// A service class to handle all interactions with Firebase Realtime Database.
 class DatabaseService {
   // Menggunakan ID pengguna statis untuk contoh ini.

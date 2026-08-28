@@ -1,5 +1,6 @@
 
-import 'package:shared_core/shared_core.dart';
+import 'package:camera/camera.dart';
+import 'package:permission_handler/permission_handler.dart' ;
 /// A result class to hold the outcome of the camera initialization process.
 class CameraInitializationResult {
   final CameraController? controller;

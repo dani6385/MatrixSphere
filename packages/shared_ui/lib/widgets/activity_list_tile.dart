@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 /// A styled list tile for displaying recent activities.
 class ActivityListTile extends StatelessWidget {

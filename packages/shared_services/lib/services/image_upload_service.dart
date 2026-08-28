@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_services/shared_services.dart';
 /// Service untuk mengunggah gambar ke ImgBB.
 class ImageUploadService {
   static const String _imgbbUploadUrl = 'https://api.imgbb.com/1/upload';

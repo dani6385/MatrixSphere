@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:geolocator/geolocator.dart';
 
 /// A utility class for showing common dialogs and UI elements.
 class UiHelper {

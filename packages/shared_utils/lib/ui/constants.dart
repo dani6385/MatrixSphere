@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 double getProportionateScreenHeight(double inputHeight) {
   double screenHeight = 812.0; // Based on iPhone 8 Plus

@@ -1,7 +1,7 @@
 // lib/screens/attendance/attendance_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_navigations/shared_navigations.dart';
+import 'package:shared_components/shared_components.dart';
 import 'package:shared_utils/shared_utils.dart';
 
 // Import komponen lokal

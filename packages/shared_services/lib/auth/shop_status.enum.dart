@@ -1,5 +1,7 @@
 
-import 'package:shared_core/shared_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
 // Enum untuk merepresentasikan status toko, agar lebih aman dari typo.
 enum ShopStatus {
   none,

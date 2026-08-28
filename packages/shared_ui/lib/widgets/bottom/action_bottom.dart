@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 class ActionButton extends StatelessWidget {
   final String label;

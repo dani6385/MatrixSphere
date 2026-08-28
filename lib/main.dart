@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_router.dart';
 import 'services/firebase_options.dart';
-
+import 'package:shared_services/shared_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
   await AppInitializer.initializeFirebase(
       DefaultFirebaseOptions.currentPlatform);
-  AppConfig.initialize(AppType.matrixSphere);
 
   runApp(const MatrixSphere());
 }

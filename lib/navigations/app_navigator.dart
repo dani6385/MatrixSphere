@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_navigations/shared_navigations.dart';
-import 'package:shared_core/app_config.dart';
-import 'package:shared_ui/shared_ui.dart';
+//import 'package:shared_navigations/shared_navigations.dart';
+import 'package:shared_components/shared_components.dart';
 import 'widgets/app_drawer_items.dart';
 import 'widgets/app_end_drawer_items.dart';
+import 'bottom_nav_bar.dart';
 
 class AppNavigator extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
-  final AppType appType; // Tambahkan parameter ini
 
-  const AppNavigator(
-      {super.key,
-      required this.navigationShell,
-      required this.appType // Wajib diisi
-      });
+  const AppNavigator({
+    super.key,
+    required this.navigationShell,
+  });
 
   @override
   State<AppNavigator> createState() => _AppNavigatorState();
@@ -22,52 +20,34 @@ class AppNavigator extends StatefulWidget {
 
 class _AppNavigatorState extends State<AppNavigator> {
   void Function(int) get _onItemTapped =>
-      (index) => widget.navigationShell.goBranch(index);
+      (index) => widget.navigationShell.goBranch(
+            index,
+            initialLocation: index == widget.navigationShell.currentIndex,
+          );
 
   @override
   Widget build(BuildContext context) {
-    // Ambil secara global
-    final currentApp = AppConfig.currentApp;
+    // Mengambil indeks halaman aktif dari navigationShell
+    final int currentIndex = widget.navigationShell.currentIndex;
 
     return Scaffold(
+      extendBody: true,
+      body: widget.navigationShell,
       drawer: SharedProjectDrawer(
         menuBuilder: (context, currentRoute) {
-          return getDrawerSideMenuItems(context, currentRoute, currentApp);
+          return getDrawerSideMenuItems(context, currentRoute);
         },
       ),
-      bottomNavigationBar: SharedBottomNavBar(
-        selectedIndex: widget.navigationShell.currentIndex,
-        onTap: _onItemTapped,
-        // Cukup panggil AppConfig.currentApp di sini
-        tabs: getBottomNavBarItems(currentApp),
+      endDrawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getEndDrawerSideMenuItems(context, currentRoute);
+        },
       ),
-      body: widget.navigationShell,
+      bottomNavigationBar: BottomNavBar(
+        navigationShell: widget.navigationShell,
+        currentIndex: currentIndex,
+        onTap: _onItemTapped,
+      ),
     );
   }
-}
-
-Widget build(BuildContext context, dynamic widget) {
-  final void Function(int) _onItemTapped =
-      (index) => widget.navigationShell.goBranch(index);
-  return Scaffold(
-    extendBody: true,
-    body: widget.navigationShell, // Ini adalah konten halaman yang aktif
-    drawer: SharedProjectDrawer(
-      menuBuilder: (context, currentRoute) {
-        // Kirim appType ke drawer agar menu drawer bisa berubah sesuai aplikasi
-        return getDrawerSideMenuItems(context, currentRoute, widget.appType);
-      },
-    ),
-    endDrawer: SharedProjectDrawer(
-      menuBuilder: (context, currentRoute) {
-        return getEndDrawerSideMenuItems(context, currentRoute, widget.appType);
-      },
-    ),
-    bottomNavigationBar: SharedBottomNavBar(
-      selectedIndex: widget.navigationShell.currentIndex,
-      onTap: _onItemTapped,
-      tabs: getBottomNavBarItems(
-          widget.appType), // Fungsi ini sekarang mengembalikan List<GButton>
-    ),
-  );
 }

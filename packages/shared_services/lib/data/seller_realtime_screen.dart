@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_services/shared_services.dart';
+import 'package:shared_models/shared_models.dart';
 
 
 class SellerRealtimeScreen extends StatefulWidget {

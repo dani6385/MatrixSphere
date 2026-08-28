@@ -1,5 +1,6 @@
 
-import 'package:shared_core/shared_core.dart';
+import 'package:firebase_database/firebase_database.dart' ;
+import 'package:latlong2/latlong.dart';
 /// A service to fetch application-wide configurations.
 ///
 /// This service can be used to get dynamic values like feature flags,

@@ -1,7 +1,8 @@
 // Disimpan di d:/matrixsphere/packages/shared_screens/lib/features/scanner_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart' hide context;
+import 'package:logger/logger.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class ScannerScreen extends StatefulWidget {
   final bool

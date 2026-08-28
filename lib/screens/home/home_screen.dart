@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_drawer_items.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_end_drawer_items.dart';
-import 'package:shared_navigations/shared_navigations.dart';
-
+import 'package:shared_components/shared_components.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

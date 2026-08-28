@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-
+import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geodesy/geodesy.dart';
+import 'package:shared_models/shared_models.dart';
+import 'package:shared_services/shared_services.dart';
 
 
 class AppViewModel extends ChangeNotifier {

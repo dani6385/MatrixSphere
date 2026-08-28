@@ -1,48 +1,84 @@
 
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
-
-class SharedBottomNavBar extends StatelessWidget {
-  final List<GButton> tabs;
-  final int selectedIndex;
-  final void Function(int) onItemTapped;
-
-  const SharedBottomNavBar({
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:shared_ui/shared_ui.dart';
+/// A shared, reusable bottom navigation bar with a custom concave (downward-curving) shape.
+///
+/// This widget is designed to be generic. It receives a list of [GButton]s
+/// and does not have any knowledge of the app's specific routes.
+class CustomBottomNavBar extends StatelessWidget {
+  const CustomBottomNavBar({
     super.key,
-    required this.tabs,
+    required this.currentIndex,
+    required this.onTap,
+    required this.tabs, // Changed from 'items' to 'tabs'
     required this.selectedIndex,
-    required this.onItemTapped, required IconData icon, required String label,
+    required List<dynamic> items,
   });
+
+  /// The index of the currently active tab.
+  final int currentIndex;
+
+  /// The callback function when a tab is tapped
+  // final void Function(int) onItemTapped;.
+  final void Function(int) onTap;
+  final int selectedIndex;
+
+  /// The list of [GButton] widgets to display as tabs.
+  final List<GButton> tabs;
 
   @override
   Widget build(BuildContext context) {
-    // Konversi GButton menjadi Icon untuk CurvedNavigationBar
+    Theme.of(context);
     final items = tabs
         .map((tab) => Icon(tab.icon, size: 20, color: kDarkTextPrimary))
         .toList();
 
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: kBrandPrimary.withOpacity(0.3),
-            spreadRadius: 5,
-            blurRadius: 10,
-            offset: const Offset(0, -3), // changes position of shadow
-          ),
-        ],
-      ),
-      child: CurvedNavigationBar(
-        index: selectedIndex,
-        height: 65,
-        items: items,
-        onTap: onItemTapped,
-        color: kNeonCyan,
-        buttonBackgroundColor: kBrandBlack,// Menggunakan kBrandPrimary
-        backgroundColor: Colors.transparent,
-        animationCurve: Curves.easeInOut,
-        animationDuration: const Duration(milliseconds: 400),
+    return ClipPath(
+      clipper: _BottomNavClipper(), // Custom clipper for the shape
+      child: Container(
+        height: 75.0, // Fixed height for the curved shape to be visible
+        decoration: const BoxDecoration(
+            // Menggunakan const karena warna transparan
+            color: kTransparent // Membuat Container terluar transparan
+            ),
+        child: CurvedNavigationBar(
+          index: selectedIndex,
+          height: 50,
+          items: items,
+          onTap: onTap,
+          color:
+              kNeonCyan, // Membuat CurvedNavigationBar itu sendiri transparan
+          buttonBackgroundColor: kDarkDivider, // Menggunakan kBrandPrimary
+          backgroundColor: Colors
+              .transparent, // Memastikan area di belakang CurvedNavigationBar juga transparan
+          animationCurve: Curves.easeIn,
+          animationDuration: const Duration(milliseconds: 400),
+        ),
       ),
     );
+  }
+}
+
+/// CustomClipper to create a downward-curving bottom navigation shape.
+class _BottomNavClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    const double curveDepth = 20.0;
+
+    path.moveTo(0, curveDepth);
+    path.quadraticBezierTo(size.width / 2, 0, size.width, curveDepth);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) {
+    return false;
   }
 }

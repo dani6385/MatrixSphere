@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_core/shared_core.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 /// Model data untuk setiap item yang akan ditampilkan di dalam [SideMenu].
 /// Ini membuat menu menjadi dinamis dan dapat dikonfigurasi dari luar.
