@@ -7,6 +7,7 @@ import 'password_input_field.dart';
 import 'login_submit_button.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_logics/shared_logics.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -81,6 +82,9 @@ class _LoginFormState extends State<LoginForm> {
 
       if (!mounted) return;
       setState(() => _isLoading = false);
+      if (context.mounted) {
+        context.go('/home'); // Sesuaikan '/' dengan rute halaman home / dashboard Anda
+      }
     } on FirebaseAuthException catch (e) {
       debugPrint("=== [LOG] ERROR FIREBASE: ${e.code} - ${e.message} ===");
       if (!mounted) return;
