@@ -148,7 +148,7 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 16),
           LoginSubmitButton(
             isLoading: _isLoading,
-            onPressed: _handleLogin,
+            onPressed: _isLoading ? () {} : () => _handleLogin(),
           ),
         ],
       ),
