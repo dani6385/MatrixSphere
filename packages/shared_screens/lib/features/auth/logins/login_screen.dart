@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Navigasi ke halaman home menggunakan GoRouter
       if (context.mounted) {
-        context.go('/home'); // Sesuaikan rute home Anda
+        context.go('/'); // Sesuaikan rute home Anda
       }
     } else {
       debugPrint("=== [HARDCODE LOGIN] Gagal: Email atau Password salah ===");
