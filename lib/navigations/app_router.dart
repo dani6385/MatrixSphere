@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // <-- Tambahkan import ini
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'app_navigator.dart';
 import 'app_branches.dart';
@@ -14,10 +14,12 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _authChanges = GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges());
 
 final GoRouter appRouter = GoRouter(
+  // Ubah initialLocation menjadi '/login' atau biarkan '/' 
+  // karena logika redirect bawah akan otomatis memindahkannya.
+  // Tapi menetapkan '/' aman karena redirect akan langsung menyaringnya.
   initialLocation: '/',
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
-  // Aktifkan kembali refreshListenable untuk mereaksi perubahan login/logout
   refreshListenable: _authChanges,
   observers: [
     analyticsService.analitycsObserver,
@@ -25,23 +27,22 @@ final GoRouter appRouter = GoRouter(
   redirect: (BuildContext context, GoRouterState state) {
     final bool loggedIn = FirebaseAuth.instance.currentUser != null;
 
-    // Asumsi rute login adalah '/login'. Sesuaikan jika berbeda.
-    // Rute ini didefinisikan di dalam `buildAuthRoutes`.
+    // Mengecek apakah pengguna sedang berada di halaman login
     final bool isLoggingIn = state.matchedLocation == '/login';
 
-    // 1. Jika pengguna TIDAK login dan TIDAK sedang menuju halaman login,
-    //    maka paksa arahkan ke halaman login.
+    // 1. Jika pengguna TIDAK login dan TIDAK sedang di halaman login, 
+    // arahkan paksa ke '/login'.
     if (!loggedIn && !isLoggingIn) {
       return '/login';
     }
 
-    // 2. Jika pengguna SUDAH login dan mencoba mengakses halaman login,
-    //    maka arahkan mereka ke halaman utama ('/').
+    // 2. Jika pengguna SUDAH login tapi masih di halaman login, 
+    // arahkan kembali ke halaman utama ('/').
     if (loggedIn && isLoggingIn) {
       return '/';
     }
 
-    // 3. Jika tidak ada kondisi di atas, jangan lakukan redirect (lanjutkan).
+    // 3. Lanjutkan navigasi normal jika kondisi aman
     return null;
   },
   errorBuilder: (context, state) {
@@ -65,12 +66,12 @@ final GoRouter appRouter = GoRouter(
               ),
               const SizedBox(height: 8),
               const Text(
-                'Halaman yang Anda tuju tidak dapat ditemukan. Kami telah mencatat error ini dan akan segera memperbaikinya.',
+                'Halaman yang Anda tuju tidak dapat ditemukan.',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => GoRouter.of(context).go('/login'), // Arahkan ke login
+                onPressed: () => GoRouter.of(context).go('/login'),
                 child: const Text('Kembali ke Login'),
               ),
             ],
@@ -83,11 +84,9 @@ final GoRouter appRouter = GoRouter(
     ...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
     buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        // Shell ini sekarang hanya akan dibangun jika pengguna sudah login,
-        // berkat logic di `redirect`.
-        return AppNavigator(navigationShell: navigationShell,);
+        return AppNavigator(navigationShell: navigationShell);
       },
-      branches: appBranches, // Daftar cabang rute khusus Matrix
+      branches: appBranches,
     ),
     ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
