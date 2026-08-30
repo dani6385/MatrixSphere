@@ -15,7 +15,9 @@ class EmailInputField extends StatelessWidget {
         labelText: 'Email',
         hintText: 'nama@example.com',
         prefixIcon: const Icon(Icons.email_outlined),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
       validator: (value) {
         if (value == null || value.trim().isEmpty) {

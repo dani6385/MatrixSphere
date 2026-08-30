@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'auth_storage.dart'; // Impor file penyimpanan di atas
+import 'auth_storage.dart';
 
-class AuthService extends ChangeNotifier {
+class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final AuthStorage _storage = AuthStorage(); // Panggil instance AuthStorage
+  final AuthStorage _storage = AuthStorage();
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
   User? get currentUser => _auth.currentUser;
@@ -13,8 +12,8 @@ class AuthService extends ChangeNotifier {
     return _auth.currentUser != null;
   }
 
-  // Login ke Firebase
-  Future<UserCredential> login(String email, String password) async {
+  // Method utama untuk login (yang dipanggil oleh LoginForm)
+  Future<UserCredential> signInWithEmail(String email, String password) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
           email: email.trim(), password: password);
@@ -22,17 +21,22 @@ class AuthService extends ChangeNotifier {
       if (credential.user != null) {
         String? token = await credential.user!.getIdToken();
         if (token != null) {
-          await _storage.saveToken(token); // Simpan token via AuthStorage
+          await _storage.saveToken(token);
         }
       }
 
-      notifyListeners();
       return credential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Login gagal.');
     } catch (e) {
       throw Exception('Terjadi kesalahan saat login.');
     }
+  }
+
+  // ALIAS: Menambahkan kembali method 'login' agar cocok 
+  // dengan pemanggilan yang ada di auth_controller.dart
+  Future<UserCredential> login(String email, String password) async {
+    return await signInWithEmail(email, password);
   }
 
   // Daftar Akun Baru
@@ -45,11 +49,10 @@ class AuthService extends ChangeNotifier {
       if (userCredential.user != null) {
         String? token = await userCredential.user!.getIdToken();
         if (token != null) {
-          await _storage.saveToken(token); // Simpan token via AuthStorage
+          await _storage.saveToken(token);
         }
       }
 
-      notifyListeners();
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Registrasi gagal.');
@@ -71,12 +74,11 @@ class AuthService extends ChangeNotifier {
 
   // Logout
   Future<void> logout() async {
-    await _storage.clearToken(); // Hapus token via AuthStorage
+    await _storage.clearToken();
     await _auth.signOut();
-    notifyListeners();
   }
 
-  // Delegasi fungsi remember me agar luar kelas tetap bisa memanggil lewat AuthService
+  // Delegasi fungsi remember me
   Future<Map<String, dynamic>> loadSavedCredentials() =>
       _storage.loadSavedCredentials();
   Future<void> saveOrClearCredentials(

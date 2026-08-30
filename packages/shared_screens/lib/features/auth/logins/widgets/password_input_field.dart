@@ -33,9 +33,15 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
                 ? Icons.visibility_off_outlined
                 : Icons.visibility_outlined,
           ),
-          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+          onPressed: () {
+            setState(() {
+              _obscurePassword = !_obscurePassword;
+            });
+          },
         ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
