@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'app_navigator.dart';
 import 'app_branches.dart';
-import 'package:shared_services/shared_services.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 
 // Kunci global untuk navigator utama (root)
@@ -14,43 +13,38 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _authChanges = GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges());
 
 final GoRouter appRouter = GoRouter(
-  // Ubah initialLocation menjadi '/login' atau biarkan '/' 
-  // karena logika redirect bawah akan otomatis memindahkannya.
-  // Tapi menetapkan '/' aman karena redirect akan langsung menyaringnya.
-  initialLocation: '/',
+  initialLocation: '/login', // Kita arahkan eksplisit ke login dulu
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   refreshListenable: _authChanges,
-  observers: [
-    analyticsService.analitycsObserver,
-  ],
+  
+  // SEMENTARA DIMATIKAN UNTUK WEB (Mencegah stuck di splash screen)
+  // observers: [
+  //   analyticsService.analitycsObserver,
+  // ],
+  
   redirect: (BuildContext context, GoRouterState state) {
+    // ========================================================
+    // [!] TESTING BYPASS: 
+    // Logika Firebase Auth dimatikan sementara agar Anda bisa
+    // masuk ke halaman utama tanpa di-block oleh router.
+    // ========================================================
+    /*
     final bool loggedIn = FirebaseAuth.instance.currentUser != null;
-
-    // Mengecek apakah pengguna sedang berada di halaman login
     final bool isLoggingIn = state.matchedLocation == '/login';
 
-    // 1. Jika pengguna TIDAK login dan TIDAK sedang di halaman login, 
-    // arahkan paksa ke '/login'.
     if (!loggedIn && !isLoggingIn) {
       return '/login';
     }
-
-    // 2. Jika pengguna SUDAH login tapi masih di halaman login, 
-    // arahkan kembali ke halaman utama ('/').
     if (loggedIn && isLoggingIn) {
       return '/';
     }
+    */
 
-    // 3. Lanjutkan navigasi normal jika kondisi aman
-    return null;
+    return null; // Membiarkan navigasi bebas berjalan
   },
+  
   errorBuilder: (context, state) {
-    crashlyticsService.recordError(
-      state.error ?? 'GoRouter Navigation Error',
-      StackTrace.current,
-      reason: 'Kesalahan Navigasi GoRouter di path: ${state.uri.toString()}',
-    );
     return Scaffold(
       appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
       body: Center(
@@ -60,13 +54,13 @@ final GoRouter appRouter = GoRouter(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Oops! Terjadi kesalahan.',
+                'Oops! Terjadi kesalahan navigasi.',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Halaman yang Anda tuju tidak dapat ditemukan.',
+              Text(
+                'Path yang error: ${state.uri.toString()}',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),

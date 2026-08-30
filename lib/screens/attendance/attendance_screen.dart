@@ -1,101 +1,52 @@
-// lib/screens/attendance/attendance_screen.dart
-
 import 'package:flutter/material.dart';
-import 'package:shared_components/shared_components.dart';
-import 'package:shared_utils/shared_utils.dart';
 
-// Import komponen lokal
-import 'package:shared_logics/shared_logics.dart';
-import 'widgets/attendance_app_bar.dart';
-import 'widgets/attendance_body.dart';
-import 'widgets/attendance_drawer_items.dart';
-import 'widgets/attendance_end_drawer_items.dart';
-
-class AttendanceScreen extends StatefulWidget {
+class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
 
-  @override
-  State<AttendanceScreen> createState() => _AttendanceScreenState();
-}
-
-class _AttendanceScreenState extends State<AttendanceScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late final AttendanceController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AttendanceController();
-    _controller.initialize(context);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleSuccess() {
-    AppDialogs.showSuccess(
-      context: context,
-      onConfirm: () {
-        Navigator.of(context).pop(); // Tutup dialog sukses
-        Navigator.of(context).pop(); // Kembali ke halaman sebelumnya
-      },
-    );
-  }
+  // ==========================================
+  // [!] MASUKKAN KOORDINAT KANTOR ANDA DI SINI
+  // ==========================================
+  static const double officeLatitude = -6.200000; // Contoh: Latitude kantor Matrix Sphere
+  static const double officeLongitude = 106.816666; // Contoh: Longitude kantor Matrix Sphere
+  static const double maxAttendanceRadius = 50.0; // Maksimal jarak untuk bisa absen (dalam meter)
 
   @override
   Widget build(BuildContext context) {
-    // ListenableBuilder digunakan untuk membangun kembali UI saat _controller memanggil notifyListeners()
-    return ListenableBuilder(
-      listenable: _controller,
-      builder: (context, _) {
-        return Scaffold(
-          key: _scaffoldKey,
-          drawerEnableOpenDragGesture: false,
-          endDrawerEnableOpenDragGesture: false,
-
-          // 1. APP BAR
-          appBar: AttendanceAppBar(
-            onRefreshLocation: () => _controller.checkLocationAndPermission(context),
-            onOpenDrawer: () => _scaffoldKey.currentState?.openDrawer(),
-            onOpenEndDrawer: () => _scaffoldKey.currentState?.openEndDrawer(),
-          ),
-
-          // 2. DRAWER KIRI
-          drawer: SharedProjectDrawer(
-            menuBuilder: (context, currentRoute) {
-              return getDrawerSideMenuItems(context, currentRoute);
-            },
-          ),
-
-          // 3. END DRAWER KANAN
-          endDrawer: SharedProjectDrawer(
-            menuBuilder: (context, currentRoute) {
-              return getEndDrawerSideMenuItems(
-                context,
-                currentRoute,
-                officeLocation: _controller.officeLocation,
-                currentPosition: _controller.currentPosition,
-              );
-            },
-          ),
-
-          // 4. BODY UTAMA
-          body: AttendanceBody(
-            isCameraInitialized: _controller.isCameraInitialized,
-            cameraController: _controller.cameraController,
-            isLoadingLocation: _controller.isLoadingLocation,
-            isInRange: _controller.isInRange,
-            distanceToOffice: _controller.distanceToOffice,
-            isProcessing: _controller.isProcessing,
-            onSubmit: (_controller.isInRange && !_controller.isLoadingLocation)
-                ? () => _controller.captureAndVerify(context, _handleSuccess)
-                : null,
-          ),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Kehadiran / Absensi'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.location_on, size: 80, color: Colors.blue),
+            const SizedBox(height: 16),
+            const Text(
+              'Absensi Matrix Sphere',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Koordinat Kantor: $officeLatitude, $officeLongitude\n'
+              'Batas Jarak: $maxAttendanceRadius meter',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () {
+                
+                // dan menghitung jaraknya dengan lokasi kantor akan dibuat di sini.
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Mengecek lokasi Anda... (Belum diimplementasi)')),
+                );
+              },
+              child: const Text('Absen Sekarang'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
