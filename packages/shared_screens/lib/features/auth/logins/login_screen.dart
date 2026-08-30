@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart'; // Hapus baris ini
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -38,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
-      // Login nyata ke Firebase Authentication
+      // 1. Proses login nyata ke Firebase
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -46,23 +47,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
       debugPrint("=== [FIREBASE LOGIN] Berhasil Masuk ===");
 
-      // Tidak perlu manual context.go('/') karena app_router.dart 
-      // dengan GoRouterRefreshStream akan otomatis mendeteksi status login 
-      // dan mengarahkan ke halaman home secara mulus!
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      // 2. Paksa navigasi manual ke rute utama '/' agar langsung berpindah
+      if (context.mounted) {
+        context.go('/');
+      }
       
     } on FirebaseAuthException catch (e) {
       debugPrint("=== [FIREBASE LOGIN ERROR] ${e.code}: ${e.message} ===");
+      if (!mounted) return;
       setState(() {
-        _isLoading = false;
-        if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
-          _errorMessage = 'Akun belum terdaftar di Firebase. Daftarkan dulu di Firebase Console.';
-        } else {
-          _errorMessage = e.message ?? 'Terjadi kesalahan saat masuk.';
-        }
+        _isLoading = false; // <-- PENTING: Matikan loading agar tombol bisa diklik lagi
+        _errorMessage = e.message ?? 'Terjadi kesalahan saat masuk.';
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
-        _isLoading = false;
+        _isLoading = false; // <-- PENTING: Matikan loading
         _errorMessage = 'Terjadi kesalahan umum: ${e.toString()}';
       });
     }
