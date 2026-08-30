@@ -83,15 +83,23 @@ class _LoginFormState extends State<LoginForm> {
 
   /// Menangani proses Login dengan validasi kredensial saja
   Future<void> _handleLogin() async {
+    print('--> Tombol Masuk diklik!'); // LOG DETEKSI KLIK
+    
     setState(() => _errorMessage = null);
 
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      print('--> Validasi Form Gagal! Periksa inputan di layar.'); // LOG JIKA INPUT SALAH
+      return;
+    }
+
+    print('--> Validasi Form Sukses! Memulai autentikasi...'); // LOG JIKA INPUT BENAR
 
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     setState(() => _isLoading = true);
-
+    
+    // ... sisa kode di bawahnya tetap sama ...
     try {
       // 1. Eksekusi Firebase Authentication
       final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
