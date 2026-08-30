@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,21 +9,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // GlobalKey untuk validasi form
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController(text: "admin@matrix.com"); // Auto-fill untuk kemudahan
+  final _passwordController = TextEditingController(text: "123456"); // Auto-fill untuk kemudahan
 
-  // Controller untuk input email/username dan password
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  // State untuk visibilitas password & loading
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _errorMessage;
-
-  // --- DATA HARDCODE USER & PASSWORD ---
-  final String _hardcodedEmail = "admin@matrix.com";
-  final String _hardcodedPassword = "123456";
 
   @override
   void dispose() {
@@ -32,42 +24,46 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleHardcodedLogin() async {
-    // Sembunyikan error sebelumnya
+  // Menggunakan Firebase Auth asli agar dikenali oleh app_router.dart
+  Future<void> _handleFirebaseLogin() async {
     setState(() => _errorMessage = null);
 
-    // Jalankan validasi form
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    // Aktifkan indikator loading
     setState(() => _isLoading = true);
 
-    // Simulasi jeda jaringan/proses (1.5 detik)
-    await Future.delayed(const Duration(milliseconds: 1500));
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
 
-    if (!mounted) return;
+      // Login nyata ke Firebase Authentication
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    // Cek kecocokan data hardcode
-    final inputEmail = _emailController.text.trim();
-    final inputPassword = _passwordController.text;
+      debugPrint("=== [FIREBASE LOGIN] Berhasil Masuk ===");
 
-    if (inputEmail == _hardcodedEmail && inputPassword == _hardcodedPassword) {
-      debugPrint("=== [HARDCODE LOGIN] Berhasil Masuk ===");
+      // Tidak perlu manual context.go('/') karena app_router.dart 
+      // dengan GoRouterRefreshStream akan otomatis mendeteksi status login 
+      // dan mengarahkan ke halaman home secara mulus!
       
-      setState(() => _isLoading = false);
-
-      // Navigasi ke halaman home menggunakan GoRouter
-      if (context.mounted) {
-        context.go('/'); // Sesuaikan rute home Anda
-      }
-    } else {
-      debugPrint("=== [HARDCODE LOGIN] Gagal: Email atau Password salah ===");
-      
+    } on FirebaseAuthException catch (e) {
+      debugPrint("=== [FIREBASE LOGIN ERROR] ${e.code}: ${e.message} ===");
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Email atau kata sandi hardcode salah! (Gunakan: admin@matrix.com / 123456)';
+        if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
+          _errorMessage = 'Akun belum terdaftar di Firebase. Daftarkan dulu di Firebase Console.';
+        } else {
+          _errorMessage = e.message ?? 'Terjadi kesalahan saat masuk.';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Terjadi kesalahan umum: ${e.toString()}';
       });
     }
   }
@@ -75,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212), // Tema gelap ala Matrix Sphere
+      backgroundColor: const Color(0xFF121212),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -87,15 +83,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Icon / Logo Gembok
                   const Icon(
                     Icons.lock_rounded,
                     size: 64,
                     color: Colors.purpleAccent,
                   ),
                   const SizedBox(height: 16),
-                  
-                  // Judul Aplikasi
                   const Text(
                     "Matrix Sphere",
                     textAlign: TextAlign.center,
@@ -107,13 +100,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    "Silakan masuk dengan akun hardcode Anda",
+                    "Masuk dengan akun terdaftar Firebase",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 32),
 
-                  // Banner Error jika login salah
                   if (_errorMessage != null) ...[
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -130,12 +122,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                   ],
 
-                  // Input Email / Username
                   TextFormField(
                     controller: _emailController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      labelText: 'Email Hardcode',
+                      labelText: 'Email',
                       labelStyle: const TextStyle(color: Colors.grey),
                       prefixIcon: const Icon(Icons.email, color: Colors.purpleAccent),
                       filled: true,
@@ -145,22 +136,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                    validator: (value) => value == null || value.isEmpty ? 'Email tidak boleh kosong' : null,
                   ),
                   const SizedBox(height: 16),
 
-                  // Input Password
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      labelText: 'Kata Sandi Hardcode',
+                      labelText: 'Kata Sandi',
                       labelStyle: const TextStyle(color: Colors.grey),
                       prefixIcon: const Icon(Icons.lock, color: Colors.purpleAccent),
                       suffixIcon: IconButton(
@@ -168,11 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           _obscurePassword ? Icons.visibility_off : Icons.visibility,
                           color: Colors.grey,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                       filled: true,
                       fillColor: const Color(0xFF1E1E1E),
@@ -181,18 +162,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Kata sandi tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                    validator: (value) => value == null || value.isEmpty ? 'Kata sandi tidak boleh kosong' : null,
                   ),
                   const SizedBox(height: 24),
 
-                  // Tombol Masuk
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _handleHardcodedLogin,
+                    onPressed: _isLoading ? null : _handleFirebaseLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purpleAccent,
                       foregroundColor: Colors.white,
@@ -205,21 +180,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? const SizedBox(
                             height: 20,
                             width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
                         : const Text(
-                            'Masuk (Hardcode)',
+                            'Masuk (Firebase)',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Petunjuk Akun Uji Coba
                   const Text(
-                    "Info Akun Hardcode:\nEmail: admin@matrix.com\nSandi: 123456",
+                    "Catatan: Pastikan email & password/ndi atas sudah didaftarkan di menu Authentication Firebase Console.",
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white54, fontSize: 12),
                   ),
