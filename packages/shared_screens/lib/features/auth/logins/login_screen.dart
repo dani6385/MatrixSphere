@@ -1,6 +1,5 @@
-import 'package:go_router/go_router.dart'; // Hapus baris ini
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,71 +9,42 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // GlobalKey untuk validasi form
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: "admin@matrix.com"); // Auto-fill untuk kemudahan
-  final _passwordController = TextEditingController(text: "123456"); // Auto-fill untuk kemudahan
 
+  // State untuk visibilitas password & loading
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _errorMessage;
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  // Menggunakan Firebase Auth asli agar dikenali oleh app_router.dart
-  Future<void> _handleFirebaseLogin() async {
+  // Fungsi login tanpa controller dan tanpa Auth
+  void _handleLogin() async {
     setState(() => _errorMessage = null);
 
+    // Validasi form
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    // Aktifkan indikator loading sebentar
     setState(() => _isLoading = true);
+    await Future.delayed(const Duration(milliseconds: 800));
 
-    try {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
+    if (!mounted) return;
+    setState(() => _isLoading = false);
 
-      // 1. Proses login nyata ke Firebase
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+    debugPrint("=== [LOGIN] Berhasil Masuk, Mengarahkan ke Home ===");
 
-      debugPrint("=== [FIREBASE LOGIN] Berhasil Masuk ===");
-
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-
-      // 2. Paksa navigasi manual ke rute utama '/' agar langsung berpindah
-      if (context.mounted) {
-        context.go('/');
-      }
-      
-    } on FirebaseAuthException catch (e) {
-      debugPrint("=== [FIREBASE LOGIN ERROR] ${e.code}: ${e.message} ===");
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false; // <-- PENTING: Matikan loading agar tombol bisa diklik lagi
-        _errorMessage = e.message ?? 'Terjadi kesalahan saat masuk.';
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false; // <-- PENTING: Matikan loading
-        _errorMessage = 'Terjadi kesalahan umum: ${e.toString()}';
-      });
+    // Pindah langsung ke halaman utama menggunakan GoRouter
+    if (context.mounted) {
+      context.go('/');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: const Color(0xFF121212), // Tema gelap Matrix Sphere
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -86,12 +56,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Logo / Icon Gembok
                   const Icon(
                     Icons.lock_rounded,
                     size: 64,
                     color: Colors.purpleAccent,
                   ),
                   const SizedBox(height: 16),
+                  
+                  // Judul Aplikasi
                   const Text(
                     "Matrix Sphere",
                     textAlign: TextAlign.center,
@@ -103,12 +76,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    "Masuk dengan akun terdaftar Firebase",
+                    "Silakan masuk untuk melanjutkan",
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 32),
 
+                  // Banner Error (jika ada)
                   if (_errorMessage != null) ...[
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -125,8 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 16),
                   ],
 
+                  // Input Email
                   TextFormField(
-                    controller: _emailController,
+                    initialValue: "admin@matrix.com",
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Email',
@@ -139,12 +114,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    validator: (value) => value == null || value.isEmpty ? 'Email tidak boleh kosong' : null,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email tidak boleh kosong';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
 
+                  // Input Password
                   TextFormField(
-                    controller: _passwordController,
+                    initialValue: "123456",
                     obscureText: _obscurePassword,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
@@ -156,7 +137,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           _obscurePassword ? Icons.visibility_off : Icons.visibility,
                           color: Colors.grey,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
                       ),
                       filled: true,
                       fillColor: const Color(0xFF1E1E1E),
@@ -165,12 +150,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    validator: (value) => value == null || value.isEmpty ? 'Kata sandi tidak boleh kosong' : null,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Kata sandi tidak boleh kosong';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 24),
 
+                  // Tombol Masuk
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _handleFirebaseLogin,
+                    onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purpleAccent,
                       foregroundColor: Colors.white,
@@ -183,18 +174,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? const SizedBox(
                             height: 20,
                             width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text(
-                            'Masuk (Firebase)',
+                            'Masuk',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Catatan: Pastikan email & password/ndi atas sudah didaftarkan di menu Authentication Firebase Console.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white54, fontSize: 12),
                   ),
                 ],
               ),
