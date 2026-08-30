@@ -72,7 +72,7 @@ class _LoginFormState extends State<LoginForm> {
       setState(() => _isLoading = false);
 
       // 3. Navigasi ke halaman beranda
-      context.go('/');
+      context.go('/home');
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
