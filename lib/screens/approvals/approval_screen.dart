@@ -6,7 +6,6 @@ import 'widgets/approval_body.dart'; // Impor body yang baru
 import 'package:shared_components/shared_components.dart';
 import 'widgets/drawer_items.dart';
 import 'widgets/end_drawer_items.dart';
-import 'package:shared_screens/shared_screens.dart';
 
 class ApprovalScreen extends StatefulWidget {
   const ApprovalScreen({super.key});

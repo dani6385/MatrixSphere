@@ -29,7 +29,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Home / Beranda',
       icon: Icons.home,
       label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
-      onTap: () => context.go('/'), // Contoh navigasi menggunakan GoRouter
+      onTap: () => AppNavigation.goToHome(context), // Contoh navigasi menggunakan GoRouter
     ),
     MenuDrawer(
       title: 'Simulasi',
