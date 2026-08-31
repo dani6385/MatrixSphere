@@ -13,7 +13,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _authChanges = GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges());
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/login', // Kita arahkan eksplisit ke login dulu
+  initialLocation: AppRoutes.login, // Kita arahkan eksplisit ke login dulu
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   refreshListenable: _authChanges,
@@ -34,10 +34,10 @@ final GoRouter appRouter = GoRouter(
     final bool isLoggingIn = state.matchedLocation == '/login';
 
     if (!loggedIn && !isLoggingIn) {
-      return '/login';
+      return AppRoutes.login;
     }
     if (loggedIn && isLoggingIn) {
-      return '/home';
+      return AppRoutes.home;
     }
     
 
