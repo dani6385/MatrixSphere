@@ -29,7 +29,7 @@ final GoRouter appRouter = GoRouter(
     // Logika Firebase Auth dimatikan sementara agar Anda bisa
     // masuk ke halaman utama tanpa di-block oleh router.
     // ========================================================
-    /*
+    
     final bool loggedIn = FirebaseAuth.instance.currentUser != null;
     final bool isLoggingIn = state.matchedLocation == '/login';
 
@@ -37,9 +37,9 @@ final GoRouter appRouter = GoRouter(
       return '/login';
     }
     if (loggedIn && isLoggingIn) {
-      return '/';
+      return '/home';
     }
-    */
+    
 
     return null; // Membiarkan navigasi bebas berjalan
   },
