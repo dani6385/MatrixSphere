@@ -15,10 +15,7 @@ class ApprovalScreen extends StatefulWidget {
 class _ApprovalScreenState extends State<ApprovalScreen> {
   // Simulasi data persetujuan berdasarkan struktur JSON yang kamu berikan
   final Map<String, dynamic> _approvalData = {
-    "toko_andika": {
-      "nama": "andika",
-      "status": "waiting"
-    },
+    "toko_andika": {"nama": "andika", "status": "waiting"},
     // Kamu bisa menambahkan data uji coba lainnya di sini jika diperlukan
   };
 
@@ -49,7 +46,6 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Mengubah Map data menjadi List agar mudah ditampilkan menggunakan ListView
     final keys = _approvalData.keys.toList();
 
     return Scaffold(
@@ -57,7 +53,6 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
         title: const Text('Persetujuan Toko (Approval)'),
         elevation: 2,
       ),
-      
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       drawer: SharedProjectDrawer(
@@ -92,80 +87,102 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Informasi Toko
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailScreen(
+                            title: 'Toko ${shopName.toUpperCase()}',
+                            subtitle: 'Status: $status',
+                            details: {
+                              'ID Toko': shopKey,
+                              'Pemilik': shopName,
+                              'Status Approval': status,
+                            },
+                            primaryButtonLabel: 'Setujui Toko',
+                            primaryButtonColor: Colors.green,
+                            onPrimaryAction: () {
+                              debugPrint('Menyetujui $shopName');
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'ID Toko: $shopKey',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Nama: $shopName',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Chip(
+                                  label: Text(
+                                    'Status: $status',
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  backgroundColor: status == 'waiting'
+                                      ? kWarmOrange.withValues(alpha: 0.2)
+                                      : kSeaGreen.withValues(alpha: 0.2),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                'ID Toko: $shopKey',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Menyetujui $shopName')),
+                                  );
+                                },
+                                icon: const Icon(Icons.check, size: 16),
+                                label: const Text('Setuju'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: kSeaGreen,
+                                  foregroundColor: Colors.white,
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Nama: $shopName',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              const SizedBox(height: 6),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Menolak $shopName')),
+                                  );
+                                },
+                                icon: const Icon(Icons.close, size: 16),
+                                label: const Text('Tolak'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: kAlertRed,
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Chip(
-                                label: Text(
-                                  'Status: $status',
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                                backgroundColor: status == 'waiting'
-                                    ? kWarmOrange.withValues(alpha: 0.2)
-                                    : kSeaGreen.withValues(alpha: 0.2),
                               ),
                             ],
                           ),
-                        ),
-
-                        // Tombol Aksi (Setujui / Tolak)
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                // Logika ketika tombol disetujui ditekan
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Menyetujui $shopName')),
-                                );
-                              },
-                              icon: const Icon(Icons.check, size: 16),
-                              label: const Text('Setuju'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: kSeaGreen,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            OutlinedButton.icon(
-                              onPressed: () {
-                                // Logika ketika tombol ditolak ditekan
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Menolak $shopName')),
-                                );
-                              },
-                              icon: const Icon(Icons.close, size: 16),
-                              label: const Text('Tolak'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: kAlertRed,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );
