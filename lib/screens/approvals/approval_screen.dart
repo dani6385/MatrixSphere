@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_ui/theme/app_colors.dart';
+import 'package:shared_components/shared_components.dart';
+import 'package:shared_ui/shared_ui.dart';
+import 'widgets/drawer_items.dart';
+import 'widgets/end_drawer_items.dart';
 
 class ApprovalScreen extends StatefulWidget {
   const ApprovalScreen({super.key});
@@ -27,6 +30,19 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
       appBar: AppBar(
         title: const Text('Persetujuan Toko (Approval)'),
         elevation: 2,
+      ),
+      
+      drawerEnableOpenDragGesture: false,
+      endDrawerEnableOpenDragGesture: false,
+      drawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getDrawerSideMenuItems(context, currentRoute);
+        },
+      ),
+      endDrawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getEndDrawerSideMenuItems(context, currentRoute);
+        },
       ),
       body: keys.isEmpty
           ? const Center(
