@@ -29,6 +29,12 @@ class HomeScreen extends StatelessWidget {
         },
       ),
       //body: const HomeBody(),
+      body: const Center(
+        child: Text(
+          'Selamat Datang di Beranda (Home)',
+          style: TextStyle(fontSize: 16, color: Colors.white),
+        ),
+      ),
     );
   }
 }
