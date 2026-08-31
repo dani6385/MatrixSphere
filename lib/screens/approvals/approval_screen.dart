@@ -16,11 +16,11 @@ class ApprovalScreen extends StatefulWidget {
 }
 
 class _ApprovalScreenState extends State<ApprovalScreen> {
-  final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child('approvals');
+  final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child('approval');
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child('approvals');
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child('approval');
     return Scaffold(
       appBar: ApprovalAppBar(),
       drawerEnableOpenDragGesture: false,

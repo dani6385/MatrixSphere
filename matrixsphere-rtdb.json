@@ -2,7 +2,19 @@
   "approval": {
     "toko_andika": {
       "nama": "andika",
-      "status": "waiting"
+      "status": "waiting",
+      "NIK": "123456789012345",
+      "alamat": "kampung Asem",
+      "latitude": -6.2088,
+      "longitude": 106.8456
+    },
+    "toko_baru_siti": {
+      "nama": "siti",
+      "status": "waiting",
+      "NIK": "123456789012345",
+      "desa": "desa Cinangsi",
+      "latitude": -6.9175,
+      "longitude": 107.6191
     }
   },
   "attendance": {
