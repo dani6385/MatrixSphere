@@ -19,22 +19,85 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     "toko_andika": {"nama": "andika", "status": "waiting"},
   };
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: ApprovalAppBar(),
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
-      drawer: SharedProjectDrawer(
-        menuBuilder: (context, currentRoute) {
-          return getDrawerSideMenuItems(context, currentRoute);
-        },
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.apps,
+                    color: Colors.white,
+                    size: 36,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Menu Aplikasi',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SharedProjectDrawer(
+              menuBuilder: (context, currentRoute) {
+                return getDrawerSideMenuItems(context, currentRoute);
+              },
+            ),
+          ],
+        ),
       ),
-      endDrawer: SharedProjectDrawer(
-        menuBuilder: (context, currentRoute) {
-          return getEndDrawerSideMenuItems(context, currentRoute);
-        },
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.apps,
+                    color: Colors.white,
+                    size: 36,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Menu Aplikasi',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SharedProjectDrawer(
+              menuBuilder: (context, currentRoute) {
+                return getEndDrawerSideMenuItems(context, currentRoute);
+              },
+            ),
+          ],
+        ),
       ),
       // Memanggil ApprovalBody yang sudah dipisahkan
       body: ApprovalBody(
