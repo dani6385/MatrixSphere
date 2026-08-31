@@ -29,10 +29,28 @@ class HomeScreen extends StatelessWidget {
         },
       ),
       //body: const HomeBody(),
-      body: const Center(
-        child: Text(
-          'Selamat Datang di Beranda (Home)',
-          style: TextStyle(fontSize: 16, color: Colors.white),
+      body: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Selamat Datang, Admin!',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Halaman utama beranda aktif.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+          ],
         ),
       ),
     );
