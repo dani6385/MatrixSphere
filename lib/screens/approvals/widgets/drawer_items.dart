@@ -29,12 +29,17 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       title: 'Home / Beranda',
       icon: Icons.home,
       label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
-      onTap: () => AppNavigation.goToHome(
-          context), // Contoh navigasi menggunakan GoRouter
+      onTap: () {
+        // 1. Tutup drawer terlebih dahulu dengan aman
+        Navigator.pop(context);
+
+        // 2. Setelah drawer tertutup, baru arahkan kembali ke beranda
+        AppNavigation.goToHome(context);
+      },
     ),
     MenuDrawer(
-      title: 'Simulasi',
-      icon: Icons.dashboard,
+      title: 'Persetujuan',
+      icon: Icons.approval,
       label:
           'Menampilkan ringkasan statistik penjualan, grafik, dan performa toko.',
       onTap: () => logger.i('Simulasi tapped'),
