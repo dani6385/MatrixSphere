@@ -4,8 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const HomeAppBar({super.key});
+class ApprovalAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const ApprovalAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
