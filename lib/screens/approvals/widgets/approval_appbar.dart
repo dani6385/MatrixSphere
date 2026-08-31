@@ -19,7 +19,7 @@ class ApprovalAppBar extends StatelessWidget implements PreferredSizeWidget {
       // Tombol di sebelah kiri untuk membuka Drawer utama (navigasi presensi)
       leading: IconButton(
         icon: Icon(
-          Icons.home, // Ikon sidik jari khusus halaman attendance
+          Icons.fact_check, // Ikon sidik jari khusus halaman attendance
           color: context.onSurface,
         ),
         tooltip: 'Menu Navigasi',
@@ -43,7 +43,7 @@ class ApprovalAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: Icon(
-            Icons.settings, // Ikon kalender untuk riwayat/jadwal kerja
+            Icons.filter_list, // Ikon kalender untuk riwayat/jadwal kerja
             color: context.onSurface,
           ),
           tooltip: 'Pengaturan',
