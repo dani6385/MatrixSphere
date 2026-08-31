@@ -66,7 +66,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
