@@ -3,6 +3,7 @@ import 'package:shared_components/shared_components.dart';
 import 'package:shared_ui/shared_ui.dart';
 import 'widgets/drawer_items.dart';
 import 'widgets/end_drawer_items.dart';
+import 'package:shared_screens/shared_screens.dart';
 
 class ApprovalScreen extends StatefulWidget {
   const ApprovalScreen({super.key});
@@ -20,6 +21,31 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
     },
     // Kamu bisa menambahkan data uji coba lainnya di sini jika diperlukan
   };
+
+  void navigateToApprovalDetail(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailScreen(
+          title: 'Toko Andika',
+          subtitle: 'Status: Menunggu Persetujuan (Waiting)',
+          details: {
+            'ID Toko': 'toko_andika',
+            'Pemilik': 'Andika',
+            'Kategori': 'Retail / Grosir',
+            'Tanggal Daftar': '31 Agustus 2026',
+          },
+          primaryButtonLabel: 'Setujui Toko',
+          primaryButtonColor: Colors.green,
+          onPrimaryAction: () {
+            // Logika ketika tombol setuju ditekan
+            debugPrint('Toko Andika disetujui!');
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

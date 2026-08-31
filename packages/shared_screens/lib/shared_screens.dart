@@ -15,4 +15,5 @@ export 'features/about/about_screen.dart';
 export 'features/help/help_screen.dart';
 export 'features/chat/chat_screen.dart';
 export 'features/streaming/streaming_screen.dart';*/
+export 'details/detail_screen.dart';
 

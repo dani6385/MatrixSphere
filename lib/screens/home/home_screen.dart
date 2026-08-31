@@ -4,11 +4,36 @@ import 'package:flutter/material.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_drawer_items.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_end_drawer_items.dart';
 import 'package:shared_components/shared_components.dart';
+import 'package:shared_screens/shared_screens.dart';
 import 'widgets/home_appbar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
+// Contoh cara memanggil DetailScreen untuk Approval Toko
+void navigateToApprovalDetail(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => DetailScreen(
+        title: 'Toko Andika',
+        subtitle: 'Status: Menunggu Persetujuan (Waiting)',
+        details: {
+          'ID Toko': 'toko_andika',
+          'Pemilik': 'Andika',
+          'Kategori': 'Retail / Grosir',
+          'Tanggal Daftar': '31 Agustus 2026',
+        },
+        primaryButtonLabel: 'Setujui Toko',
+        primaryButtonColor: Colors.green,
+        onPrimaryAction: () {
+          // Logika ketika tombol setuju ditekan
+          debugPrint('Toko Andika disetujui!');
+          Navigator.pop(context);
+        },
+      ),
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

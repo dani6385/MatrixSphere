@@ -21,3 +21,4 @@ export 'widgets/app_card.dart';
 export 'src/base_app.dart';
 export 'widgets/bottom/bottom.dart';
 export 'widgets/bottom/action_bottom.dart';
+export 'widgets/bottom/action_button.dart';
