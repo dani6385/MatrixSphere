@@ -3,7 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart'; // Tambahkan go_router untuk navigasi
 import 'package:logger/logger.dart';
-import 'package:shared_ui/shared_ui.dart'; // Impor shared_ui agar kita bisa menggunakan SideMenuItem
+import 'package:shared_ui/shared_ui.dart';
+import 'shared_navigations/shared_navigation.dart';
 
 final Logger logger = Logger();
 
