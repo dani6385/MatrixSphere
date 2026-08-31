@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_drawer_items.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_end_drawer_items.dart';
 import 'package:shared_components/shared_components.dart';
+import 'widgets/home_appbar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,7 +13,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       // Scaffold itself will have a transparent background by default
-      //appBar: const HomeAppBar(),
+      appBar: const HomeAppBar(),
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       drawer: SharedProjectDrawer(
