@@ -1,5 +1,6 @@
 // lib/screens/approval_screen.dart
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'widgets/approval_appbar.dart';
 import 'widgets/approval_body.dart'; // Impor body yang baru
@@ -15,12 +16,11 @@ class ApprovalScreen extends StatefulWidget {
 }
 
 class _ApprovalScreenState extends State<ApprovalScreen> {
-  final Map<String, dynamic> _approvalData = {
-    "toko_andika": {"nama": "andika", "status": "waiting"},
-  };
+  final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child('approvals');
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child('approvals');
     return Scaffold(
       appBar: ApprovalAppBar(),
       drawerEnableOpenDragGesture: false,
@@ -100,16 +100,45 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
         ),
       ),
       // Memanggil ApprovalBody yang sudah dipisahkan
-      body: ApprovalBody(
-        approvalData: _approvalData,
-        onApprove: (shopKey, shopName) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Menyetujui $shopName')),
-          );
-        },
-        onReject: (shopKey, shopName) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Menolak $shopName')),
+      body: StreamBuilder(
+        stream: dbRef.onValue,
+        builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+          // 1. Kondisi saat data masih dimuat (Loading)
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // 2. Kondisi jika terjadi error atau data kosong
+          if (snapshot.hasError || !snapshot.hasData || snapshot.data!.snapshot.value == null) {
+            return const Center(
+              child: Text(
+                'Tidak ada data persetujuan saat ini.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            );
+          }
+
+          // 3. Mengambil dan mengubah data dari Firebase menjadi Map<String, dynamic>
+          final rawData = snapshot.data!.snapshot.value;
+          final Map<String, dynamic> approvalData = Map<String, dynamic>.from(rawData as Map);
+
+          // 4. Masukkan data dinamis ke dalam ApprovalBody
+          return ApprovalBody(
+            approvalData: approvalData,
+            onApprove: (shopKey, shopName) {
+              // Logika aksi setuju ke database RTDB
+              dbRef.child(shopKey).update({'status': 'approved'});
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Menyetujui $shopName')),
+              );
+            },
+            onReject: (shopKey, shopName) {
+              // Logika aksi tolak ke database RTDB
+              dbRef.child(shopKey).update({'status': 'rejected'});
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Menolak $shopName')),
+              );
+            },
           );
         },
       ),
