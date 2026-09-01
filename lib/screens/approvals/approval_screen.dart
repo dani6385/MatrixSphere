@@ -25,22 +25,12 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
       appBar: ApprovalAppBar(),
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
-      drawer: Drawer(
-  child: ListView(
-    padding: EdgeInsets.zero,
-    children: [
-      const DrawerHeader(
-        decoration: BoxDecoration(color: Colors.blue),
-        child: Text('Menu Aplikasi', style: TextStyle(color: Colors.white, fontSize: 18)),
-      ),
+      drawer: 
             SharedProjectDrawer(
               menuBuilder: (context, currentRoute) {
                 return getDrawerSideMenuItems(context, currentRoute);
               },
             ),
-          ],
-        ),
-      ),
       endDrawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
