@@ -196,5 +196,14 @@
       "role": "admin",
       "isAllowed": true
     }
+  },
+  "crashes": {
+    "-Oxyz123456789": {
+      "modul": "seller_sphere",
+      "pesanError": "Gagal menyambungkan data toko ke server",
+      "waktu": "2026-07-21 16:30:00",
+      "status": "pending"
+    }
   }
 }
+

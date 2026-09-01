@@ -16,21 +16,22 @@ class ApprovalScreen extends StatefulWidget {
 }
 
 class _ApprovalScreenState extends State<ApprovalScreen> {
-  final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child('approval');
+  final DatabaseReference dbRef =
+      FirebaseDatabase.instance.ref().child('approval');
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child('approval');
+    final DatabaseReference dbRef =
+        FirebaseDatabase.instance.ref().child('approval');
     return Scaffold(
       appBar: ApprovalAppBar(),
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
-      drawer: 
-            SharedProjectDrawer(
-              menuBuilder: (context, currentRoute) {
-                return getDrawerSideMenuItems(context, currentRoute);
-              },
-            ),
+      drawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getDrawerSideMenuItems(context, currentRoute);
+        },
+      ),
       endDrawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -78,7 +79,9 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
           }
 
           // 2. Kondisi jika terjadi error atau data kosong
-          if (snapshot.hasError || !snapshot.hasData || snapshot.data!.snapshot.value == null) {
+          if (snapshot.hasError ||
+              !snapshot.hasData ||
+              snapshot.data!.snapshot.value == null) {
             return const Center(
               child: Text(
                 'Tidak ada data persetujuan saat ini.',
@@ -89,7 +92,8 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
 
           // 3. Mengambil dan mengubah data dari Firebase menjadi Map<String, dynamic>
           final rawData = snapshot.data!.snapshot.value;
-          final Map<String, dynamic> approvalData = Map<String, dynamic>.from(rawData as Map);
+          final Map<String, dynamic> approvalData =
+              Map<String, dynamic>.from(rawData as Map);
 
           // 4. Masukkan data dinamis ke dalam ApprovalBody
           return ApprovalBody(

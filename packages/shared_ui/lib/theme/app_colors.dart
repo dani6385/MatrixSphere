@@ -87,6 +87,7 @@ const Color kInfo = AppColors.info;
 // Sisa alias lama pendukung
 const Color darkBlueBackground = Color(0xFF0D1B2A);
 const Color kBlueSecondary = kBrandSecondary;
+const Color kBlueAccent = Colors.blueAccent;
 const Color kCyanPrimary = kBrandPrimary;
 const Color kSlateBackgroundDark = kDarkBackground;
 const Color kSlateBackgroundLight = kLightBackground;
