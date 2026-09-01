@@ -26,34 +26,13 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.apps,
-                    color: Colors.white,
-                    size: 36,
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Menu Aplikasi',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  child: ListView(
+    padding: EdgeInsets.zero,
+    children: [
+      const DrawerHeader(
+        decoration: BoxDecoration(color: Colors.blue),
+        child: Text('Menu Aplikasi', style: TextStyle(color: Colors.white, fontSize: 18)),
+      ),
             SharedProjectDrawer(
               menuBuilder: (context, currentRoute) {
                 return getDrawerSideMenuItems(context, currentRoute);
