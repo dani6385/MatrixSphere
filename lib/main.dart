@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_router.dart';
 import 'services/firebase_options.dart';
 import 'package:shared_services/shared_services.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
   await AppInitializer.initializeFirebase(
       DefaultFirebaseOptions.currentPlatform);
-
-  runApp(const MatrixSphere());
+  final prefs = await SharedPreferences.getInstance();
+  final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+  
+  runApp(MatrixSphere(isLoggedIn: isLoggedIn));
 }
 
 class MatrixSphere extends StatelessWidget {
-  const MatrixSphere({super.key});
+  final bool isLoggedIn;
+  const MatrixSphere({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
@@ -30,4 +33,3 @@ class MatrixSphere extends StatelessWidget {
     );
   }
 }
-
