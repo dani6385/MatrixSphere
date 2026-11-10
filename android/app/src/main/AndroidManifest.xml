@@ -39,7 +39,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 
                 <!-- Ganti 'namadomainanda.com' dengan domain web Anda yang menampung assetlinks.json -->
-                <data android:scheme="https" android:host="namadomainanda.com" />
+                <data android:scheme="https" android:host="ms-matrix-sphere.web.app" />
                 
                 <!-- (Opsional) Jika Anda ingin mendukung sub-domain atau path spesifik -->
                 <!-- <data android:pathPrefix="/app" /> -->

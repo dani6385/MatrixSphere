@@ -58,6 +58,7 @@ dependencies:
   csv: ^8.0.0
   pdf: ^3.13.0
   fluttertoast: ^10.0.0
+  app_links: ^7.2.2
 
 dev_dependencies:
   flutter_test:
