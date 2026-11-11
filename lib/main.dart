@@ -7,6 +7,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    // Inisialisasi Firebase atau layanan lain
+    // await AppInitializer.initializeFirebase(...);
+
+    // Ambil data dari penyimpanan lokal
+    final prefs = await SharedPreferences.getInstance();
+    final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+
+    runApp(MatrixSphere(isLoggedIn: isLoggedIn));
+  } catch (e) {
+    debugPrint('Terjadi kesalahan saat inisialisasi: $e');
+    // Jalankan fallback UI jika diperlukan agar aplikasi tetap merespons
+  }
   // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
   await AppInitializer.initializeFirebase(
       DefaultFirebaseOptions.currentPlatform);
