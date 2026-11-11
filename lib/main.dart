@@ -1,27 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_router.dart';
-import 'package:matrix_sphere/services/deep_linking.dart';
-import 'package:matrix_sphere/services/firebase_options.dart';
+import 'services/deep_linking.dart';
+import 'services/firebase_options.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    // 1. Aktifkan kembali inisialisasi Firebase agar tidak bernilai null
-    await AppInitializer.initializeFirebase(
-        DefaultFirebaseOptions.currentPlatform);
+  // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
+  await AppInitializer.initializeFirebase(
+      DefaultFirebaseOptions.currentPlatform);
+  final prefs = await SharedPreferences.getInstance();
+  final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
 
-    // 2. Ambil data status login dari penyimpanan lokal
-    final prefs = await SharedPreferences.getInstance();
-    final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-
-    // 3. Jalankan aplikasi utama sekali saja
-    runApp(MatrixSphere(isLoggedIn: isLoggedIn));
-    
-  } catch (e) {
-    debugPrint('Terjadi kesalahan saat inisialisasi: $e');
-  }
+  runApp(MatrixSphere(isLoggedIn: isLoggedIn));
 }
 
 class MatrixSphere extends StatefulWidget {
