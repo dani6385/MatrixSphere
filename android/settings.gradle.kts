@@ -23,7 +23,7 @@ plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     
     // PERBAIKAN: Diperbarui ke 8.11.1 untuk mendukung pustaka kamera & rekomendasi Flutter
-    id("com.android.application") version "8.11.1" apply false
+    id("com.android.application") version "9.1.1" apply false
     id("com.android.library") version "8.11.1" apply false
     
     id("com.google.gms.google-services") version "4.4.2" apply false

@@ -19,12 +19,10 @@ void main() async {
 
     // 3. Jalankan aplikasi utama sekali saja
     runApp(MatrixSphere(isLoggedIn: isLoggedIn));
-    
   } catch (e) {
     debugPrint('Terjadi kesalahan saat inisialisasi: $e');
   }
 }
-
 
 class MatrixSphere extends StatefulWidget {
   final bool isLoggedIn;
