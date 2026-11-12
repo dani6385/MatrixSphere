@@ -1,5 +1,5 @@
 export 'notifications/notification_screen.dart';
-export 'features/scanner/scanner_screen.dart';
+//export 'features/scanner/scanner_screen.dart';
 export 'features/auth/logins/login_screen.dart';
 export 'features/auth/forgot_password_screen.dart';
 export 'features/auth/user_registration.dart';

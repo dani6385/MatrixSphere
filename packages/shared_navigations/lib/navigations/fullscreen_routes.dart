@@ -17,11 +17,11 @@ List<RouteBase> buildFullscreenRoutes(
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ShopProfileScreen(),
     ),
-    GoRoute(
+    /*GoRoute(
       path: AppRoutes.scanQr,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ScannerScreen(),
-    ),
+    ),*/
   ];
 }
 
