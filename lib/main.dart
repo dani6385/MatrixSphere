@@ -8,12 +8,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
-  await AppInitializer.initializeFirebase(
-      DefaultFirebaseOptions.currentPlatform);
-  final prefs = await SharedPreferences.getInstance();
-  final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+  try {
+    // 1. Aktifkan kembali inisialisasi Firebase agar tidak bernilai null
+    await AppInitializer.initializeFirebase(
+        DefaultFirebaseOptions.currentPlatform);
 
-  runApp(MatrixSphere(isLoggedIn: isLoggedIn));
+    // 2. Ambil data status login dari penyimpanan lokal
+    final prefs = await SharedPreferences.getInstance();
+    final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+
+    // 3. Jalankan aplikasi utama sekali saja
+    runApp(MatrixSphere(isLoggedIn: isLoggedIn));
+    
+  } catch (e) {
+    debugPrint('Terjadi kesalahan saat inisialisasi: $e');
+  }
 }
 
 class MatrixSphere extends StatefulWidget {
