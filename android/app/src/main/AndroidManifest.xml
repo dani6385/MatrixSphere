@@ -1,16 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
-        android:label="MS Matrix Sphere"
+        android:label="Matrix Sphere"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
-        <meta-data 
-        android:name="asset_statements" 
-        android:resource="@string/asset_statements" />
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -31,18 +23,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-            <!-- TAMBAHKAN KODE DI BAWAH INI UNTUK ANDROID APP LINKS -->
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                
-                <!-- Ganti 'namadomainanda.com' dengan domain web Anda yang menampung assetlinks.json -->
-                <data android:scheme="https" android:host="ms-matrix-sphere.web.app" />
-                
-                <!-- (Opsional) Jika Anda ingin mendukung sub-domain atau path spesifik -->
-                <!-- <data android:pathPrefix="/app" /> -->
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
