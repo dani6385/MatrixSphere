@@ -17,7 +17,6 @@ dependencies:
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  curved_navigation_bar: ^1.0.6
   
   #firebase_core: ^4.13.0
   firebase_crashlytics: ^5.2.7
@@ -80,10 +79,10 @@ dependency_overrides:
   cli_util: ^0.5.0
 
 workspace:
-  #- apps/admin_mikrotik
-  #- apps/client_connectivity
-  #- apps/seller_sphere
-  #- apps/shop_sphere
+  - apps/admin_mikrotik
+  - apps/client_connectivity
+  - apps/seller_sphere
+  - apps/shop_sphere
   - packages/shared_components
   #- packages/shared_core
   #- packages/shared_contents

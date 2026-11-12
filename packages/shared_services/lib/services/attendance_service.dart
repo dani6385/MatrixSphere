@@ -20,16 +20,11 @@ class AttendanceService {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      throw Exception(
-          "Izin lokasi ditolak permanen. Silakan atur di pengaturan HP.");
+      throw Exception("Izin lokasi ditolak permanen. Silakan atur di pengaturan HP.");
     }
 
     return await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter:
-            10, // Opsional: jarak minimum perpindahan (dalam meter) sebelum update
-      ),
+      desiredAccuracy: LocationAccuracy.high,
     );
   }
 
@@ -54,8 +49,7 @@ class AttendanceService {
       var uri = Uri.parse('https://api.domainanda.com/v1/attendance/verify');
       var request = http.MultipartRequest('POST', uri);
 
-      request.files
-          .add(await http.MultipartFile.fromPath('face_image', imageFile.path));
+      request.files.add(await http.MultipartFile.fromPath('face_image', imageFile.path));
       request.fields['employee_id'] = employeeId;
       request.fields['latitude'] = latitude.toString();
       request.fields['longitude'] = longitude.toString();

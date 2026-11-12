@@ -20,7 +20,7 @@ class ActivityListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: color.withValues(alpha: 0.1),
+        backgroundColor: color.withOpacity(0.1),
         child: Icon(icon, color: color),
       ),
       title: Text(title, style: AppStyles.bodyLarge),

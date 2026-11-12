@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_ui/shared_ui.dart';
-
 /// A shared, reusable bottom navigation bar with a custom concave (downward-curving) shape.
 ///
 /// This widget is designed to be generic. It receives a list of [GButton]s
