@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_router.dart';
-import 'services/deep_linking.dart';
+//import 'services/deep_linking.dart';
 import 'services/firebase_options.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,9 +35,9 @@ class MatrixSphere extends StatefulWidget {
 
 // 2. State pendukung untuk MatrixSphere
 class _MatrixSphereState extends State<MatrixSphere> {
-  final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
+  //final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
 
-  @override
+  /*@override
   void initState() {
     super.initState();
 
@@ -45,7 +45,7 @@ class _MatrixSphereState extends State<MatrixSphere> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _deepLinkHandler.initDeepLinks(context, appRouter);
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
