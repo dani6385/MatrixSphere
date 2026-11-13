@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'navigations/app_router.dart';
 
 void main() {
   runApp(const MatrixSphere(isLoggedIn: false));
@@ -31,7 +32,7 @@ class _MatrixSphereState extends State<MatrixSphere> {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
-      //routerConfig: appRouter,
+      routerConfig: appRouter,
     );
   }
 }
