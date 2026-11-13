@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'navigations/app_router.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Pastikan Firebase terinisialisasi agar tidak terjadi error tertahan
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase init error: $e');
+  }
   runApp(const MatrixSphere(isLoggedIn: false));
 }
 
