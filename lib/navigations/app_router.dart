@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'app_routes.dart';
 import 'bottom_nav_bar.dart';
 import 'app_branches.dart';
@@ -18,21 +18,21 @@ final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.login, // Kita arahkan eksplisit ke login dulu
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
+
   //refreshListenable: _authChanges,
-  
+
   // SEMENTARA DIMATIKAN UNTUK WEB (Mencegah stuck di splash screen)
   // observers: [
   //   analyticsService.analitycsObserver,
   // ],
-  
   redirect: (BuildContext context, GoRouterState state) {
     // ========================================================
-    // [!] TESTING BYPASS: 
+    // [!] TESTING BYPASS:
     // Logika Firebase Auth dimatikan sementara agar Anda bisa
     // masuk ke halaman utama tanpa di-block oleh router.
     // ========================================================
-    
-    final bool loggedIn = FirebaseAuth.instance.currentUser != null;
+
+    /*final bool loggedIn = FirebaseAuth.instance.currentUser != null;
     final bool isLoggingIn = state.matchedLocation == '/login';
 
     if (!loggedIn && !isLoggingIn) {
@@ -40,12 +40,11 @@ final GoRouter appRouter = GoRouter(
     }
     if (loggedIn && isLoggingIn) {
       return AppRoutes.home;
-    }
-    
+    }*/
 
     return null; // Membiarkan navigasi bebas berjalan
   },
-  
+
   errorBuilder: (context, state) {
     return Scaffold(
       appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
@@ -95,7 +94,7 @@ final GoRouter appRouter = GoRouter(
       },
       branches: appBranches,
     ),
-    
+
     ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );

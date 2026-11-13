@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 import 'app_extractor.dart';
-import 'auth_gate.dart';
+import 'package:matrix_sphere/auth/auth_gate.dart';
 
 /// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
 List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
