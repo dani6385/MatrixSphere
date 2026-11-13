@@ -7,17 +7,19 @@ import 'auth_gate.dart';
 /// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
 List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
   return [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const AuthGate(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const AuthGate()),
     GoRoute(
       path: AppRoutes.login,
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const LoginScreen(),
+      name: 'login',
+      builder: (BuildContext context, GoRouterState state) {
+        return const Scaffold(
+          body: Center(child: Text('Ini adalah Halaman Login')),
+        );
+      },
     ),
     /*GoRoute(
       path: AppRoutes.forgotPassword,
+      name: 'forgot_password',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
@@ -47,10 +49,7 @@ List<StatefulShellBranch> authShellBranches({
       StatefulShellBranch(
         navigatorKey: homeNavigatorKey,
         routes: [
-          GoRoute(
-            path: '/onboard',
-            builder: (context, state) => onboardScreen,
-          ),
+          GoRoute(path: '/onboard', builder: (context, state) => onboardScreen),
         ],
       ),
     StatefulShellBranch(
@@ -84,4 +83,3 @@ List<StatefulShellBranch> authShellBranches({
     ),*/
   ];
 }
-
