@@ -1,73 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'app_branches.dart';
+import 'app_branches.dart';
+import 'app_routes.dart';
+import 'fullscreen_routes.dart';
 
-// 1. Impor halaman-halaman yang Anda miliki di dalam aplikasi
-// (Sesuaikan path impor di bawah ini dengan struktur folder Anda)
-// import '../features/auth/presentation/login_screen.dart';
-// import '../features/home/presentation/home_screen.dart';
+// Kunci global untuk navigator utama (root)
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-// 2. Definisi GoRouter utama
+// StreamListenable untuk memantau perubahan status autentikasi
+//final _authChanges = GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges());
+
 final GoRouter appRouter = GoRouter(
-  // Menentukan rute awal saat aplikasi pertama kali dibuka
-  initialLocation: '/',
+  initialLocation: AppRoutes.login, // Kita arahkan eksplisit ke login dulu
+  debugLogDiagnostics: true,
+  navigatorKey: _rootNavigatorKey,
+  //refreshListenable: _authChanges,
   
-  // Penanganan jika rute tidak ditemukan (Halaman 404)
-  errorBuilder: (context, state) => Scaffold(
-    appBar: AppBar(title: const Text('Error')),
-    body: Center(
-      child: Text('Halaman tidak ditemukan: ${state.uri.path}'),
-    ),
-  ),
-
-  // Daftar rute (routes) yang tersedia di aplikasi
-  routes: <RouteBase>[
-    // Rute Halaman Utama / Home
-    GoRoute(
-      path: '/',
-      name: 'home',
-      builder: (BuildContext context, GoRouterState state) {
-        // Ganti dengan widget HomeScreen Anda
-        return const PlaceholderScreen(title: 'Halaman Utama (Home)');
-      },
-    ),
-
-    // Rute Halaman Login
-    GoRoute(
-      path: '/login',
-      name: 'login',
-      builder: (BuildContext context, GoRouterState state) {
-        // Ganti dengan widget LoginScreen Anda
-        return const PlaceholderScreen(title: 'Halaman Login');
-      },
-    ),
+  // SEMENTARA DIMATIKAN UNTUK WEB (Mencegah stuck di splash screen)
+  // observers: [
+  //   analyticsService.analitycsObserver,
+  // ],
+  
+  redirect: (BuildContext context, GoRouterState state) {
+    // ========================================================
+    // [!] TESTING BYPASS: 
+    // Logika Firebase Auth dimatikan sementara agar Anda bisa
+    // masuk ke halaman utama tanpa di-block oleh router.
+    // ========================================================
     
-    // Contoh rute dengan parameter (misal: detail item)
-    // GoRoute(
-    //   path: '/detail/:id',
-    //   name: 'detail',
-    //   builder: (BuildContext context, GoRouterState state) {
-    //     final id = state.pathParameters['id'] ?? '';
-    //     return DetailScreen(id: id);
-    //   },
-    // ),
-  ],
-);
+    final bool loggedIn = FirebaseAuth.instance.currentUser != null;
+    final bool isLoggingIn = state.matchedLocation == '/login';
 
-// Widget sementara sebagai placeholder jika halaman aslinya belum diimpor
-class PlaceholderScreen extends StatelessWidget {
-  final String title;
-  const PlaceholderScreen({super.key, required this.title});
+    if (!loggedIn && !isLoggingIn) {
+      return AppRoutes.login;
+    }
+    if (loggedIn && isLoggingIn) {
+      return AppRoutes.home;
+    }
+    
 
-  @override
-  Widget build(BuildContext context) {
+    return null; // Membiarkan navigasi bebas berjalan
+  },
+  
+  errorBuilder: (context, state) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
       body: Center(
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Oops! Terjadi kesalahan navigasi.',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Path yang error: ${state.uri.toString()}',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => GoRouter.of(context).go('/login'),
+                child: const Text('Kembali ke Login'),
+              ),
+            ],
+          ),
         ),
       ),
     );
-  }
-}
+  },
+  routes: [
+    //...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
+    /*buildAppShellRoute(
+      shellBuilder: (context, state, navigationShell) {
+        return AppNavigator(navigationShell: navigationShell);
+      },
+      branches: appBranches,
+    ),*/
+    ...buildFullscreenRoutes(_rootNavigatorKey),
+  ],
+);
