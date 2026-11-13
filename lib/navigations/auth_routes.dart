@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart'; // Sesuaikan jika nama file routes-mu berbeda
-import '../auth/login_screen.dart';
+import 'package:matrix_sphere/auth/login_screen.dart';
 
 // Import halaman login kamu di sini
 // Contoh path import: import '../features/auth/login_screen.dart';
