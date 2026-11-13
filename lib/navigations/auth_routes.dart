@@ -4,6 +4,7 @@ import 'app_routes.dart';
 import 'app_extractor.dart';
 import 'auth_gate.dart';
 
+/// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
 List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
   return [
     GoRoute(path: '/', builder: (context, state) => const AuthGate()),
@@ -11,9 +12,7 @@ List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
       path: AppRoutes.login,
       name: 'login',
       builder: (BuildContext context, GoRouterState state) {
-        return const Scaffold(
-          body: Center(child: Text('Ini adalah Halaman Login')),
-        );
+        return const LoginScreen();
       },
     ),
     /*GoRoute(
