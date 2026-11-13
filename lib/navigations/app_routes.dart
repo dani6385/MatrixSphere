@@ -8,4 +8,5 @@ class AppRoutes {
   static const String attendance = '/attendance';
   static const String userProfile = '/user-profile';
   static const String projects = '/projects';
+  static const String authGate = '/auth-gate';
 }
