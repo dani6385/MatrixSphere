@@ -1,12 +1,8 @@
 class AppRoutes {
   static const String login = '/login';
   static const String home = '/';
-  static const String details = '/details';
-  static const String approvals = '/approvals';
-  static const String analytics = '/analytics';
-  static const String transactions = '/transactions';
+  static const String approval = '/approval';
+  static const String analytic = '/analytic';
+  static const String project = '/project';
   static const String attendance = '/attendance';
-  static const String userProfile = '/user-profile';
-  static const String projects = '/projects';
-  static const String authGate = '/auth-gate';
 }

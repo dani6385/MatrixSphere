@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'app_routes.dart';
-import 'app_extractor.dart';
-import 'package:matrix_sphere/auth/auth_gate.dart';
+import 'app_routes.dart'; // Sesuaikan jika nama file routes-mu berbeda
+import '../auth/login_screen.dart';
 
-/// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
-List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
+// Import halaman login kamu di sini
+// Contoh path import: import '../features/auth/login_screen.dart';
+// import '../features/auth/login_screen.dart'; 
+
+/// Fungsi untuk menghasilkan daftar rute autentikasi (Login, Register, dll)
+List<RouteBase> buildAuthRoutes({required GlobalKey<NavigatorState> rootNavigatorKey}) {
   return [
     GoRoute(
-      path: AppRoutes.login,
-      name: 'login',
+      path: AppRoutes.login, // Menggunakan konstanta dari AppRoutes ('/login')
+      parentNavigatorKey: rootNavigatorKey, // Memastikan tampil fullscreen tanpa bottom navbar
       builder: (BuildContext context, GoRouterState state) {
         return const LoginScreen();
       },
-    ),
-    GoRoute(
-      path: AppRoutes.authGate,
-      name: 'auth_gate',
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const AuthGate(),
     ),
   ];
 }
