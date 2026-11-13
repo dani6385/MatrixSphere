@@ -1,4 +1,4 @@
-# matrixsphere
+# Matrix phere
 
 A new Flutter project.
 
