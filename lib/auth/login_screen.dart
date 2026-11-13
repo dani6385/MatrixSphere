@@ -30,23 +30,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() {
     // Memeriksa apakah input sudah valid sesuai aturan Form
     if (_formKey.currentState!.validate()) {
-      try {
-        // PROSES LOGIN LOGIC DI SINI
-        // Contoh: panggil API authentication atau kirim data login
+      // PROSES LOGIN LOGIC DI SINI
+      // Contoh: panggil API authentication atau kirim data login
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Proses Login...')),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Proses Login...')),
+      );
 
-        // Setelah login berhasil, arahkan pengguna ke halaman utama (home)
-        // Sesuaikan rute '/home' dengan path halaman utamamu
-        context.go('/home');
-      } catch (e) {
-        // Tangani error login di sini, misalnya menampilkan pesan error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login gagal: $e')),
-        );
-      }
+      // Setelah login berhasil, arahkan pengguna ke halaman utama (home)
+      // Sesuaikan rute '/home' dengan path halaman utamamu
+      context.go('/home');
     }
   }
 

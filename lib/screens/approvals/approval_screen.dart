@@ -1,78 +1,119 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// lib/screens/approval_screen.dart
 
-/// Kelas utama untuk halaman Approval (hom.dart).
-/// Menggunakan StatelessWidget karena halaman dasar ini belum menyimpan perubahan data internal.
-class ApprovalScreen extends StatelessWidget {
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'widgets/approval_appbar.dart';
+import 'widgets/approval_body.dart'; // Impor body yang baru
+import 'package:shared_components/shared_components.dart';
+import 'widgets/drawer_items.dart';
+import 'widgets/end_drawer_items.dart';
+
+class ApprovalScreen extends StatefulWidget {
   const ApprovalScreen({super.key});
 
-  /// Fungsi untuk menghapus sesi login dari penyimpanan lokal (SharedPreferences)
-  /// dan mengarahkan pengguna kembali ke halaman login.
-  Future<void> _handleLogout(BuildContext context) async {
-    // 1. Mengambil instance penyimpanan lokal
-    final prefs = await SharedPreferences.getInstance();
-    
-    // 2. Menghapus status login yang tersimpan sebelumnya
-    await prefs.remove('is_logged_in');
+  @override
+  State<ApprovalScreen> createState() => _ApprovalScreenState();
+}
 
-    // 3. Memastikan widget masih aktif di layar sebelum berpindah halaman
-    if (context.mounted) {
-      // Mengarahkan pengguna kembali ke rute login menggunakan GoRouter
-      // Sesuaikan '/login' dengan nama path rute login di app_router.dart Anda
-      context.go('/login');
-    }
-  }
+class _ApprovalScreenState extends State<ApprovalScreen> {
+  final DatabaseReference dbRef =
+      FirebaseDatabase.instance.ref().child('approval');
 
   @override
   Widget build(BuildContext context) {
+    final DatabaseReference dbRef =
+        FirebaseDatabase.instance.ref().child('approval');
     return Scaffold(
-      // Bagian bilah atas aplikasi
-      appBar: AppBar(
-        title: const Text('Approval'),
-        centerTitle: true,
-        actions: [
-          // Tombol contoh untuk keluar (Logout)
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Keluar',
-            onPressed: () => _handleLogout(context),
-          ),
-        ],
+      appBar: ApprovalAppBar(),
+      drawerEnableOpenDragGesture: false,
+      endDrawerEnableOpenDragGesture: false,
+      drawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getDrawerSideMenuItems(context, currentRoute);
+        },
       ),
-      
-      // Bagian isi utama halaman (area kosongan yang siap diisi widget Anda)
-      body: const SafeArea(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.dashboard_customize_outlined,
-                  size: 64,
-                  color: Colors.blueGrey,
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Selamat Datang di Matrix Sphere!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.apps,
+                    color: Colors.white,
+                    size: 36,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Ini adalah kerangka halaman hom.dart yang siap Anda kembangkan.',
-                  style: TextStyle(color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Menu Aplikasi',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            SharedProjectDrawer(
+              menuBuilder: (context, currentRoute) {
+                return getEndDrawerSideMenuItems(context, currentRoute);
+              },
+            ),
+          ],
         ),
+      ),
+      // Memanggil ApprovalBody yang sudah dipisahkan
+      body: StreamBuilder(
+        stream: dbRef.onValue,
+        builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+          // 1. Kondisi saat data masih dimuat (Loading)
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // 2. Kondisi jika terjadi error atau data kosong
+          if (snapshot.hasError ||
+              !snapshot.hasData ||
+              snapshot.data!.snapshot.value == null) {
+            return const Center(
+              child: Text(
+                'Tidak ada data persetujuan saat ini.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            );
+          }
+
+          // 3. Mengambil dan mengubah data dari Firebase menjadi Map<String, dynamic>
+          final rawData = snapshot.data!.snapshot.value;
+          final Map<String, dynamic> approvalData =
+              Map<String, dynamic>.from(rawData as Map);
+
+          // 4. Masukkan data dinamis ke dalam ApprovalBody
+          return ApprovalBody(
+            approvalData: approvalData,
+            onApprove: (shopKey, shopName) {
+              // Logika aksi setuju ke database RTDB
+              dbRef.child(shopKey).update({'status': 'approved'});
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Menyetujui $shopName')),
+              );
+            },
+            onReject: (shopKey, shopName) {
+              // Logika aksi tolak ke database RTDB
+              dbRef.child(shopKey).update({'status': 'rejected'});
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Menolak $shopName')),
+              );
+            },
+          );
+        },
       ),
     );
   }

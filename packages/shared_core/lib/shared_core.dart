@@ -1,0 +1,34 @@
+/*
+import 'package:bloc/bloc.dart';
+import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:equatable/equatable.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_database/firebase_database.dart' ;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:geodesy/geodesy.dart' hide Path;
+import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import 'package:mobile_scanner/mobile_scanner.dart' hide CameraLensType, GeoPoint;
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' hide Context;
+import 'package:permission_handler/permission_handler.dart' hide ServiceStatus;
+import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_logics/shared_logics.dart';
+import 'package:shared_models/shared_models.dart';
+import 'package:shared_navigations/shared_navigations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_screens/shared_screens.dart';
+import 'package:shared_services/shared_services.dart';
+import 'package:shared_ui/shared_ui.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'app_config.dart';
+*/

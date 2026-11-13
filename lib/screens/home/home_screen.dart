@@ -1,78 +1,117 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// lib/screens/home_screen.dart
 
-/// Kelas utama untuk halaman Home (hom.dart).
-/// Menggunakan StatelessWidget karena halaman dasar ini belum menyimpan perubahan data internal.
+import 'package:flutter/material.dart';
+import 'package:matrix_sphere/screens/home/widgets/home_drawer_items.dart';
+import 'package:matrix_sphere/screens/home/widgets/home_end_drawer_items.dart';
+import 'package:shared_components/shared_components.dart';
+import 'package:shared_screens/shared_screens.dart';
+import 'widgets/home_appbar.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  /// Fungsi untuk menghapus sesi login dari penyimpanan lokal (SharedPreferences)
-  /// dan mengarahkan pengguna kembali ke halaman login.
-  Future<void> _handleLogout(BuildContext context) async {
-    // 1. Mengambil instance penyimpanan lokal
-    final prefs = await SharedPreferences.getInstance();
-    
-    // 2. Menghapus status login yang tersimpan sebelumnya
-    await prefs.remove('is_logged_in');
-
-    // 3. Memastikan widget masih aktif di layar sebelum berpindah halaman
-    if (context.mounted) {
-      // Mengarahkan pengguna kembali ke rute login menggunakan GoRouter
-      // Sesuaikan '/login' dengan nama path rute login di app_router.dart Anda
-      context.go('/login');
-    }
-  }
-
+// Contoh cara memanggil DetailScreen untuk Approval Toko
+void navigateToApprovalDetail(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => DetailScreen(
+        title: 'Toko Andika',
+        subtitle: 'Status: Menunggu Persetujuan (Waiting)',
+        details: {
+          'ID Toko': 'toko_andika',
+          'Pemilik': 'Andika',
+          'Kategori': 'Retail / Grosir',
+          'Tanggal Daftar': '31 Agustus 2026',
+        },
+        primaryButtonLabel: 'Setujui Toko',
+        primaryButtonColor: Colors.green,
+        onPrimaryAction: () {
+          // Logika ketika tombol setuju ditekan
+          debugPrint('Toko Andika disetujui!');
+          Navigator.pop(context);
+        },
+      ),
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Bagian bilah atas aplikasi
-      appBar: AppBar(
-        title: const Text('Home'),
-        centerTitle: true,
-        actions: [
-          // Tombol contoh untuk keluar (Logout)
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Keluar',
-            onPressed: () => _handleLogout(context),
-          ),
-        ],
+      appBar: const HomeAppBar(),
+      drawerEnableOpenDragGesture: false,
+      endDrawerEnableOpenDragGesture: false,
+      drawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getDrawerSideMenuItems(context, currentRoute);
+        },
       ),
-      
-      // Bagian isi utama halaman (area kosongan yang siap diisi widget Anda)
-      body: const SafeArea(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.dashboard_customize_outlined,
-                  size: 64,
-                  color: Colors.blueGrey,
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Selamat Datang di Matrix Sphere!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+      endDrawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getEndDrawerSideMenuItems(context, currentRoute);
+        },
+      ),
+      // Menggunakan ListView sebagai body standar agar halaman bisa digulir
+      body: //const HomeBody(),
+      ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          // Kartu Sambutan Utama
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Halo, Selamat Datang!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Ini adalah kerangka halaman hom.dart yang siap Anda kembangkan.',
-                  style: TextStyle(color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                  SizedBox(height: 8),
+                  Text(
+                    'Ini adalah tampilan standar halaman utama (Home) Matrix Sphere. Silakan pilih menu di samping atau navigasi bawah untuk mulai menggunakan fitur lainnya.',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+          const SizedBox(height: 16),
+          
+          // Contoh Daftar Menu Pintasan Standar
+          const Text(
+            'Menu Cepat',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.approval, color: Colors.blue),
+            title: const Text('Persetujuan (Approval)'),
+            subtitle: const Text('Kelola daftar persetujuan toko'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              // Tambahkan navigasi ke halaman approval jika diperlukan
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.access_time, color: Colors.green),
+            title: const Text('Absensi Kehadiran'),
+            subtitle: const Text('Catat jam masuk dan pulang kerja'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              // Tambahkan navigasi ke halaman absensi jika diperlukan
+            },
+          ),
+        ],
       ),
     );
   }

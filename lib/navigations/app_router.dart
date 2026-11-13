@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'app_routes.dart';
-import 'auth_routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:matrix_sphere/services/refresh_stream.dart';
+import 'app_navigator.dart';
+import 'app_branches.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 
+// Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 // StreamListenable untuk memantau perubahan status autentikasi
@@ -74,12 +75,12 @@ final GoRouter appRouter = GoRouter(
   },
   routes: [
     ...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
-    /*buildAppShellRoute(
+    buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
         return AppNavigator(navigationShell: navigationShell);
       },
       branches: appBranches,
     ),
-    ...buildFullscreenRoutes(_rootNavigatorKey),*/
+    ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );

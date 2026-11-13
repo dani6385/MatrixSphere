@@ -1,78 +1,138 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+// 1. Impor pustaka Firebase Realtime Database dan UI-nya
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:shared_ui/shared_ui.dart';
 
-/// Kelas utama untuk halaman Project (hom.dart).
-/// Menggunakan StatelessWidget karena halaman dasar ini belum menyimpan perubahan data internal.
-class ProjectScreen extends StatelessWidget {
+class ProjectScreen extends StatefulWidget {
   const ProjectScreen({super.key});
 
-  /// Fungsi untuk menghapus sesi login dari penyimpanan lokal (SharedPreferences)
-  /// dan mengarahkan pengguna kembali ke halaman login.
-  Future<void> _handleLogout(BuildContext context) async {
-    // 1. Mengambil instance penyimpanan lokal
-    final prefs = await SharedPreferences.getInstance();
-    
-    // 2. Menghapus status login yang tersimpan sebelumnya
-    await prefs.remove('is_logged_in');
+  @override
+  State<ProjectScreen> createState() => _ProjectScreenState();
+}
 
-    // 3. Memastikan widget masih aktif di layar sebelum berpindah halaman
-    if (context.mounted) {
-      // Mengarahkan pengguna kembali ke rute login menggunakan GoRouter
-      // Sesuaikan '/login' dengan nama path rute login di app_router.dart Anda
-      context.go('/login');
+class _ProjectScreenState extends State<ProjectScreen> {
+  bool _isLoading = false;
+  String _statusMessage = 'Memantau status Shop & Seller...';
+
+  // Fungsi simulasi untuk memeriksa kendala pada modul Shop atau Seller
+  Future<void> _periksaKendalaModul() async {
+    setState(() {
+      _isLoading = true;
+      _statusMessage = 'Menghubungkan ke server untuk memeriksa kendala...';
+    });
+
+    try {
+      // 1. Catat event analitik bahwa pemeriksaan kendala sedang dijalankan
+      await FirebaseAnalytics.instance.logEvent(
+        name: 'periksa_kendala_modul_dijalankan',
+      );
+
+      // Simulasi pengecekan data
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Contoh simulasi jika ingin memicu error untuk Crashlytics:
+      // throw Exception('Koneksi ke modul Seller/Shop terputus');
+
+      setState(() {
+        _statusMessage = 'Semua sistem Shop & Seller berjalan normal.';
+        _isLoading = false;
+      });
+    } catch (e, stackTrace) {
+      // 2. Tangkap error dan kirimkan ke Firebase Crashlytics
+      FirebaseCrashlytics.instance
+          .log("Kendala terdeteksi pada ProjectScreen (Shop/Seller)");
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, fatal: false);
+
+      setState(() {
+        _statusMessage =
+            'Terdeteksi kendala pada sistem. Laporan telah dikirim.';
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Referensi query ke node crashes di RTDB
+    final Query crashQuery = FirebaseDatabase.instance.ref().child('crashes');
+
     return Scaffold(
-      // Bagian bilah atas aplikasi
       appBar: AppBar(
-        title: const Text('Project'),
-        centerTitle: true,
-        actions: [
-          // Tombol contoh untuk keluar (Logout)
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Keluar',
-            onPressed: () => _handleLogout(context),
-          ),
-        ],
+        title: const Text('Monitoring Kendala Shop & Seller'),
       ),
-      
-      // Bagian isi utama halaman (area kosongan yang siap diisi widget Anda)
-      body: const SafeArea(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
+      body: Column(
+        children: [
+          // Bagian Atas: Tombol dan Status Pemeriksaan Manual
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.dashboard_customize_outlined,
-                  size: 64,
-                  color: Colors.blueGrey,
+                const Icon(
+                  Icons.monitor_heart,
+                  size: 48,
+                  color: kBlueAccent,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 8),
                 Text(
-                  'Selamat Datang di Matrix Sphere!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  _statusMessage,
                   textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
-                Text(
-                  'Ini adalah kerangka halaman hom.dart yang siap Anda kembangkan.',
-                  style: TextStyle(color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
+                const SizedBox(height: 12),
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton.icon(
+                        onPressed: _periksaKendalaModul,
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('Periksa Kendala Shop & Seller'),
+                      ),
               ],
             ),
           ),
-        ),
+          const Divider(thickness: 2),
+          // Bagian Bawah: Daftar Riwayat Kendala (Crashes) dari Realtime Database secara Real-Time
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Daftar Laporan Kendala (RTDB):',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Expanded(
+            child: FirebaseAnimatedList(
+              query: crashQuery,
+              itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
+                final jsonVal = snapshot.value as Map<dynamic, dynamic>? ?? {};
+                final String modul = jsonVal['modul'] ?? 'Tidak diketahui';
+                final String pesan = jsonVal['pesanError'] ?? 'Tidak ada pesan error';
+                final String waktu = jsonVal['waktu'] ?? '-';
+
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  child: ListTile(
+                    leading: const Icon(Icons.error_outline, color: kError),
+                    title: Text('Modul: $modul', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 2),
+                        Text('Pesan: $pesan', style: const TextStyle(fontSize: 12)),
+                        const SizedBox(height: 2),
+                        Text('Waktu: $waktu', style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
