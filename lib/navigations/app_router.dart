@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'app_branches.dart';
-import 'app_branches.dart';
 import 'app_routes.dart';
+import 'bottom_nav_bar.dart';
+import 'app_branches.dart';
+import 'auth_routes.dart';
+import 'app_shell_routes.dart';
 import 'fullscreen_routes.dart';
 
 // Kunci global untuk navigator utama (root)
@@ -75,13 +77,25 @@ final GoRouter appRouter = GoRouter(
     );
   },
   routes: [
-    //...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
-    /*buildAppShellRoute(
+    ...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
+    buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
-        return AppNavigator(navigationShell: navigationShell);
+        return BottomNavBar(
+          navigationShell: navigationShell,
+          currentIndex: navigationShell.currentIndex,
+          onTap: (index) {
+            // Berpindah ke cabang (branch) sesuai indeks tab yang ditekan
+            navigationShell.goBranch(
+              index,
+              // Mengatur agar initial location dipertahankan saat kembali ke tab yang sama
+              initialLocation: index == navigationShell.currentIndex,
+            );
+          },
+        );
       },
       branches: appBranches,
-    ),*/
+    ),
+    
     ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );

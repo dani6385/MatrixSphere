@@ -41,7 +41,7 @@ class BottomNavBar extends StatelessWidget {
       ),
       const GButton(
         icon: Icons.receipt_long,
-        text: 'Transactions',
+        text: 'Projects',
       ),
       const GButton(
         icon: Icons.access_time,
