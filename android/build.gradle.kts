@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Diperbaiki menggunakan format Kotlin DSL (tanda kutip ganda dan kurung)
+        classpath("com.android.tools.build:gradle:9.1.1")
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -21,7 +32,4 @@ subprojects {
 
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
-}
-dependencies {
-    classpath 'com.android.tools.build:gradle:9.1.1' // Perbarui ke 9.1.1
 }
