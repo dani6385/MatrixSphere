@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'services/firebase_options.dart';
 // Sesuaikan path import ini dengan lokasi file appRouter milikmu
 import 'navigations/app_router.dart'; 
-
 void main() async {
   // 1. Memastikan binding Flutter siap sebelum menjalankan kode asynchronous (Firebase)
   WidgetsFlutterBinding.ensureInitialized();
