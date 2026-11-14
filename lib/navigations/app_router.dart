@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'app_routes.dart';
+import 'auth_router.dart';
 //import 'app_branches.dart';
 
 // Kunci global untuk navigator utama (root)
@@ -72,8 +73,8 @@ final GoRouter appRouter = GoRouter(
     );
   },
   routes: [
-    /*...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
-    buildAppShellRoute(
+    ...AuthRouter.routes(rootNavigatorKey: _rootNavigatorKey),
+    /*buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
         return AppNavigator(navigationShell: navigationShell);
       },

@@ -4,7 +4,6 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // Diperbaiki menggunakan format Kotlin DSL (tanda kutip ganda dan kurung)
         classpath("com.android.tools.build:gradle:9.1.1")
     }
 }
