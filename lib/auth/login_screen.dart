@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'auth_storage_service.dart';
+import 'login_form_widgets.dart';
 
 final Logger _logger = Logger();
 
@@ -13,8 +14,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // GlobalKey digunakan untuk validasi Form
   final _formKey = GlobalKey<FormState>();
+  final _storageService = AuthStorageService(); // Memanggil layanan penyimpanan
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -25,34 +27,23 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
+    _initSavedCredentials();
   }
 
-  Future<void> _loadSavedCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
+  /// Memuat data tersimpan menggunakan AuthStorageService
+  Future<void> _initSavedCredentials() async {
+    final savedData = await _storageService.loadCredentials();
+    if (!mounted) return;
+
     setState(() {
-      _rememberMe = prefs.getBool('remember_me') ?? false;
-      if (_rememberMe) {
-        _emailController.text = prefs.getString('saved_email') ?? '';
-        _passwordController.text = prefs.getString('saved_password') ?? '';
-      }
+      _rememberMe = savedData['rememberMe'] as bool;
+      _emailController.text = savedData['email'] as String;
+      _passwordController.text = savedData['password'] as String;
     });
-  }
-
-  Future<void> _saveCredentials(String email, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    if (_rememberMe) {
-      await prefs.setBool('remember_me', true);
-      await prefs.setString('saved_email', email);
-      await prefs.setString('saved_password', password);
-    } else {
-      await prefs.clear(); // Hapus data jika pilihan "Ingat Saya" dimatikan
-    }
   }
 
   @override
   void dispose() {
-    // Selalu dispose controller agar tidak memicu memory leak
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -60,59 +51,61 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true; // Aktifkan status loading
-      });
+      setState(() => _isLoading = true);
 
       try {
         final email = _emailController.text.trim();
         final password = _passwordController.text.trim();
-        // Memanggil Firebase Authentication untuk masuk
+
+        // 1. Proses autentikasi Firebase
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
 
-        await _saveCredentials(email, password);
-
-        _logger.i(
-          'Login berhasil untuk email: ${_emailController.text.trim()}',
+        // 2. Simpan atau hapus data kredensial sesuai status checkbox
+        await _storageService.saveCredentials(
+          rememberMe: _rememberMe,
+          email: email,
+          password: password,
         );
+
+        _logger.i('Login berhasil untuk email: $email');
       } on FirebaseAuthException catch (e) {
         _logger.w('Gagal login (Firebase): ${e.code} - ${e.message}');
-
-        String errorMessage = 'Terjadi kesalahan saat masuk.';
-        if (e.code == 'user-not-found') {
-          errorMessage = 'Pengguna dengan email ini tidak ditemukan.';
-        } else if (e.code == 'wrong-password') {
-          errorMessage = 'Password yang Anda masukkan salah.';
-        } else if (e.code == 'invalid-email') {
-          errorMessage = 'Format email tidak valid.';
-        } else if (e.code == 'invalid-credential') {
-          errorMessage = 'Email atau password salah.';
-        }
-
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
-        );
+        _showErrorSnackBar(_mapFirebaseError(e.code));
       } catch (e) {
         _logger.e('Gagal login (Umum): $e');
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Terjadi kesalahan: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showErrorSnackBar('Terjadi kesalahan: $e');
       } finally {
         if (mounted) {
-          setState(() {
-            _isLoading = false; // Matikan status loading
-          });
+          setState(() => _isLoading = false);
         }
       }
     }
+  }
+
+  /// Menerjemahkan kode error Firebase ke bahasa Indonesia
+  String _mapFirebaseError(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return 'Pengguna dengan email ini tidak ditemukan.';
+      case 'wrong-password':
+        return 'Password yang Anda masukkan salah.';
+      case 'invalid-email':
+        return 'Format email tidak valid.';
+      case 'invalid-credential':
+        return 'Email atau password salah.';
+      default:
+        return 'Terjadi kesalahan saat masuk.';
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
   }
 
   @override
@@ -128,86 +121,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // 1. Header / Logo Placeholder
-                  const Icon(
-                    Icons.lock_person_rounded,
-                    size: 80,
-                    color: Colors.blue,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Selamat Datang',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Silakan masuk ke akun Anda',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
-                  ),
+                  // Komponen 1: Header
+                  const LoginHeader(),
                   const SizedBox(height: 32),
 
-                  // 2. Input Email / Username
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'masukkan email Anda',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email tidak boleh kosong';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Format email tidak valid';
-                      }
-                      return null;
+                  // Komponen 2: Input Email & Password
+                  LoginInputFields(
+                    emailController: _emailController,
+                    passwordController: _passwordController,
+                    isPasswordObscured: _isPasswordObscured,
+                    onTogglePasswordVisibility: () {
+                      setState(() {
+                        _isPasswordObscured = !_isPasswordObscured;
+                      });
                     },
                   ),
                   const SizedBox(height: 16),
 
-                  // 3. Input Password
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _isPasswordObscured,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      hintText: 'masukkan password Anda',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isPasswordObscured
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordObscured = !_isPasswordObscured;
-                          });
-                        },
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password tidak boleh kosong';
-                      }
-                      if (value.length < 6) {
-                        return 'Password minimal 6 karakter';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-
+                  // Checkbox "Ingat Saya"
                   Row(
                     children: [
                       Checkbox(
@@ -222,7 +153,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // 4. Tombol Login
+
+                  // Tombol Masuk
                   ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
