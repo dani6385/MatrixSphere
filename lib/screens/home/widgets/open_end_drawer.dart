@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'package:matrix_sphere/navigations/app_routes.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 
 final Logger _logger = Logger();
 
@@ -52,7 +52,7 @@ class OpenEndDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 // Contoh navigasi ke halaman profil (sesuaikan rutenya)
-                context.go(AppRoutes.profile); 
+                context.goToProfile(); // Menggunakan ekstensi kustom untuk navigasi
               },
             ),
             ListTile(
@@ -60,7 +60,7 @@ class OpenEndDrawer extends StatelessWidget {
               title: const Text('Pengaturan', style: TextStyle(color: Colors.white)),
               onTap: () {
                 Navigator.pop(context);
-                context.go(AppRoutes.settings);
+                context.goToSettings(); // Menggunakan ekstensi kustom untuk navigasi
               },
             ),
             
