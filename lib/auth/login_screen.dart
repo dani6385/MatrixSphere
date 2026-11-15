@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final Logger _logger = Logger();
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Status visual untuk melihat/menyembunyikan password
   bool _isPasswordObscured = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -27,19 +31,62 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     // Memeriksa apakah input sudah valid sesuai aturan Form
     if (_formKey.currentState!.validate()) {
       // PROSES LOGIN LOGIC DI SINI
       // Contoh: panggil API authentication atau kirim data login
+      setState(() {
+        _isLoading = true; // Aktifkan status loading
+      });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Proses Login...')),
-      );
+      try {
+        // Memanggil Firebase Authentication untuk masuk
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
 
-      // Setelah login berhasil, arahkan pengguna ke halaman utama (home)
-      // Sesuaikan rute '/home' dengan path halaman utamamu
-      context.go('/home');
+        _logger.i(
+          'Login berhasil untuk email: ${_emailController.text.trim()}',
+        );
+
+        // Catatan: Karena kita menggunakan GoRouter dengan refreshListenable (stream auth changes),
+        // router akan otomatis mendeteksi status login dan mengalihkan ke halaman Home secara mandiri.
+      } on FirebaseAuthException catch (e) {
+        _logger.w('Gagal login (Firebase): ${e.code} - ${e.message}');
+
+        String errorMessage = 'Terjadi kesalahan saat masuk.';
+        if (e.code == 'user-not-found') {
+          errorMessage = 'Pengguna dengan email ini tidak ditemukan.';
+        } else if (e.code == 'wrong-password') {
+          errorMessage = 'Password yang Anda masukkan salah.';
+        } else if (e.code == 'invalid-email') {
+          errorMessage = 'Format email tidak valid.';
+        } else if (e.code == 'invalid-credential') {
+          errorMessage = 'Email atau password salah.';
+        }
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        );
+      } catch (e) {
+        _logger.e('Gagal login (Umum): $e');
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Terjadi kesalahan: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false; // Matikan status loading
+          });
+        }
+      }
     }
   }
 
@@ -67,16 +114,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Selamat Datang',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Silakan masuk ke akun Anda',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 32),
 
@@ -138,17 +185,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // 4. Tombol Login
                   ElevatedButton(
-                    onPressed: _handleLogin,
+                    onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Masuk',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Masuk', style: TextStyle(fontSize: 16)),
                   ),
                 ],
               ),
