@@ -68,4 +68,6 @@ class AppRoutes {
   static const String vendors = '/vendors';
   static const String webhooks = '/webhooks';
   static const String workCalendar = '/work-calendar';
+
+  static const String profile = '/profile';
 }
