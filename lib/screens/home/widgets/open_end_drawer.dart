@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
+import 'package:shared_ui/shared_ui.dart';
 
 final Logger _logger = Logger();
 
@@ -13,15 +12,14 @@ class OpenEndDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan SizedBox untuk mengatur lebar drawer agar proporsional
+    // Membatasi lebar drawer agar proporsional di layar perangkat
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.85,
       child: Drawer(
-        backgroundColor: kDarkSurface, // Menggunakan warna dari shared_ui
-        child: ListView(
-          padding: EdgeInsets.zero,
+        backgroundColor: kDarkSurface, // Warna latar belakang dari shared_ui
+        child: Column(
           children: [
-            // 1. Header Akun / Profil Pengguna
+            // 1. Header Akun / Profil Pengguna (Bagian Atas)
             UserAccountsDrawerHeader(
               decoration: BoxDecoration(
                 color: kBrandPrimary,
@@ -37,36 +35,41 @@ class OpenEndDrawer extends StatelessWidget {
               accountEmail: const Text('user@matrixsphere.com'),
             ),
 
-            // 2. Daftar Menu Navigasi Utama
-            ListTile(
-              leading: const Icon(Icons.home_outlined, color: Colors.white70),
-              title: const Text('Beranda', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context); // Tutup drawer
-                context.go('/home');    // Arahkan ke rute beranda
-              },
+            // 2. Daftar Menu Navigasi (Dibungkus Expanded agar mengisi ruang tengah)
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.home_outlined, color: Colors.white70),
+                    title: const Text('Beranda', style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.goToHome();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.person_outline, color: Colors.white70),
+                    title: const Text('Profil Saya', style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.goToProfile();
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.settings_outlined, color: Colors.white70),
+                    title: const Text('Pengaturan', style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.goToSettings();
+                    },
+                  ),
+                ],
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.person_outline, color: Colors.white70),
-              title: const Text('Profil Saya', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                // Contoh navigasi ke halaman profil (sesuaikan rutenya)
-                context.goToProfile(); // Menggunakan ekstensi kustom untuk navigasi
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings_outlined, color: Colors.white70),
-              title: const Text('Pengaturan', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                context.goToSettings(); // Menggunakan ekstensi kustom untuk navigasi
-              },
-            ),
-            
-            const Divider(color: Colors.grey, indent: 16, endIndent: 16),
 
-            // 3. Tombol Keluar (Logout)
+            // 3. Garis Pemisah & Tombol Keluar (Logout) di Bagian Paling Bawah
+            const Divider(color: Colors.grey, height: 1),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.redAccent),
               title: const Text(
@@ -82,12 +85,11 @@ class OpenEndDrawer extends StatelessWidget {
                   await FirebaseAuth.instance.signOut();
                   _logger.i('Pengguna berhasil logout.');
 
-                  // Tutup drawer terlebih dahulu
                   if (!context.mounted) return;
                   Navigator.pop(context);
 
                   // Arahkan kembali ke halaman login
-                  context.go('/login');
+                  context.goToLogin();
                 } catch (e) {
                   _logger.e('Gagal melakukan logout: $e');
                   if (!context.mounted) return;
@@ -100,6 +102,8 @@ class OpenEndDrawer extends StatelessWidget {
                 }
               },
             ),
+            // Berikan sedikit ruang aman di bagian paling bawah perangkat (safe area)
+            const SizedBox(height: 16),
           ],
         ),
       ),

@@ -9,4 +9,6 @@ extension AppNavigation on BuildContext {
   void goToHome() => go(AppRoutes.home);
   /// Berpindah ke halaman pengaturan
   void goToSettings() => go(AppRoutes.settings);
+  /// Berpindah ke halaman login
+  void goToLogin() => go(AppRoutes.login);
 }
