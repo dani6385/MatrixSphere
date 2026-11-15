@@ -1,28 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'app_extractor.dart';
 import 'app_routes.dart';
-// Sesuaikan path import ini dengan lokasi file halaman LoginScreens milikmu
-import 'package:matrix_sphere/auth/login_screen.dart';
 
-class AuthRouter {
-  /// Mengembalikan daftar rute khusus untuk fitur Autentikasi (Login, Register, dll).
-  /// Parameter [rootNavigatorKey] memastikan halaman ditampilkan di atas navigator utama.
-  static List<RouteBase> routes({
-    required GlobalKey<NavigatorState> rootNavigatorKey,
-  }) {
-    return [
-      GoRoute(
-        path: AppRoutes.login, // Mengarah ke path '/login' sesuai definisi di AppRoutes
-        name: 'login',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (BuildContext context, GoRouterState state) {
-          // Mengarahkan langsung ke widget LoginScreens milikmu
-          return const LoginScreen();
-        },
-      ),
-      
-      // Kamu bisa menambahkan rute autentikasi lainnya di bawah ini nanti,
-      // misalnya untuk halaman Register atau Lupa Password.
-    ];
-  }
+/// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
+List<RouteBase> authRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
+  return [
+    /*GoRoute(
+      path: '/',
+      builder: (context, state) => const AuthGate(),
+    ),*/
+    GoRoute(
+      path: AppRoutes.login,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const LoginScreen(),
+    ),/*
+    GoRoute(
+      path: AppRoutes.forgotPassword,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.userRegistration,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const UserRegistrationScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.shopRegistration,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ShopRegistrationScreen(),
+    ),*/
+  ];
 }
+
+/// Membangun branch shell untuk navigasi otentikasi.
+List<StatefulShellBranch> authShellBranches({
+  Widget? onboardScreen,
+  Widget? loginScreen,
+  Widget? registrationScreen,
+  Widget? forgotScreen,
+  GlobalKey<NavigatorState>? homeNavigatorKey,
+}) {
+  return [
+    if (onboardScreen != null)
+      StatefulShellBranch(
+        navigatorKey: homeNavigatorKey,
+        routes: [
+          GoRoute(
+            path: '/onboard',
+            builder: (context, state) => onboardScreen,
+          ),
+        ],
+      ),
+    StatefulShellBranch(
+      navigatorKey: homeNavigatorKey,
+      routes: [
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (context, state) => loginScreen ?? const LoginScreen(),
+        ),
+      ],
+    ),
+  ];
+}
+

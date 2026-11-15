@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'app_navigator.dart';
+import 'app_branches.dart';
 import 'app_routes.dart';
 import 'auth_router.dart';
-//import 'app_branches.dart';
+import 'shell_route.dart';
 
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -15,20 +17,20 @@ final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.login, // Kita arahkan eksplisit ke login dulu
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
-
-  //refreshListenable: _authChanges,
-
+  // refreshListenable: _authChanges,
+  
   // SEMENTARA DIMATIKAN UNTUK WEB (Mencegah stuck di splash screen)
   // observers: [
   //   analyticsService.analitycsObserver,
   // ],
+  
   redirect: (BuildContext context, GoRouterState state) {
     // ========================================================
-    // [!] TESTING BYPASS:
+    // [!] TESTING BYPASS: 
     // Logika Firebase Auth dimatikan sementara agar Anda bisa
     // masuk ke halaman utama tanpa di-block oleh router.
     // ========================================================
-
+    
     final bool loggedIn = FirebaseAuth.instance.currentUser != null;
     final bool isLoggingIn = state.matchedLocation == '/login';
 
@@ -38,10 +40,11 @@ final GoRouter appRouter = GoRouter(
     if (loggedIn && isLoggingIn) {
       return AppRoutes.home;
     }
+    
 
     return null; // Membiarkan navigasi bebas berjalan
   },
-
+  
   errorBuilder: (context, state) {
     return Scaffold(
       appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
@@ -73,13 +76,13 @@ final GoRouter appRouter = GoRouter(
     );
   },
   routes: [
-    ...AuthRouter.routes(rootNavigatorKey: _rootNavigatorKey),
-    /*buildAppShellRoute(
+    ...authRoutes(rootNavigatorKey: _rootNavigatorKey),
+    appShellRoute(
       shellBuilder: (context, state, navigationShell) {
         return AppNavigator(navigationShell: navigationShell);
       },
       branches: appBranches,
     ),
-    ...buildFullscreenRoutes(_rootNavigatorKey),*/
+    //...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );
