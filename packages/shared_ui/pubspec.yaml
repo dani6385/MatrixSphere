@@ -10,6 +10,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  curved_navigation_bar: ^1.0.6
   flutter:
     sdk: flutter
   font_awesome_flutter: ^11.0.0

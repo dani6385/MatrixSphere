@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_ui/shared_ui.dart'; // Menggunakan konstanta warna/gaya dari shared_ui
+import 'package:shared_ui/shared_ui.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class BottomNavBar {
   final IconData icon;
@@ -27,33 +28,25 @@ class CustomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: NavigationBar(
-          selectedIndex: currentIndex,
-          onDestinationSelected: onTap,
-          backgroundColor: Colors.transparent,
-          indicatorColor: kBrandPrimary.withValues(alpha: 0.15), // Menggunakan warna dari shared_ui[cite: 8]
-          destinations: items.map((item) {
-            return NavigationDestination(
-              icon: Icon(item.icon, color: Colors.grey),
-              selectedIcon: Icon(item.activeIcon, color: kBrandPrimary),
-              label: item.label,
-            );
-          }).toList(),
-        ),
-      ),
+    final navIcons = items.map((item) {
+      final bool isActive = items.indexOf(item) == currentIndex;
+    return Icon(
+        isActive ? item.activeIcon : item.icon,
+        size: 30,
+        color: isActive ? Colors.white : Colors.white70,
+      );
+      }).toList();
+
+    return CurvedNavigationBar(
+      index: currentIndex,
+      height: 60.0,
+      items: navIcons,
+      color: kBrandPrimary, // Menggunakan warna utama dari shared_ui
+      buttonBackgroundColor: kBrandPrimary, // Warna latar tombol yang aktif
+      backgroundColor: Colors.transparent, // Warna latar di luar bilah navigasi
+      animationCurve: Curves.easeInOut,
+      animationDuration: const Duration(milliseconds: 300),
+      onTap: onTap,
     );
   }
 }
