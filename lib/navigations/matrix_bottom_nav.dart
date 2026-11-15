@@ -7,7 +7,9 @@ class MatrixBottomNav extends StatelessWidget {
 
   const MatrixBottomNav({
     super.key,
-    required this.navigationShell, required int currentIndex, required void Function(int) onTap,
+    required this.navigationShell,
+    required int currentIndex,
+    required void Function(int) onTap,
   });
 
   @override
@@ -23,31 +25,33 @@ class MatrixBottomNav extends StatelessWidget {
       },
       items: const [
         BottomNavBar(
-          icon: Icons.home_outlined, 
-          activeIcon: Icons.home, 
+          icon: Icons.home_outlined,
+          activeIcon: Icons.home,
           label: 'Home',
         ),
         BottomNavBar(
-          icon: Icons.how_to_reg_outlined, 
-          activeIcon: Icons.how_to_reg, 
+          icon: Icons.how_to_reg_outlined,
+          activeIcon: Icons.how_to_reg,
           label: 'Approval',
         ),
         BottomNavBar(
-          icon: Icons.analytics_outlined, 
-          activeIcon: Icons.analytics, 
+          icon: Icons.analytics_outlined,
+          activeIcon: Icons.analytics,
           label: 'Analytic',
         ),
         BottomNavBar(
-          icon: Icons.work_outline, 
-          activeIcon: Icons.work, 
+          icon: Icons.work_outline,
+          activeIcon: Icons.work,
           label: 'Project',
         ),
         BottomNavBar(
-          icon: Icons.access_time_outlined, 
-          activeIcon: Icons.access_time, 
+          icon: Icons.access_time_outlined,
+          activeIcon: Icons.access_time,
           label: 'Attendance',
         ),
       ],
+      tabs: null,
+      selectedIndex: null,
     );
   }
 }
