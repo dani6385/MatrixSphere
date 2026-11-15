@@ -13,7 +13,7 @@ class AppRoutes {
   static const String roles = '/roles';
 
   //main
-  static const String home = '/';
+  static const String home = '/home';
   static const String caseOScreen = '/case0';
   static const String case1Screen = '/case1';
   static const String case2Screen = '/case2';
