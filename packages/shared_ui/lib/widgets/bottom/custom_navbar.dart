@@ -30,18 +30,18 @@ class CustomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final navIcons = items.map((item) {
       final bool isActive = items.indexOf(item) == currentIndex;
-    return Icon(
+      return Icon(
         isActive ? item.activeIcon : item.icon,
         size: 30,
         color: isActive ? Colors.white : Colors.white70,
       );
-      }).toList();
+    }).toList();
 
     return CurvedNavigationBar(
       index: currentIndex,
       height: 60.0,
       items: navIcons,
-      color: kBrandPrimary, // Menggunakan warna utama dari shared_ui
+      color: kBrandTertiary, // Menggunakan warna utama dari shared_ui
       buttonBackgroundColor: kBrandPrimary, // Warna latar tombol yang aktif
       backgroundColor: Colors.transparent, // Warna latar di luar bilah navigasi
       animationCurve: Curves.easeInOut,

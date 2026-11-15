@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_ui/shared_ui.dart'; // Mengimpor komponen dari shared_ui[cite: 6]
 
 /// 1. Bagian Header / Judul Halaman Login
 class LoginHeader extends StatelessWidget {
@@ -34,7 +35,7 @@ class LoginHeader extends StatelessWidget {
   }
 }
 
-/// 2. Bagian Input Email dan Password
+/// 2. Bagian Input Email dan Password Menggunakan CustomTextField dari shared_ui
 class LoginInputFields extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
@@ -53,16 +54,17 @@ class LoginInputFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Input Email
-        TextFormField(
+        // Input Email menggunakan CustomTextField
+        CustomTextField(
           controller: emailController,
-          keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(
-            labelText: 'Email',
-            hintText: 'masukkan email Anda',
-            prefixIcon: Icon(Icons.email_outlined),
-            border: OutlineInputBorder(),
+          labelText: 'Email',
+          hintText: 'masukkan email Anda',
+          prefixIcon: const Icon(Icons.email_outlined),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () => emailController.clear(),
           ),
+          keyboardType: TextInputType.emailAddress,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Email tidak boleh kosong';
@@ -75,21 +77,18 @@ class LoginInputFields extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        // Input Password
-        TextFormField(
+        // Input Password menggunakan CustomTextField
+        CustomTextField(
           controller: passwordController,
+          labelText: 'Password',
+          hintText: 'masukkan password Anda',
+          prefixIcon: const Icon(Icons.lock_outline),
           obscureText: isPasswordObscured,
-          decoration: InputDecoration(
-            labelText: 'Password',
-            hintText: 'masukkan password Anda',
-            prefixIcon: const Icon(Icons.lock_outline),
-            border: const OutlineInputBorder(),
-            suffixIcon: IconButton(
-              icon: Icon(
-                isPasswordObscured ? Icons.visibility_off : Icons.visibility,
-              ),
-              onPressed: onTogglePasswordVisibility,
+          suffixIcon: IconButton(
+            icon: Icon(
+              isPasswordObscured ? Icons.visibility_off : Icons.visibility,
             ),
+            onPressed: onTogglePasswordVisibility,
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
