@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final Logger _logger = Logger();
 
@@ -14,14 +15,40 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   // GlobalKey digunakan untuk validasi Form
   final _formKey = GlobalKey<FormState>();
-
-  // Controller untuk mengambil nilai teks input
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Status visual untuk melihat/menyembunyikan password
   bool _isPasswordObscured = true;
   bool _isLoading = false;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _rememberMe = prefs.getBool('remember_me') ?? false;
+      if (_rememberMe) {
+        _emailController.text = prefs.getString('saved_email') ?? '';
+        _passwordController.text = prefs.getString('saved_password') ?? '';
+      }
+    });
+  }
+
+  Future<void> _saveCredentials(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_rememberMe) {
+      await prefs.setBool('remember_me', true);
+      await prefs.setString('saved_email', email);
+      await prefs.setString('saved_password', password);
+    } else {
+      await prefs.clear(); // Hapus data jika pilihan "Ingat Saya" dimatikan
+    }
+  }
 
   @override
   void dispose() {
@@ -32,27 +59,25 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    // Memeriksa apakah input sudah valid sesuai aturan Form
     if (_formKey.currentState!.validate()) {
-      // PROSES LOGIN LOGIC DI SINI
-      // Contoh: panggil API authentication atau kirim data login
       setState(() {
         _isLoading = true; // Aktifkan status loading
       });
 
       try {
+        final email = _emailController.text.trim();
+        final password = _passwordController.text.trim();
         // Memanggil Firebase Authentication untuk masuk
         await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
+          email: email,
+          password: password,
         );
+
+        await _saveCredentials(email, password);
 
         _logger.i(
           'Login berhasil untuk email: ${_emailController.text.trim()}',
         );
-
-        // Catatan: Karena kita menggunakan GoRouter dengan refreshListenable (stream auth changes),
-        // router akan otomatis mendeteksi status login dan mengalihkan ke halaman Home secara mandiri.
       } on FirebaseAuthException catch (e) {
         _logger.w('Gagal login (Firebase): ${e.code} - ${e.message}');
 
@@ -183,6 +208,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 24),
 
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _rememberMe,
+                        onChanged: (value) {
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('Ingat Saya'),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
                   // 4. Tombol Login
                   ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
