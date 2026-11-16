@@ -1,7 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthStorageService {
-  // Kunci penyimpanan dibuat konstan agar tidak terjadi salah ketik (typo)
   static const String _keyRememberMe = 'remember_me';
   static const String _keySavedEmail = 'saved_email';
   static const String _keySavedPassword = 'saved_password';

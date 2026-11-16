@@ -27,18 +27,18 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _initSavedCredentials();
+    _loadCredentialsToForm();
   }
 
   /// Memuat data tersimpan menggunakan AuthStorageService
-  Future<void> _initSavedCredentials() async {
-    final savedData = await _storageService.loadCredentials();
+  Future<void> _loadCredentialsToForm() async {
+    final credentials = await _storageService.loadCredentials();
     if (!mounted) return;
 
     setState(() {
-      _rememberMe = savedData['rememberMe'] as bool;
-      _emailController.text = savedData['email'] as String;
-      _passwordController.text = savedData['password'] as String;
+      _rememberMe = credentials['rememberMe'] as bool;
+      _emailController.text = credentials['email'] as String;
+      _passwordController.text = credentials['password'] as String;
     });
   }
 

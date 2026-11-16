@@ -9,26 +9,22 @@ class LoginHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Icon(
-          Icons.lock_person_rounded,
-          size: 80,
-          color: Colors.blue,
-        ),
+        const Icon(Icons.lock_person_rounded, size: 80, color: Colors.blue),
         const SizedBox(height: 16),
         Text(
           'Selamat Datang',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Text(
           'Silakan masuk ke akun Anda',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
         ),
       ],
     );
@@ -78,18 +74,24 @@ class LoginInputFields extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Input Password menggunakan CustomTextField
+        // Di dalam file login_form_widgets.dart, pastikan bagian Password seperti ini:
         CustomTextField(
           controller: passwordController,
           labelText: 'Password',
           hintText: 'masukkan password Anda',
           prefixIcon: const Icon(Icons.lock_outline),
-          obscureText: isPasswordObscured,
+          obscureText:
+              isPasswordObscured, // Mengontrol bintang-bintang password
+          // Memastikan suffixIcon (tombol mata) terpasang di sini secara eksplisit
           suffixIcon: IconButton(
             icon: Icon(
               isPasswordObscured ? Icons.visibility_off : Icons.visibility,
+              color: Colors.grey,
             ),
-            onPressed: onTogglePasswordVisibility,
+            onPressed:
+                onTogglePasswordVisibility, // Memanggil fungsi pembalik status
           ),
+
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Password tidak boleh kosong';
