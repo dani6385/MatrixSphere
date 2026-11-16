@@ -1,9 +1,9 @@
 // lib/navigation/widgets/app_drawer_items.dart
 
 import 'package:flutter/material.dart';
+// Tambahkan go_router untuk navigasi
 import 'package:logger/logger.dart';
-import 'package:shared_ui/shared_ui.dart';
-//import 'package:matrix_sphere/navigations/app_navigation.dart';
+import 'package:shared_ui/shared_ui.dart'; // Impor shared_ui agar kita bisa menggunakan SideMenuItem
 
 final Logger logger = Logger();
 
@@ -26,31 +26,21 @@ class MenuDrawer {
 List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
   return [
     MenuDrawer(
-      title: 'Home / Beranda',
-      icon: Icons.home,
-      label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
-      onTap: () {
-      },
-    ),
-    MenuDrawer(
-      title: 'Persetujuan',
-      icon: Icons.approval,
-      label:
-          'Menampilkan ringkasan statistik penjualan, grafik, dan performa toko.',
+      title: 'Simulasi',
+      icon: Icons.info_outline,
+      label: 'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
       onTap: () => logger.i('Simulasi tapped'),
     ),
     MenuDrawer(
       title: 'Status Toko',
       icon: Icons.info_outline,
-      label:
-          'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
+      label: 'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
       onTap: () => logger.i('Status Toko tapped'),
     ),
     MenuDrawer(
       title: 'Products / Produk',
       icon: Icons.shopping_bag,
-      label:
-          'Mengelola daftar produk, menambah barang baru, atau mengatur harga.',
+      label: 'Mengelola daftar produk, menambah barang baru, atau mengatur harga.',
       onTap: () => logger.i('Products tapped'),
     ),
     MenuDrawer(
@@ -99,10 +89,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
 }
 
 /// Fungsi helper untuk mengubah MenuDrawer lokal menjadi SideMenuItem shared_ui
-List<SideMenuItem> getDrawerSideMenuItems(
-  BuildContext context,
-  String currentRoute,
-) {
+List<SideMenuItem> getDrawerSideMenuItems(BuildContext context, String currentRoute) {
   final drawerItems = getDrawerItems(context, currentRoute);
 
   return drawerItems.map((item) {
@@ -112,9 +99,7 @@ List<SideMenuItem> getDrawerSideMenuItems(
       label: item.label,
       route: '', // Sesuaikan rute jika diperlukan
       isSelected: false,
-      onTap:
-          item.onTap ??
-          () {}, // Provide an empty function if item.onTap is null
+      onTap: item.onTap ?? () {}, // Provide an empty function if item.onTap is null
     );
   }).toList();
 }

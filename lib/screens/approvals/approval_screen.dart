@@ -3,10 +3,9 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'widgets/approval_appbar.dart';
-import 'widgets/approval_body.dart'; // Impor body yang baru
 import 'package:shared_ui/shared_ui.dart';
-import 'widgets/drawer_items.dart';
-import 'widgets/end_drawer_items.dart';
+import 'widgets/app_drawer.dart';
+import 'widgets/app_end_drawer.dart';
 
 class ApprovalScreen extends StatefulWidget {
   const ApprovalScreen({super.key});
@@ -22,7 +21,7 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child(
+    final DatabaseReference _ = FirebaseDatabase.instance.ref().child(
       'approval',
     );
     return Scaffold(
@@ -75,52 +74,68 @@ class _ApprovalScreenState extends State<ApprovalScreen> {
           ],
         ),
       ),
-      // Memanggil ApprovalBody yang sudah dipisahkan
-      body: StreamBuilder(
-        stream: dbRef.onValue,
-        builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
-          // 1. Kondisi saat data masih dimuat (Loading)
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          // 2. Kondisi jika terjadi error atau data kosong
-          if (snapshot.hasError ||
-              !snapshot.hasData ||
-              snapshot.data!.snapshot.value == null) {
-            return const Center(
-              child: Text(
-                'Tidak ada data persetujuan saat ini.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+      // Menggunakan ListView sebagai body standar agar halaman bisa digulir
+      body: //const HomeBody(),
+      ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          // Kartu Sambutan Utama
+          Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Halo, Selamat Datang!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Ini adalah tampilan standar halaman utama (Home) Matrix Sphere. Silakan pilih menu di samping atau navigasi bawah untuk mulai menggunakan fitur lainnya.',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
               ),
-            );
-          }
-
-          // 3. Mengambil dan mengubah data dari Firebase menjadi Map<String, dynamic>
-          final rawData = snapshot.data!.snapshot.value;
-          final Map<String, dynamic> approvalData = Map<String, dynamic>.from(
-            rawData as Map,
-          );
-
-          // 4. Masukkan data dinamis ke dalam ApprovalBody
-          return ApprovalBody(
-            approvalData: approvalData,
-            onApprove: (shopKey, shopName) {
-              // Logika aksi setuju ke database RTDB
-              dbRef.child(shopKey).update({'status': 'approved'});
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Menyetujui $shopName')));
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // Contoh Daftar Menu Pintasan Standar
+          const Text(
+            'Menu Cepat',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.approval, color: Colors.blue),
+            title: const Text('Persetujuan (Approval)'),
+            subtitle: const Text('Kelola daftar persetujuan toko'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              // Tambahkan navigasi ke halaman approval jika diperlukan
             },
-            onReject: (shopKey, shopName) {
-              // Logika aksi tolak ke database RTDB
-              dbRef.child(shopKey).update({'status': 'rejected'});
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Menolak $shopName')));
+          ),
+          ListTile(
+            leading: const Icon(Icons.access_time, color: Colors.green),
+            title: const Text('Absensi Kehadiran'),
+            subtitle: const Text('Catat jam masuk dan pulang kerja'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              // Tambahkan navigasi ke halaman absensi jika diperlukan
             },
-          );
-        },
+          ),
+        ],
       ),
     );
   }
