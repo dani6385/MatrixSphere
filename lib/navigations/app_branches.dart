@@ -18,7 +18,7 @@ final appBranches = <StatefulShellBranch>[
   StatefulShellBranch(routes: [
     GoRoute(
       path: AppRoutes.analytics, // Menggunakan '/analytics'
-      builder: (context, state) => const AnalyticsScreen(),
+      builder: (context, state) => const AnalyticScreen(),
     ),
   ]),
   StatefulShellBranch(routes: [
