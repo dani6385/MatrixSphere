@@ -1,7 +1,7 @@
 // lib/navigation/widgets/app_drawer_items.dart
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // Tambahkan go_router untuk navigasi
+// Tambahkan go_router untuk navigasi
 import 'package:logger/logger.dart';
 import 'package:shared_ui/shared_ui.dart'; // Impor shared_ui agar kita bisa menggunakan SideMenuItem
 

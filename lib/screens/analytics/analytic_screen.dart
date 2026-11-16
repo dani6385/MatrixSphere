@@ -1,10 +1,10 @@
 // lib/screens/Analytic_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/screens/Analytics/widgets/drawer_items.dart';
-import 'package:matrix_sphere/screens/Analytics/widgets/end_drawer_items.dart';
+import 'package:matrix_sphere/screens/analytics/widgets/drawer_items.dart';
+import 'package:matrix_sphere/screens/analytics/widgets/end_drawer_items.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'package:matrix_sphere/screens/Analytics/widgets/analytic_appbar.dart';
+import 'package:matrix_sphere/screens/analytics/widgets/analytic_appbar.dart';
 
 class AnalyticScreen extends StatelessWidget {
   const AnalyticScreen({super.key});
