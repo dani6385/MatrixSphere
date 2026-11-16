@@ -1,27 +1,126 @@
-import 'package:flutter/material.dart';
+// lib/screens/approval_screen.dart
 
-/// Halaman utama (Approval Screen) awal yang masih kosong dan siap untuk dikembangkan.
-class ApprovalScreen extends StatelessWidget {
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'widgets/approval_appbar.dart';
+import 'widgets/approval_body.dart'; // Impor body yang baru
+import 'package:shared_ui/shared_ui.dart';
+import 'widgets/drawer_items.dart';
+import 'widgets/end_drawer_items.dart';
+
+class ApprovalScreen extends StatefulWidget {
   const ApprovalScreen({super.key});
 
   @override
+  State<ApprovalScreen> createState() => _ApprovalScreenState();
+}
+
+class _ApprovalScreenState extends State<ApprovalScreen> {
+  final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child(
+    'approval',
+  );
+
+  @override
   Widget build(BuildContext context) {
+    final DatabaseReference dbRef = FirebaseDatabase.instance.ref().child(
+      'approval',
+    );
     return Scaffold(
-      // Bilah bagian atas aplikasi (AppBar)
-      appBar: AppBar(
-        title: const Text('Approval'),
-        elevation: 0, // Memberikan efek rata tanpa bayangan
-      ),
-      
-      // Area utama halaman (Body)
-      body: const Center(
-        child: Text(
-          'Halaman Beranda (Approval)',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-          ),
+      appBar: ApprovalAppBar(),
+      drawerEnableOpenDragGesture: false,
+      endDrawerEnableOpenDragGesture: false,
+      drawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getDrawerSideMenuItems(context, currentRoute);
+        },
+        header: const UserAccountsDrawerHeader(
+          accountName: Text('Matrix Sphere'),
+          accountEmail: Text('admin@matrixsphere.id'),
+          currentAccountPicture: CircleAvatar(child: Icon(Icons.person)),
         ),
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.apps, color: Colors.white, size: 36),
+                  SizedBox(height: 12),
+                  Text(
+                    'Menu Aplikasi',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SharedProjectDrawer(
+              menuBuilder: (context, currentRoute) {
+                return getEndDrawerSideMenuItems(context, currentRoute);
+              },
+              header: const UserAccountsDrawerHeader(
+                accountName: Text('Matrix Sphere'),
+                accountEmail: Text('admin@matrixsphere.id'),
+                currentAccountPicture: CircleAvatar(child: Icon(Icons.person)),
+              ),
+            ),
+          ],
+        ),
+      ),
+      // Memanggil ApprovalBody yang sudah dipisahkan
+      body: StreamBuilder(
+        stream: dbRef.onValue,
+        builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+          // 1. Kondisi saat data masih dimuat (Loading)
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // 2. Kondisi jika terjadi error atau data kosong
+          if (snapshot.hasError ||
+              !snapshot.hasData ||
+              snapshot.data!.snapshot.value == null) {
+            return const Center(
+              child: Text(
+                'Tidak ada data persetujuan saat ini.',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            );
+          }
+
+          // 3. Mengambil dan mengubah data dari Firebase menjadi Map<String, dynamic>
+          final rawData = snapshot.data!.snapshot.value;
+          final Map<String, dynamic> approvalData = Map<String, dynamic>.from(
+            rawData as Map,
+          );
+
+          // 4. Masukkan data dinamis ke dalam ApprovalBody
+          return ApprovalBody(
+            approvalData: approvalData,
+            onApprove: (shopKey, shopName) {
+              // Logika aksi setuju ke database RTDB
+              dbRef.child(shopKey).update({'status': 'approved'});
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Menyetujui $shopName')));
+            },
+            onReject: (shopKey, shopName) {
+              // Logika aksi tolak ke database RTDB
+              dbRef.child(shopKey).update({'status': 'rejected'});
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Menolak $shopName')));
+            },
+          );
+        },
       ),
     );
   }
