@@ -26,15 +26,9 @@ class MenuDrawer {
 List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
   return [
     MenuDrawer(
-      title: 'Home / Beranda',
-      icon: Icons.home,
-      label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
-      onTap: () => context.go('/'), // Contoh navigasi menggunakan GoRouter
-    ),
-    MenuDrawer(
       title: 'Simulasi',
-      icon: Icons.dashboard,
-      label: 'Menampilkan ringkasan statistik penjualan, grafik, dan performa toko.',
+      icon: Icons.info_outline,
+      label: 'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
       onTap: () => logger.i('Simulasi tapped'),
     ),
     MenuDrawer(

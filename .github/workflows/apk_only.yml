@@ -121,6 +121,47 @@ jobs:
           channel: 'stable'
           cache: true
 
+# --- OTOMATISASI PENAIKAN VERSI (VERSION BUMP) ---
+      - name: Auto Increment Version in pubspec.yaml
+        shell: bash
+        run: |
+          TARGET_DIR="${{ steps.vars.outputs.dir }}"
+          PUBSPEC_PATH="$TARGET_DIR/pubspec.yaml"
+          
+          if [ -f "$PUBSPEC_PATH" ]; then
+            echo "Memproses file pubspec.yaml di: $PUBSPEC_PATH"
+            
+            # Membaca baris versi saat ini (contoh: version: 1.0.0+1)
+            VERSION_LINE=$(grep '^version:' "$PUBSPEC_PATH")
+            echo "Versi lama: $VERSION_LINE"
+            
+            # Memisahkan nama versi (1.0.0) dan build number (1)
+            VERSION_NAME=$(echo $VERSION_LINE | cut -d ' ' -f 2 | cut -d '+' -f 1)
+            BUILD_NUM=$(echo $VERSION_LINE | cut -d '+' -f 2)
+            
+            # Jika file pubspec tidak memiliki build number (hanya 1.0.0), berikan nilai default 1
+            if [ -z "$BUILD_NUM" ] || [ "$BUILD_NUM" = "$VERSION_NAME" ]; then
+              BUILD_NUM=1
+              NEW_VERSION="$VERSION_NAME+$BUILD_NUM"
+            else
+              # Memecah major, minor, patch dari version name
+              IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NAME"
+              
+              # Menaikkan angka patch sebesar 1 (misal: 0 jadi 1)
+              NEW_PATCH=$((PATCH + 1))
+              NEW_BUILD=$((BUILD_NUM + 1))
+              
+              NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH+$NEW_BUILD"
+            fi
+            
+            echo "Versi baru otomatis: $NEW_VERSION"
+            
+            # Memperbarui file pubspec.yaml secara otomatis di sistem build runner
+            sed -i "s/^version: .*/version: $NEW_VERSION/" "$PUBSPEC_PATH"
+          else
+            echo "Peringatan: pubspec.yaml tidak ditemukan di $PUBSPEC_PATH"
+          fi
+          
       # --- BUILD PROCESS ---
       - name: Get Dependencies
         shell: bash
