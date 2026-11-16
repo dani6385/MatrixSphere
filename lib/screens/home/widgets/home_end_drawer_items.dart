@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// lib/navigations/widgets/app_end_drawer_items.dart
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();
@@ -82,29 +82,8 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
       icon: Icons.logout,
       label: 'Keluar dari sesi akun aktif pada aplikasi.',
       route: '',
-      onTap: () async {
-        try {
-          // 1. Keluar dari sesi Firebase Auth
-          await FirebaseAuth.instance.signOut();
-          logger.i('Pengguna berhasil keluar (logout) dari aplikasi.');
-
-          // 2. Pastikan widget/konteks masih aktif di layar sebelum navigasi
-          if (!context.mounted) return;
-
-          // 3. Arahkan kembali ke halaman login menggunakan GoRouter
-          context.goToLogin();
-        } catch (e) {
-          logger.e('Gagal melakukan logout: $e');
-          
-          // Menampilkan pesan kesalahan jika gagal logout
-          if (!context.mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Gagal logout: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+      onTap: () {
+        // Aksi keluar akun
       },
     ),
   ];
