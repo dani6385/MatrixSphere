@@ -39,7 +39,7 @@ class CustomNavBar extends StatelessWidget {
       return Icon(
         isActive ? item.activeIcon : item.icon,
         size: 30,
-        color: isActive ? Colors.white : Colors.white70,
+        color: isActive ? Colors.black87 : Colors.white70,
       );
     }).toList();
     return ClipPath(
@@ -54,7 +54,7 @@ class CustomNavBar extends StatelessWidget {
           index: currentIndex,
           height: 60.0,
           items: navIcons,
-          color: kBrandTertiary, // Menggunakan warna utama dari shared_ui
+          color: Colors.transparent, // Menggunakan warna utama dari shared_ui
           buttonBackgroundColor: kBrandPrimary, // Warna latar tombol yang aktif
           backgroundColor:
               Colors.transparent, // Warna latar di luar bilah navigasi
