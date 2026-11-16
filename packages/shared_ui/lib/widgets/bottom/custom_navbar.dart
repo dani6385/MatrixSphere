@@ -54,8 +54,8 @@ class CustomNavBar extends StatelessWidget {
           index: currentIndex,
           height: 60.0,
           items: navIcons,
-          color: Colors.transparent, // Menggunakan warna utama dari shared_ui
-          buttonBackgroundColor: kBrandPrimary, // Warna latar tombol yang aktif
+          color: kBrandTertiary, // Menggunakan warna utama dari shared_ui
+          buttonBackgroundColor: Colors.transparent, // Warna latar tombol yang aktif
           backgroundColor:
               Colors.transparent, // Warna latar di luar bilah navigasi
           animationCurve: Curves.easeInOut,
