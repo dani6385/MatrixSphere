@@ -16,7 +16,7 @@ class AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
       // Tombol di sebelah kiri untuk membuka Drawer utama (navigasi presensi)
       leading: IconButton(
         icon: Icon(
-          Icons.access_time_outlined, // Ikon sidik jari khusus halaman attendance
+          Icons.event_available, // Ikon sidik jari khusus halaman attendance
           color: context.onSurface,
         ),
         tooltip: 'Menu',
@@ -37,7 +37,7 @@ class AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: Icon(
-            Icons.event_available, // Ikon kalender untuk riwayat/jadwal kerja
+            Icons.badge_outlined, // Ikon kalender untuk riwayat/jadwal kerja
             color: context.onSurface,
           ),
           tooltip: 'Pengaturan',

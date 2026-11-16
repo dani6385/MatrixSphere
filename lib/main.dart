@@ -28,11 +28,9 @@ class MatrixSphere extends StatelessWidget {
     return MaterialApp.router(
       title: 'MatrixSphere',
       debugShowCheckedModeBanner: false, // Menghilangkan pita "DEBUG" di pojok kanan atas
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      // Menghubungkan aplikasi dengan variabel appRouter yang sudah kamu buat
+      theme: ThemeData.light(), // Tema terang Anda
+      darkTheme: ThemeData.dark(), // Tema gelap Anda
+      themeMode: ThemeMode.system,
       routerConfig: appRouter,
     );
   }

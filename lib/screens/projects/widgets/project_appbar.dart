@@ -37,7 +37,7 @@ class ProjectAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: Icon(
-            Icons.folder_shared_outlined, // Ikon kalender untuk riwayat/jadwal kerja
+            Icons.assignment_outlined, // Ikon kalender untuk riwayat/jadwal kerja
             color: context.onSurface,
           ),
           tooltip: 'Pengaturan',

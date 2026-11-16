@@ -19,7 +19,7 @@ class AnalyticAppBar extends StatelessWidget implements PreferredSizeWidget {
       // Tombol di sebelah kiri untuk membuka Drawer utama (navigasi presensi)
       leading: IconButton(
         icon: Icon(
-          Icons.analytics_outlined, // Ikon sidik jari khusus halaman attendance
+          Icons.bar_chart, // Ikon sidik jari khusus halaman attendance
           color: context.onSurface,
         ),
         tooltip: 'Menu Navigasi',

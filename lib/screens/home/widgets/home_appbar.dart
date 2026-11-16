@@ -16,7 +16,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       // Tombol di sebelah kiri untuk membuka Drawer utama (navigasi presensi)
       leading: IconButton(
         icon: Icon(
-          Icons.dashboard_rounded, // Ikon sidik jari khusus halaman attendance
+          Icons.home_outlined, // Ikon sidik jari khusus halaman attendance
           color: context.onSurface,
         ),
         tooltip: 'Menu',
@@ -37,7 +37,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: Icon(
-            Icons.grid_view_rounded, // Ikon kalender untuk riwayat/jadwal kerja
+            Icons.dashboard_outlined, // Ikon kalender untuk riwayat/jadwal kerja
             color: context.onSurface,
           ),
           tooltip: 'Pengaturan',
