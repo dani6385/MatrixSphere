@@ -14,19 +14,10 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Home'),
         elevation: 0, // Memberikan efek rata tanpa bayangan
       ),
-      endDrawer: SideMenu(
-        header: const UserAccountsDrawerHeader(
-          accountName: Text('Nama Pengguna'),
-          accountEmail: Text('user@email.com'),
-          currentAccountPicture: CircleAvatar(child: Icon(Icons.person)),
-        ),
-        items: [
-          // Daftar menu item lainnya di sini...
-        ],
-        // Menempatkan tombol logout di bagian bawah drawer
-        footer: const OpenEndDrawer(),
-        selectedRoute: '/home',
-        children: const [],
+      endDrawer: SharedProjectDrawer(
+        menuBuilder: (context, currentRoute) {
+          return getEndDrawerSideMenuItems(context, currentRoute);
+        },
       ),
       // Area utama halaman (Body)
       // Area utama halaman (Body)

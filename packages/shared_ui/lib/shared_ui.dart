@@ -20,3 +20,4 @@ export 'widgets/summary_card.dart';
 export 'widgets/app_card.dart';
 export 'src/base_app.dart';
 export 'widgets/bottom/custom_navbar.dart';
+export 'widgets/shared_project_drawer.dart';

@@ -1,112 +1,125 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_ui/shared_ui.dart';
+final Logger logger = Logger();
 
-final Logger _logger = Logger();
+// Definisi struktur data untuk item menu EndDrawer yang ditambah properti 'label'
+class MenuDrawer {
+  final String title;
+  final IconData icon;
+  final String label; // Properti untuk menyimpan keterangan fungsi
+  final String route;
+  final VoidCallback? onTap;
 
-/// Widget laci navigasi samping (Drawer/EndDrawer) dengan menu lengkap
-class OpenEndDrawer extends StatelessWidget {
-  const OpenEndDrawer({super.key});
+  MenuDrawer({
+    required this.title,
+    required this.icon,
+    required this.label,
+    required this.route,
+    this.onTap,
+  });
+}
 
-  @override
-  Widget build(BuildContext context) {
-    // Membatasi lebar drawer agar proporsional di layar perangkat
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.85,
-      child: Drawer(
-        backgroundColor: kDarkSurface, // Warna latar belakang dari shared_ui
-        child: Column(
-          children: [
-            // 1. Header Akun / Profil Pengguna (Bagian Atas)
-            UserAccountsDrawerHeader(
-              decoration: BoxDecoration(
-                color: kBrandPrimary,
-              ),
-              currentAccountPicture: const CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(Icons.person, size: 40, color: Colors.blue),
-              ),
-              accountName: const Text(
-                'Pengguna MatrixSphere',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              accountEmail: const Text('user@matrixsphere.com'),
+// Daftar rekomendasi item menu EndDrawer khusus saat di Halaman Home
+List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
+  return [
+    MenuDrawer(
+      title: 'Profile',
+      icon: Icons.person,
+      label: 'Melihat dan mengubah informasi profil akun toko.',
+      route: '/user-profile',
+      onTap: () {},
+    ),
+    MenuDrawer(
+      title: 'Dark Mode',
+      icon: Icons.dark_mode,
+      label: 'Mengubah tema tampilan aplikasi menjadi mode gelap atau terang.',
+      route: '',
+      onTap: () {
+        // Aksi mengubah tema
+      },
+    ),
+    MenuDrawer(
+      title: 'Notifications',
+      icon: Icons.notifications_active,
+      label: 'Mengatur pemberitahuan pesanan masuk dan pesan pembeli.',
+      route: '',
+      onTap: () {},
+    ),
+    MenuDrawer(
+      title: 'Settings',
+      icon: Icons.settings,
+      label: 'Mengatur preferensi dasar aplikasi secara keseluruhan.',
+      route: '/setting',
+      onTap: () {},
+    ),
+    MenuDrawer(
+      title: 'Security',
+      icon: Icons.security,
+      label: 'Mengatur kata sandi dan keamanan akun seller.',
+      route: '',
+      onTap: () {},
+    ),
+    MenuDrawer(
+      title: 'Help',
+      icon: Icons.help_outline,
+      label: 'Membaca panduan penggunaan atau menghubungi pusat bantuan.',
+      route: '',
+      onTap: () {},
+    ),
+    MenuDrawer(
+      title: 'About',
+      icon: Icons.info_outline,
+      label: 'Melihat informasi versi dan pengembang aplikasi.',
+      route: '',
+      onTap: () {},
+    ),
+    MenuDrawer(
+      title: 'Logout',
+      icon: Icons.logout,
+      label: 'Keluar dari sesi akun aktif pada aplikasi.',
+      route: '',
+      onTap: () async {
+        try {
+          // 1. Keluar dari sesi Firebase Auth
+          await FirebaseAuth.instance.signOut();
+          logger.i('Pengguna berhasil keluar (logout) dari aplikasi.');
+
+          // 2. Pastikan widget/konteks masih aktif di layar sebelum navigasi
+          if (!context.mounted) return;
+
+          // 3. Arahkan kembali ke halaman login menggunakan GoRouter
+          context.goToLogin();
+        } catch (e) {
+          logger.e('Gagal melakukan logout: $e');
+          
+          // Menampilkan pesan kesalahan jika gagal logout
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Gagal logout: $e'),
+              backgroundColor: Colors.red,
             ),
+          );
+        }
+      },
+    ),
+  ];
+}
 
-            // 2. Daftar Menu Navigasi (Dibungkus Expanded agar mengisi ruang tengah)
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.home_outlined, color: Colors.white70),
-                    title: const Text('Beranda', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.goToHome();
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.person_outline, color: Colors.white70),
-                    title: const Text('Profil Saya', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.goToProfile();
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.settings_outlined, color: Colors.white70),
-                    title: const Text('Pengaturan', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.goToSettings();
-                    },
-                  ),
-                ],
-              ),
-            ),
+List<SideMenuItem> getEndDrawerSideMenuItems(BuildContext context, String currentRoute) {
+  final drawerItems = getEndDrawerItems(context, currentRoute);
 
-            // 3. Garis Pemisah & Tombol Keluar (Logout) di Bagian Paling Bawah
-            const Divider(color: Colors.grey, height: 1),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.redAccent),
-              title: const Text(
-                'Keluar (Logout)',
-                style: TextStyle(
-                  color: Colors.redAccent,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              onTap: () async {
-                try {
-                  // Keluar dari sesi Firebase Auth
-                  await FirebaseAuth.instance.signOut();
-                  _logger.i('Pengguna berhasil logout.');
-
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-
-                  // Arahkan kembali ke halaman login
-                  context.goToLogin();
-                } catch (e) {
-                  _logger.e('Gagal melakukan logout: $e');
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Gagal logout: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-            ),
-            // Berikan sedikit ruang aman di bagian paling bawah perangkat (safe area)
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
+  return drawerItems.map((item) {
+    return SideMenuItem(
+      title: item.title,
+      icon: item.icon,
+      label: item.label,
+      route: '', // Sesuaikan rute jika diperlukan
+      isSelected: false,
+      onTap: item.onTap ?? () {}, // Provide an empty function if item.onTap is null
     );
-  }
+  }).toList();
 }
