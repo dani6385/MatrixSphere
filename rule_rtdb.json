@@ -9,6 +9,10 @@
         ".write": "auth != null && auth.uid == $uid"
       }
     },
+    "company_profile": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.isAdmin === true"
+    },
     "app_errors": {
       // Mengizinkan pengguna yang sudah login untuk mencatat dan memantau log error
       ".read": "auth != null",

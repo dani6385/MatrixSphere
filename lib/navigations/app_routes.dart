@@ -71,4 +71,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String userProfile = '/user-profile';
   static const String userEditProfile = '/user-profile/edit';
+  static const String companyProfile = '/company-profile';
+  static const String companyEditProfile = '/company-profile/edit';
+
 }

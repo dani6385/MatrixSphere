@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 // Tambahkan go_router untuk navigasi
 import 'package:logger/logger.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_ui/shared_ui.dart'; // Impor shared_ui agar kita bisa menggunakan SideMenuItem
 
 final Logger logger = Logger();
@@ -26,10 +27,19 @@ class MenuDrawer {
 List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
   return [
     MenuDrawer(
-      title: 'Simulasi',
+      title: 'Company Profile / Profil Perusahaan',
       icon: Icons.info_outline,
       label: 'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
-      onTap: () => logger.i('Simulasi tapped'),
+      onTap: () {
+    // 1. Jalankan simulasi logger sesuai permintaan
+    logger.i('Simulasi tapped');
+
+    // 2. Tutup drawer terlebih dahulu jika diletakkan di dalam menu drawer
+    Navigator.pop(context);
+
+    // 3. Panggil navigasi ke halaman profil perusahaan
+    context.goToCompanyProfile();
+  },
     ),
     MenuDrawer(
       title: 'Status Toko',

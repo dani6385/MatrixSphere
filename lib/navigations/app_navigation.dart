@@ -9,11 +9,15 @@ extension AppNavigation on BuildContext {
       context.pop();
     }
   }
+
   /// Berpindah ke halaman profil
   void goToProfile() => go(AppRoutes.profile);
   void goToUserProfile() => go(AppRoutes.userProfile);
   void pushToUserProfile() => push(AppRoutes.userProfile);
   void pushToUserEditProfile() => push(AppRoutes.userEditProfile);
+  void goToCompanyProfile() => go(AppRoutes.companyProfile);
+  void pushToCompanyProfile() => push(AppRoutes.companyProfile);
+  void pushToCompanyEditProfile() => push(AppRoutes.companyEditProfile);
 
   /// Berpindah ke halaman beranda
   void goToHome(BuildContext context) => go(AppRoutes.home);
