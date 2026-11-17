@@ -46,6 +46,8 @@ dependencies:
   logger: ^2.8.0
   firebase_database: ^13.0.1
   package_info_plus: ^10.2.2
+  http: ^1.6.0
+  image_picker: ^1.2.4
 
 dev_dependencies:
   flutter_test:

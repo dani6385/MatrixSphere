@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:matrix_sphere/navigations/app_routes.dart';
+import 'package:matrix_sphere/navigations/app_extractor.dart';
 
 
 class AppShellRoute {
@@ -73,12 +75,15 @@ class AppShellRoute {
         // --- Branch Tab 2 (Contoh: Profil) ---
         StatefulShellBranch(
           routes: [
-            /*
+            
             GoRoute(
-              path: AppRoutes.profile,
-              builder: (context, state) => const ProfileScreen(),
+              path: AppRoutes.userProfile,
+              builder: (context, state) => const UserProfileScreen(),
             ),
-            */
+            GoRoute(
+              path: AppRoutes.userEditProfile,
+              builder: (context, state) => const EditProfileScreen(),
+            ),
           ],
         ),
         

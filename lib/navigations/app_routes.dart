@@ -43,7 +43,7 @@ class AppRoutes {
   static const String billing = '/billing';
   static const String calendar = '/calendar';
   static const String contacts = '/contacts';
-  static const String editprofile = '/editprofile';
+
   static const String files = '/files';
   static const String marketing = '/marketing';
   static const String messages = '/messages';
@@ -63,11 +63,12 @@ class AppRoutes {
   static const String team = '/team';
   static const String templates = '/templates';
   static const String transactions = '/transactions';
-  static const String userProfile = '/user-profile';
-  static const String users = '/users';
   static const String vendors = '/vendors';
   static const String webhooks = '/webhooks';
   static const String workCalendar = '/work-calendar';
-
+  // profile
+  static const String users = '/users';
   static const String profile = '/profile';
+  static const String userProfile = '/user-profile';
+  static const String userEditProfile = '/user-profile/edit';
 }

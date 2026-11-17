@@ -7,6 +7,7 @@ extension AppNavigation on BuildContext {
   /// Berpindah ke halaman profil
   void goToProfile() => go(AppRoutes.profile);
   void goToUserProfile() => go(AppRoutes.userProfile);
+  void goToUserEditProfile() => go(AppRoutes.userEditProfile);
 
   /// Berpindah ke halaman beranda
   void goToHome(BuildContext context) => go(AppRoutes.home);
