@@ -5,6 +5,7 @@ import 'package:matrix_sphere/screens/home/widgets/home_drawer_items.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_end_drawer_items.dart';
 import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_appbar.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -43,7 +44,7 @@ class HomeScreen extends StatelessWidget {
             // Tutup drawer terlebih dahulu sebelum berpindah halaman
             Navigator.pop(context);
             // Arahkan ke halaman profile menggunakan GoRouter
-            context.go('/user-profile');
+            context.goToUserProfile();
           },
         ),
         menuBuilder: (context, currentRoute) {
