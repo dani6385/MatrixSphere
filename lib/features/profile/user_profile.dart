@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:go_router/go_router.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -33,7 +34,7 @@ class UserProfileScreen extends StatelessWidget {
             icon: const Icon(Icons.edit),
             tooltip: 'Edit Profil',
             // Navigasi ke sub-rute user-profile/edit
-            onPressed: () => context.go('/user-profile/edit'),
+            onPressed: () => context.goToUserEditProfile(),
           ),
         ],
       ),
@@ -139,7 +140,7 @@ class UserProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () => context.go('/user-profile/edit'),
+                    onPressed: () => context.goToUserEditProfile(),
                   ),
                 ),
               ],
