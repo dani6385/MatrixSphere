@@ -28,31 +28,6 @@ class MenuDrawer {
 // Daftar rekomendasi item menu EndDrawer khusus saat di Halaman Home
 List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
   return [
-MenuDrawer(
-      title: 'Profile',
-      icon: Icons.person, // Kamu bisa menggantinya dengan ikon lain jika mau, misal Icons.account_circle
-      label: 'Melihat dan mengubah informasi profil akun toko.',
-      route: '/user-profile',
-      onTap: () {
-        // 1. Tutup laci kanan (EndDrawer) terlebih dahulu agar animasi mulus
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
-        }
-
-        // 2. Pastikan widget masih aktif sebelum melakukan navigasi
-        if (!context.mounted) return;
-
-        // 3. Pindah ke halaman profil menggunakan GoRouter
-        context.goToUserProfile;
-      },
-    ),
-    MenuDrawer(
-      title: 'Profile',
-      icon: Icons.person,
-      label: 'Melihat dan mengubah informasi profil akun toko.',
-      route: '/user-profile',
-      onTap: () {},
-    ),
     MenuDrawer(
       title: 'Dark Mode',
       icon: Icons.dark_mode,
