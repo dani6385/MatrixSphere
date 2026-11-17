@@ -8,8 +8,7 @@ class EditCompanyProfile extends StatefulWidget {
   const EditCompanyProfile({super.key});
 
   @override
-  State<EditCompanyProfile> createState() =>
-      _EditCompanyProfileState();
+  State<EditCompanyProfile> createState() => _EditCompanyProfileState();
 }
 
 class _EditCompanyProfileState extends State<EditCompanyProfile> {
@@ -22,6 +21,8 @@ class _EditCompanyProfileState extends State<EditCompanyProfile> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _websiteController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _visionController = TextEditingController();
+  final TextEditingController _missionController = TextEditingController();
 
   File? _selectedLogoFile;
   String? _currentLogoUrl;
@@ -36,8 +37,9 @@ class _EditCompanyProfileState extends State<EditCompanyProfile> {
 
   Future<void> _loadCompanyData() async {
     try {
-      final snapshot =
-          await FirebaseDatabase.instance.ref('company_profile').get();
+      final snapshot = await FirebaseDatabase.instance
+          .ref('company_profile')
+          .get();
 
       if (snapshot.exists && snapshot.value != null) {
         final data = snapshot.value as Map<dynamic, dynamic>;
@@ -76,8 +78,9 @@ class _EditCompanyProfileState extends State<EditCompanyProfile> {
 
       // Unggah logo baru ke ImgBB jika dipilih
       if (_selectedLogoFile != null) {
-        final uploadedUrl =
-            await ProfileImageService.uploadImageToImgBB(_selectedLogoFile!);
+        final uploadedUrl = await ProfileImageService.uploadImageToImgBB(
+          _selectedLogoFile!,
+        );
         if (uploadedUrl != null) {
           finalLogoUrl = uploadedUrl;
         } else {
@@ -95,6 +98,8 @@ class _EditCompanyProfileState extends State<EditCompanyProfile> {
         'website': _websiteController.text.trim(),
         'address': _addressController.text.trim(),
         'logoUrl': finalLogoUrl ?? '',
+        'vision': _visionController.text.trim(),
+        'mission': _missionController.text.trim(),
         'updatedAt': DateTime.now().toIso8601String(),
       });
 
@@ -163,33 +168,42 @@ class _EditCompanyProfileState extends State<EditCompanyProfile> {
                             color: Colors.blue.shade50,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                                color: Colors.blue.shade200, width: 2),
+                              color: Colors.blue.shade200,
+                              width: 2,
+                            ),
                             image: _selectedLogoFile != null
                                 ? DecorationImage(
                                     image: FileImage(_selectedLogoFile!),
                                     fit: BoxFit.cover,
                                   )
                                 : (_currentLogoUrl != null &&
-                                        _currentLogoUrl!.isNotEmpty)
-                                    ? DecorationImage(
-                                        image: NetworkImage(_currentLogoUrl!),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : null,
+                                      _currentLogoUrl!.isNotEmpty)
+                                ? DecorationImage(
+                                    image: NetworkImage(_currentLogoUrl!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
                           ),
-                          child: (_selectedLogoFile == null &&
+                          child:
+                              (_selectedLogoFile == null &&
                                   (_currentLogoUrl == null ||
                                       _currentLogoUrl!.isEmpty))
-                              ? const Icon(Icons.apartment,
-                                  size: 56, color: Colors.blue)
+                              ? const Icon(
+                                  Icons.apartment,
+                                  size: 56,
+                                  color: Colors.blue,
+                                )
                               : null,
                         ),
                         CircleAvatar(
                           radius: 18,
                           backgroundColor: Colors.blue,
                           child: IconButton(
-                            icon: const Icon(Icons.camera_alt,
-                                size: 18, color: Colors.white),
+                            icon: const Icon(
+                              Icons.camera_alt,
+                              size: 18,
+                              color: Colors.white,
+                            ),
                             onPressed: _isLoading ? null : _handlePickLogo,
                           ),
                         ),

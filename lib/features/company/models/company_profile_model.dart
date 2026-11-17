@@ -7,6 +7,8 @@ class CompanyProfileModel {
   final String website;
   final String address;
   final String? logoUrl;
+  final String vision;   // <-- BARU
+  final String mission;  // <-- BARU
 
   const CompanyProfileModel({
     required this.name,
@@ -17,6 +19,8 @@ class CompanyProfileModel {
     required this.website,
     required this.address,
     this.logoUrl,
+    required this.vision,
+    required this.mission,
   });
 
   factory CompanyProfileModel.fromMap(Map<dynamic, dynamic>? map) {
@@ -46,6 +50,12 @@ class CompanyProfileModel {
           ? data['address'].toString()
           : 'Belum diisi',
       logoUrl: (rawLogo != null && rawLogo.isNotEmpty) ? rawLogo : null,
+      vision: (data['vision']?.toString().isNotEmpty == true)
+          ? data['vision'].toString()
+          : 'Belum diisi',
+      mission: (data['mission']?.toString().isNotEmpty == true)
+          ? data['mission'].toString()
+          : 'Belum diisi',
     );
   }
 
