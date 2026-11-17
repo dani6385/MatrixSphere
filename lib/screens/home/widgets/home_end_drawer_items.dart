@@ -43,7 +43,7 @@ MenuDrawer(
         if (!context.mounted) return;
 
         // 3. Pindah ke halaman profil menggunakan GoRouter
-        context.go('/user-profile');
+        context.goToUserProfile;
       },
     ),
     MenuDrawer(
