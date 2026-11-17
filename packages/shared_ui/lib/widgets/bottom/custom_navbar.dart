@@ -39,7 +39,7 @@ class CustomNavBar extends StatelessWidget {
       return Icon(
         isActive ? item.activeIcon : item.icon,
         size: 30,
-        color: isActive ? Colors.black87 : Colors.white70,
+        color: isActive ? kBlueAccent : Colors.white70,
       );
     }).toList();
     return ClipPath(

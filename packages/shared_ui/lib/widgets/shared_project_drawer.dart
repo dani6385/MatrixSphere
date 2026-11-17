@@ -25,14 +25,8 @@ class SharedProjectDrawer extends StatelessWidget {
     final List<SideMenuItem> menuList = menuBuilder(context, currentRoute);
 
     return SideMenu(
-      header: const DrawerHeader(
-        decoration: BoxDecoration(color: Colors.blue),
-        child: Text(
-          'Menu Aplikasi',
-          style: TextStyle(
-              color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
+      // PERBAIKAN: Menggunakan variabel 'header' yang dikirim dari luar (seperti UserAccountsDrawerHeader)
+      header: header,
       items: menuList,
       selectedRoute: currentRoute,
       children: null,

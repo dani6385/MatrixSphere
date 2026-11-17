@@ -78,7 +78,7 @@ const Color kLightTextSecondary = AppColors.lightTextSecondary;
 // 4. WARNA STATUS & UMPAN BALIK (Feedback)
 // ==========================================
 const Color kSuccess = AppColors.success;
-const Color kwarning = AppColors.warning;
+const Color kWarning = AppColors.warning;
 const Color kError = AppColors.error;
 const Color kInfo = AppColors.info;
 
@@ -86,6 +86,7 @@ const Color kInfo = AppColors.info;
 
 // Sisa alias lama pendukung
 const Color darkBlueBackground = Color(0xFF0D1B2A);
+const Color kBluePrimary = Colors.blue;
 const Color kBlueSecondary = kBrandSecondary;
 const Color kBlueAccent = Colors.blueAccent;
 const Color kCyanPrimary = kBrandPrimary;

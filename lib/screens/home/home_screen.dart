@@ -31,10 +31,10 @@ class HomeScreen extends StatelessWidget {
       endDrawer: SharedProjectDrawer(
         // Menggunakan UserAccountsDrawerHeader sebagai header drawer yang interaktif
         header: UserAccountsDrawerHeader(
-          decoration: const BoxDecoration(color: Colors.blue),
+          decoration: const BoxDecoration(color: kBluePrimary),
           currentAccountPicture: const CircleAvatar(
             backgroundColor: Colors.white,
-            child: Icon(Icons.person, size: 40, color: Colors.blue),
+            child: Icon(Icons.person, size: 40, color: kBluePrimary),
           ),
           accountName: const Text('Pengguna MatrixSphere'),
           accountEmail: Text(
