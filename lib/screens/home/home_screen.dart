@@ -27,18 +27,29 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       endDrawer: SharedProjectDrawer(
+        // Menggunakan UserAccountsDrawerHeader sebagai header drawer yang interaktif
+        header: UserAccountsDrawerHeader(
+          decoration: const BoxDecoration(color: Colors.blue),
+          currentAccountPicture: const CircleAvatar(
+            backgroundColor: Colors.white,
+            child: Icon(Icons.person, size: 40, color: Colors.blue),
+          ),
+          accountName: const Text('Pengguna MatrixSphere'),
+          accountEmail: Text(
+            FirebaseAuth.instance.currentUser?.email ?? 'user@email.com',
+          ),
+          // Aksi ketika area profil diketuk (onTap)
+          onDetailsPressed: () {
+            // Tutup drawer terlebih dahulu sebelum berpindah halaman
+            Navigator.pop(context);
+            // Arahkan ke halaman profile menggunakan GoRouter
+            context.go('/user-profile');
+          },
+        ),
         menuBuilder: (context, currentRoute) {
           return getEndDrawerSideMenuItems(context, currentRoute);
         },
-        header: const UserAccountsDrawerHeader(
-          accountName: Text('Matrix Sphere'),
-          accountEmail: Text('admin@matrixsphere.id'),
-          currentAccountPicture: CircleAvatar(
-            child: Icon(Icons.person),
-          ),
-        ),
       ),
-      // Menggunakan ListView sebagai body standar agar halaman bisa digulir
       body: //const HomeBody(),
       ListView(
         padding: const EdgeInsets.all(16.0),
