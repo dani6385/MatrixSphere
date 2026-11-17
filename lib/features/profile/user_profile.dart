@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:go_router/go_router.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 
 class UserProfileScreen extends StatelessWidget {
@@ -27,14 +26,14 @@ class UserProfileScreen extends StatelessWidget {
         title: const Text('Profil Pengguna'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'), // Kembali ke Home
+          onPressed: () => AppNavigation.goBack(context),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
             tooltip: 'Edit Profil',
             // Navigasi ke sub-rute user-profile/edit
-            onPressed: () => context.goToUserEditProfile(),
+            onPressed: () => context.pushToUserEditProfile(),
           ),
         ],
       ),
@@ -140,7 +139,7 @@ class UserProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () => context.goToUserEditProfile(),
+                    onPressed: () => context.pushToUserEditProfile(),
                   ),
                 ),
               ],

@@ -5,9 +5,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -164,7 +164,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
 
       // Kembali ke halaman User Profile
-      context.go('/user-profile');
+      AppNavigation.goBack(context);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -196,7 +196,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         title: const Text('Edit Profil'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/user-profile'),
+          onPressed: () => AppNavigation.goBack(context),
         ),
       ),
       body: _isInitialLoading
