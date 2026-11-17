@@ -1,5 +1,6 @@
 // lib/screens/home_screen.dart
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_drawer_items.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_end_drawer_items.dart';
@@ -10,8 +11,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
+final User? currentUser = FirebaseAuth.instance.currentUser;
+    
+    // Referensi database untuk mendengarkan perubahan data profil pengguna secara real-time
+    final DatabaseReference userRef = currentUser != null
+        ? FirebaseDatabase.instance.ref('users/${currentUser.uid}')
+        : FirebaseDatabase.instance.ref('dummy');
+
     return Scaffold(
       appBar: const HomeAppBar(),
       drawerEnableOpenDragGesture: false,
@@ -28,28 +37,48 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      endDrawer: SharedProjectDrawer(
-        // Menggunakan UserAccountsDrawerHeader sebagai header drawer yang interaktif
-        header: UserAccountsDrawerHeader(
-          decoration: const BoxDecoration(color: kBluePrimary),
-          currentAccountPicture: const CircleAvatar(
-            backgroundColor: Colors.white,
-            child: Icon(Icons.person, size: 40, color: kBluePrimary),
-          ),
-          accountName: const Text('Pengguna MatrixSphere'),
-          accountEmail: Text(
-            FirebaseAuth.instance.currentUser?.email ?? 'user@email.com',
-          ),
-          // Aksi ketika area profil diketuk (onTap)
-          onDetailsPressed: () {
-            // Tutup drawer terlebih dahulu sebelum berpindah halaman
-            Navigator.pop(context);
-            // Arahkan ke halaman profile menggunakan GoRouter
-            context.goToUserProfile();
-          },
-        ),
-        menuBuilder: (context, currentRoute) {
-          return getEndDrawerSideMenuItems(context, currentRoute);
+      endDrawer: StreamBuilder<DatabaseEvent>(
+        stream: userRef.onValue,
+        builder: (context, snapshot) {
+          Map<dynamic, dynamic> userData = {};
+          if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
+            userData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+          }
+
+          // Ambil data dari RTDB dengan fallback ke FirebaseAuth
+          final String displayName = userData['name']?.toString() ??
+              currentUser?.displayName ??
+              'Pengguna MatrixSphere';
+          final String email = currentUser?.email ?? 'user@email.com';
+          final String? photoUrl =
+              userData['photoUrl']?.toString() ?? currentUser?.photoURL;
+
+          return SharedProjectDrawer(
+            header: UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(color: Colors.blue),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                // Jika photoUrl tersedia, tampilkan NetworkImage, jika tidak tampilkan ikon
+                backgroundImage: (photoUrl != null && photoUrl.isNotEmpty)
+                    ? NetworkImage(photoUrl)
+                    : null,
+                child: (photoUrl == null || photoUrl.isEmpty)
+                    ? const Icon(Icons.person, size: 40, color: Colors.blue)
+                    : null,
+              ),
+              accountName: Text(displayName),
+              accountEmail: Text(email),
+              onDetailsPressed: () {
+                // Tutup drawer terlebih dahulu sebelum berpindah halaman
+                Navigator.pop(context);
+                // Arahkan ke halaman profile menggunakan ekstensi navigasi
+                context.goToUserProfile();
+              },
+            ),
+            menuBuilder: (context, currentRoute) {
+              return getEndDrawerSideMenuItems(context, currentRoute);
+            },
+          );
         },
       ),
       body: //const HomeBody(),
