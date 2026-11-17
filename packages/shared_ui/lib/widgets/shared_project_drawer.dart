@@ -7,12 +7,13 @@ typedef ProjectMenuBuilder = List<SideMenuItem> Function(
     BuildContext context, String currentRoute);
 
 class SharedProjectDrawer extends StatelessWidget {
-  final ProjectMenuBuilder menuBuilder; // Menerima data dari project utama
+  final ProjectMenuBuilder menuBuilder;
+  final Widget header;
 
   const SharedProjectDrawer({
     super.key,
     required this.menuBuilder,
-    required UserAccountsDrawerHeader header,
+    required this.header,
   });
 
   @override
