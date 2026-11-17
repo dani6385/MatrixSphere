@@ -5,6 +5,7 @@ import 'app_routes.dart';
 extension AppNavigation on BuildContext {
   /// Berpindah ke halaman profil
   void goToProfile() => go(AppRoutes.profile);
+void goToUserProfile() => go(AppRoutes.userProfile);
   /// Berpindah ke halaman beranda
   void goToHome(BuildContext context) => go(AppRoutes.home);
   /// Berpindah ke halaman pengaturan
