@@ -27,7 +27,7 @@ class UserProfileScreen extends StatelessWidget {
         title: const Text('Profil Pengguna'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => AppNavigation.goBack(context),
+          onPressed: () => context.pushToHome(context),
         ),
         actions: [
           IconButton(
