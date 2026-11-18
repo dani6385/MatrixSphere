@@ -20,12 +20,12 @@ List<RouteBase> getFullScreen() {
     ),
 GoRoute(
       path: '/compny-profile',
-      builder: (context, state) => const CompanyProfileScreen(),
+      builder: (context, state) => const CompanyProfile(),
       routes: [
         // Sub-rute untuk Edit Profil: /user-profile/edit
         GoRoute(
           path: 'edit',
-          builder: (context, state) => const EditCompanyProfileScreen(),
+          builder: (context, state) => const EditCompanyProfile(),
         ),
       ],
     ),
