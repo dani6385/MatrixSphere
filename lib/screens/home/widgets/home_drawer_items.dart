@@ -27,30 +27,17 @@ class MenuDrawer {
 List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
   return [
     MenuDrawer(
-      title: 'Company Profile / Profil Perusahaan',
-      icon: Icons.info_outline,
-      label: 'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
-      onTap: () {
-    // 1. Jalankan simulasi logger sesuai permintaan
-    logger.i('Simulasi tapped');
-
-    // 2. Tutup drawer terlebih dahulu jika diletakkan di dalam menu drawer
-    Navigator.pop(context);
-
-    // 3. Panggil navigasi ke halaman profil perusahaan
-    context.goToCompanyProfile();
-  },
-    ),
-    MenuDrawer(
       title: 'Status Toko',
       icon: Icons.info_outline,
-      label: 'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
+      label:
+          'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
       onTap: () => logger.i('Status Toko tapped'),
     ),
     MenuDrawer(
       title: 'Products / Produk',
       icon: Icons.shopping_bag,
-      label: 'Mengelola daftar produk, menambah barang baru, atau mengatur harga.',
+      label:
+          'Mengelola daftar produk, menambah barang baru, atau mengatur harga.',
       onTap: () => logger.i('Products tapped'),
     ),
     MenuDrawer(
@@ -99,7 +86,10 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
 }
 
 /// Fungsi helper untuk mengubah MenuDrawer lokal menjadi SideMenuItem shared_ui
-List<SideMenuItem> getDrawerSideMenuItems(BuildContext context, String currentRoute) {
+List<SideMenuItem> getDrawerSideMenuItems(
+  BuildContext context,
+  String currentRoute,
+) {
   final drawerItems = getDrawerItems(context, currentRoute);
 
   return drawerItems.map((item) {
@@ -109,7 +99,9 @@ List<SideMenuItem> getDrawerSideMenuItems(BuildContext context, String currentRo
       label: item.label,
       route: '', // Sesuaikan rute jika diperlukan
       isSelected: false,
-      onTap: item.onTap ?? () {}, // Provide an empty function if item.onTap is null
+      onTap:
+          item.onTap ??
+          () {}, // Provide an empty function if item.onTap is null
     );
   }).toList();
 }

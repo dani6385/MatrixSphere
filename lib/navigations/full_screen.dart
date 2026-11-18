@@ -19,7 +19,7 @@ List<RouteBase> getFullScreen() {
         ),
       ],
     ),
-GoRoute(
+    GoRoute(
       path: AppRoutes.companyProfile,
       builder: (context, state) => const CompanyProfile(),
       routes: [

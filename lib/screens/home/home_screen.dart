@@ -8,34 +8,66 @@ import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_appbar.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:matrix_sphere/features/company/models/company_profile_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-final User? currentUser = FirebaseAuth.instance.currentUser;
-    
+    final User? currentUser = FirebaseAuth.instance.currentUser;
+
     // Referensi database untuk mendengarkan perubahan data profil pengguna secara real-time
     final DatabaseReference userRef = currentUser != null
         ? FirebaseDatabase.instance.ref('users/${currentUser.uid}')
         : FirebaseDatabase.instance.ref('dummy');
+    final DatabaseReference companyRef = FirebaseDatabase.instance.ref(
+      'company_profile',
+    );
 
     return Scaffold(
       appBar: const HomeAppBar(),
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
-      drawer: SharedProjectDrawer(
-        menuBuilder: (context, currentRoute) {
-          return getDrawerSideMenuItems(context, currentRoute);
+      drawer: StreamBuilder<DatabaseEvent>(
+        stream: companyRef.onValue,
+        builder: (context, snapshot) {
+          Map<dynamic, dynamic>? rawCompanyData;
+          if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
+            rawCompanyData =
+                snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+          }
+
+          // Gunakan CompanyProfileModel agar pemetaan data aman dan rapi
+          final company = CompanyProfileModel.fromMap(rawCompanyData);
+
+          return SharedProjectDrawer(
+            menuBuilder: (context, currentRoute) {
+              return getDrawerSideMenuItems(context, currentRoute);
+            },
+            header: UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(color: Colors.blue),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                // Tampilkan logo perusahaan dari ImgBB jika sudah diunggah
+                backgroundImage: company.hasLogo
+                    ? NetworkImage(company.logoUrl!)
+                    : null,
+                child: !company.hasLogo
+                    ? const Icon(Icons.apartment, size: 40, color: Colors.blue)
+                    : null,
+              ),
+              accountName: Text(company.name),
+              accountEmail: Text(company.email),
+              // Navigasi langsung ke halaman Profil Perusahaan saat header diketuk
+              onDetailsPressed: () {
+                Navigator.pop(context); // Tutup drawer terlebih dahulu
+                context
+                    .goToCompanyProfile(); // Pindah ke halaman Company Profile
+              },
+            ),
+          );
         },
-        header: const UserAccountsDrawerHeader(
-          accountName: Text('Matrix Sphere'),
-          accountEmail: Text('admin@matrixsphere.id'),
-          currentAccountPicture: CircleAvatar(
-            child: Icon(Icons.person),
-          ),
-        ),
       ),
       endDrawer: StreamBuilder<DatabaseEvent>(
         stream: userRef.onValue,
@@ -46,7 +78,8 @@ final User? currentUser = FirebaseAuth.instance.currentUser;
           }
 
           // Ambil data dari RTDB dengan fallback ke FirebaseAuth
-          final String displayName = userData['name']?.toString() ??
+          final String displayName =
+              userData['name']?.toString() ??
               currentUser?.displayName ??
               'Pengguna MatrixSphere';
           final String email = currentUser?.email ?? 'user@email.com';
@@ -98,10 +131,7 @@ final User? currentUser = FirebaseAuth.instance.currentUser;
                 children: [
                   Text(
                     'Halo, Selamat Datang!',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -113,14 +143,11 @@ final User? currentUser = FirebaseAuth.instance.currentUser;
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Contoh Daftar Menu Pintasan Standar
           const Text(
             'Menu Cepat',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           ListTile(
