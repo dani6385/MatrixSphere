@@ -36,8 +36,15 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
         label: 'Mengatur jabatan dan status kerja setiap akun karyawan.',
         onTap: () {
           logger.i('Kelola Jabatan Pekerja tapped');
-          Navigator.pop(context); // Tutup laci navigasi terlebih dahulu
-          context.pushToManageUsers(); // Buka halaman AminScreen
+
+          if (Navigator.canPop(context)) {
+            Navigator.of(context).pop();
+          }
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (context.mounted) {
+              context.pushToManageUsers();
+            }
+          });
         },
       ),
     MenuDrawer(
