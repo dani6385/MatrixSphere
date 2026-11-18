@@ -1,6 +1,7 @@
 // lib/navigations/full_screen_route.dart
 
 import 'package:go_router/go_router.dart';
+import 'app_routes.dart';
 import 'app_extractor.dart';
 
 /// Daftar rute full screen (di luar shell branches / bottom navigation bar)
@@ -8,7 +9,7 @@ List<RouteBase> getFullScreen() {
   return [
     // Halaman Profil Pengguna
     GoRoute(
-      path: '/user-profile',
+      path: AppRoutes.userProfile,
       builder: (context, state) => const UserProfileScreen(),
       routes: [
         // Sub-rute untuk Edit Profil: /user-profile/edit
@@ -19,10 +20,10 @@ List<RouteBase> getFullScreen() {
       ],
     ),
 GoRoute(
-      path: '/compny-profile',
+      path: AppRoutes.companyProfile,
       builder: (context, state) => const CompanyProfile(),
       routes: [
-        // Sub-rute untuk Edit Profil: /user-profile/edit
+        // Sub-rute untuk Edit Profil: /company-profile/edit
         GoRoute(
           path: 'edit',
           builder: (context, state) => const EditCompanyProfile(),

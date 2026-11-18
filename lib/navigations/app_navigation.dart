@@ -13,15 +13,12 @@ extension AppNavigation on BuildContext {
   /// Berpindah ke halaman profil
   void goToProfile() => go(AppRoutes.profile);
   void goToUserProfile() => go(AppRoutes.userProfile);
-  void pushToUserProfile() => push(AppRoutes.userProfile);
   void pushToUserEditProfile() => push(AppRoutes.userEditProfile);
   void goToCompanyProfile() => go(AppRoutes.companyProfile);
-  void pushToCompanyProfile() => push(AppRoutes.companyProfile);
   void pushToCompanyEditProfile() => push(AppRoutes.companyEditProfile);
 
   /// Berpindah ke halaman beranda
   void goToHome(BuildContext context) => go(AppRoutes.home);
-  void pushToHome(BuildContext context) => push(AppRoutes.home);
 
   /// Berpindah ke halaman pengaturan
   void goToSettings() => go(AppRoutes.settings);
