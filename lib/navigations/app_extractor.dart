@@ -8,3 +8,5 @@ export 'package:matrix_sphere/screens/attendance/attendance_screen.dart';
 //profile
 export 'package:matrix_sphere/features/profile/user_profile.dart';
 export 'package:matrix_sphere/features/profile/edit_profile.dart';
+export 'package:matrix_sphere/features/company/company_profile.dart';
+export 'package:matrix_sphere/features/company/edit_company_profile.dart';
