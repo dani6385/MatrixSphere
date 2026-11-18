@@ -34,43 +34,10 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
       label: 'Mengubah tema tampilan aplikasi menjadi mode gelap atau terang.',
       route: '',
       onTap: () {
-        // Aksi mengubah tema
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
       },
-    ),
-    MenuDrawer(
-      title: 'Notifications',
-      icon: Icons.notifications_active,
-      label: 'Mengatur pemberitahuan pesanan masuk dan pesan pembeli.',
-      route: '',
-      onTap: () {},
-    ),
-    MenuDrawer(
-      title: 'Settings',
-      icon: Icons.settings,
-      label: 'Mengatur preferensi dasar aplikasi secara keseluruhan.',
-      route: '/setting',
-      onTap: () {},
-    ),
-    MenuDrawer(
-      title: 'Security',
-      icon: Icons.security,
-      label: 'Mengatur kata sandi dan keamanan akun seller.',
-      route: '',
-      onTap: () {},
-    ),
-    MenuDrawer(
-      title: 'Help',
-      icon: Icons.help_outline,
-      label: 'Membaca panduan penggunaan atau menghubungi pusat bantuan.',
-      route: '',
-      onTap: () {},
-    ),
-    MenuDrawer(
-      title: 'About',
-      icon: Icons.info_outline,
-      label: 'Melihat informasi versi dan pengembang aplikasi.',
-      route: '',
-      onTap: () {},
     ),
     MenuDrawer(
       title: 'Logout',
@@ -108,7 +75,10 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
   ];
 }
 
-List<SideMenuItem> getEndDrawerSideMenuItems(BuildContext context, String currentRoute) {
+List<SideMenuItem> getEndDrawerSideMenuItems(
+  BuildContext context,
+  String currentRoute,
+) {
   final drawerItems = getEndDrawerItems(context, currentRoute);
 
   return drawerItems.map((item) {
@@ -118,7 +88,9 @@ List<SideMenuItem> getEndDrawerSideMenuItems(BuildContext context, String curren
       label: item.label,
       route: '', // Sesuaikan rute jika diperlukan
       isSelected: false,
-      onTap: item.onTap ?? () {}, // Provide an empty function if item.onTap is null
+      onTap:
+          item.onTap ??
+          () {}, // Provide an empty function if item.onTap is null
     );
   }).toList();
 }

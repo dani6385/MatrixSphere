@@ -36,8 +36,15 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
         label: 'Mengatur jabatan dan status kerja setiap akun karyawan.',
         onTap: () {
           logger.i('Kelola Jabatan Pekerja tapped');
-          Navigator.pop(context); // Tutup laci navigasi terlebih dahulu
-          context.pushToManageUsers(); // Buka halaman AminScreen
+
+          if (Navigator.canPop(context)) {
+            Navigator.of(context).pop();
+          }
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (context.mounted) {
+              context.pushToManageUsers();
+            }
+          });
         },
       ),
     MenuDrawer(
@@ -45,56 +52,12 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       icon: Icons.info_outline,
       label:
           'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
-      onTap: () => logger.i('Status Toko tapped'),
-    ),
-    MenuDrawer(
-      title: 'Products / Produk',
-      icon: Icons.shopping_bag,
-      label:
-          'Mengelola daftar produk, menambah barang baru, atau mengatur harga.',
-      onTap: () => logger.i('Products tapped'),
-    ),
-    MenuDrawer(
-      title: 'Orders / Pesanan',
-      icon: Icons.receipt,
-      label: 'Melihat dan memproses pesanan masuk dari pembeli.',
-      onTap: () => logger.i('Orders tapped'),
-    ),
-    MenuDrawer(
-      title: 'Stok Barang / Inventaris',
-      icon: Icons.inventory,
-      label: 'Memantau ketersediaan stok barang secara mendetail.',
-      onTap: () => logger.i('Inventory tapped'),
-    ),
-    MenuDrawer(
-      title: 'Shopes / Pelanggan',
-      icon: Icons.people,
-      label: 'Melihat daftar data pembeli atau pelanggan setia toko.',
-      onTap: () => logger.i('Customers tapped'),
-    ),
-    MenuDrawer(
-      title: 'Google MAP',
-      icon: Icons.map,
-      label: 'Melihat lokasi toko di peta.',
-      onTap: () => logger.i('Google MAP tapped'),
-    ),
-    MenuDrawer(
-      title: 'Riwayat / Transaksi',
-      icon: Icons.payment,
-      label: 'Memeriksa riwayat pembayaran atau transaksi yang masuk.',
-      onTap: () => logger.i('Transactions tapped'),
-    ),
-    MenuDrawer(
-      title: 'Reports / Laporan',
-      icon: Icons.bar_chart,
-      label: 'Mengakses laporan penjualan harian, bulanan, atau tahunan.',
-      onTap: () => logger.i('Reports tapped'),
-    ),
-    MenuDrawer(
-      title: 'Promotions / Promosi',
-      icon: Icons.discount,
-      label: 'Mengatur diskon, kupon, atau voucher toko.',
-      onTap: () => logger.i('Promotions tapped'),
+      onTap: () {
+        logger.i('Status Toko tapped');
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
+      },
     ),
   ];
 }
