@@ -1,57 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:matrix_sphere/navigations/app_navigation.dart';
-import 'package:matrix_sphere/navigations/full_screen.dart';
 import 'app_navigator.dart';
 import 'app_branches.dart';
-import 'app_routes.dart';
-import 'auth_router.dart';
-import 'shell_route.dart';
-import 'go_router_refresh_stream.dart';
-import 'package:logger/logger.dart';
+import 'package:shared_navigations/shared_navigations.dart';
 
-final Logger logger = Logger();
 // Kunci global untuk navigator utama (root)
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
 // StreamListenable untuk memantau perubahan status autentikasi
-final _authChanges = GoRouterRefreshStream(
-  FirebaseAuth.instance.authStateChanges(),
-);
+final _authChanges = GoRouterRefreshStream(FirebaseAuth.instance.authStateChanges());
 
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.login, // Kita arahkan eksplisit ke login dulu
   debugLogDiagnostics: true,
   navigatorKey: _rootNavigatorKey,
   refreshListenable: _authChanges,
-
+  
   // SEMENTARA DIMATIKAN UNTUK WEB (Mencegah stuck di splash screen)
   // observers: [
   //   analyticsService.analitycsObserver,
   // ],
+  
   redirect: (BuildContext context, GoRouterState state) {
     // ========================================================
-    // [!] TESTING BYPASS:
+    // [!] TESTING BYPASS: 
     // Logika Firebase Auth dimatikan sementara agar Anda bisa
     // masuk ke halaman utama tanpa di-block oleh router.
     // ========================================================
-
+    
     final bool loggedIn = FirebaseAuth.instance.currentUser != null;
     final bool isLoggingIn = state.matchedLocation == '/login';
-    // Cetak log ini untuk debugging di konsol terminalmu
-    logger.i(
-      '--- REDIRECT CHECK --- LoggedIn: $loggedIn | Location: ${state.matchedLocation}',
-    );
+
     if (!loggedIn && !isLoggingIn) {
       return AppRoutes.login;
     }
     if (loggedIn && isLoggingIn) {
       return AppRoutes.home;
     }
+    
 
     return null; // Membiarkan navigasi bebas berjalan
   },
-
+  
   errorBuilder: (context, state) {
     return Scaffold(
       appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
@@ -73,8 +64,8 @@ final GoRouter appRouter = GoRouter(
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => context.goToHome(context),
-                child: const Text('Kembali ke Home'),
+                onPressed: () => GoRouter.of(context).go('/login'),
+                child: const Text('Kembali ke Login'),
               ),
             ],
           ),
@@ -83,13 +74,13 @@ final GoRouter appRouter = GoRouter(
     );
   },
   routes: [
-    ...authRoutes(rootNavigatorKey: _rootNavigatorKey),
-    appShellRoute(
+    ...buildAuthRoutes(rootNavigatorKey: _rootNavigatorKey),
+    buildAppShellRoute(
       shellBuilder: (context, state, navigationShell) {
         return AppNavigator(navigationShell: navigationShell);
       },
       branches: appBranches,
     ),
-    ...getFullScreen(),
+    ...buildFullscreenRoutes(_rootNavigatorKey),
   ],
 );

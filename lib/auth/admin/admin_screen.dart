@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:matrix_sphere/navigations/app_navigation.dart';
+import 'package:shared_navigations/shared_navigations.dart'; // Pastikan Anda memiliki file ini untuk navigasi
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});

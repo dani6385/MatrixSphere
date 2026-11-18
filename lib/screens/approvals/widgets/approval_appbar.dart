@@ -1,3 +1,4 @@
+
 // lib/features/attendance/presentation/widgets/attendance_app_bar.dart
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ class ApprovalAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+
     return AppBar(
       // Latar belakang transparan agar gradient dari body terlihat.
       backgroundColor: Colors.transparent,
@@ -16,10 +19,10 @@ class ApprovalAppBar extends StatelessWidget implements PreferredSizeWidget {
       // Tombol di sebelah kiri untuk membuka Drawer utama (navigasi presensi)
       leading: IconButton(
         icon: Icon(
-          Icons.approval, // Ikon sidik jari khusus halaman attendance
+          Icons.fact_check, // Ikon sidik jari khusus halaman attendance
           color: context.onSurface,
         ),
-        tooltip: 'Menu',
+        tooltip: 'Menu Navigasi',
         onPressed: () {
           // Membuka Drawer dari sisi kiri
           Scaffold.of(context).openDrawer();
@@ -29,7 +32,10 @@ class ApprovalAppBar extends StatelessWidget implements PreferredSizeWidget {
       // Judul AppBar.
       title: Text(
         'Halaman Awal',
-        style: TextStyle(color: context.onSurface, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          color: context.onSurface,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       centerTitle: true,
 
@@ -37,7 +43,7 @@ class ApprovalAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: Icon(
-            Icons.task_alt, // Ikon kalender untuk riwayat/jadwal kerja
+            Icons.filter_list, // Ikon kalender untuk riwayat/jadwal kerja
             color: context.onSurface,
           ),
           tooltip: 'Pengaturan',

@@ -1,13 +1,3 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:9.1.1")
-    }
-}
-
 allprojects {
     repositories {
         google()
@@ -31,4 +21,13 @@ subprojects {
 
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
+}
+
+buildscript {
+    ext.kotlin_version = "1.9.24" // Sesuaikan dengan versi Kotlin stabil yang kompatibel
+    repositories {
+        google()
+        mavenCentral()
+    }
+    // ...
 }

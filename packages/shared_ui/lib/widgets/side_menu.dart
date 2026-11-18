@@ -69,7 +69,7 @@ class SideMenu extends StatelessWidget {
               color: item.isSelected ? kBrandPrimary : kDarkTextPrimary),
         ),
         selected: item.isSelected,
-        selectedTileColor: kBrandPrimary.withValues(alpha: 0.1),
+        selectedTileColor: kBrandPrimary.withOpacity(0.1),
         onTap: () {
           item.onTap();
           onItemSelected?.call(item);

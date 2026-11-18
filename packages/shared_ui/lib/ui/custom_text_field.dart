@@ -13,10 +13,7 @@ class CustomTextField extends StatelessWidget {
     required this.labelText,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
-    this.validator,
-    required String hintText,
-    required Icon prefixIcon,
-    required IconButton suffixIcon,
+    this.validator, required String hintText, required Icon prefixIcon, required IconButton suffixIcon,
   });
 
   @override

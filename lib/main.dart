@@ -1,35 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-// Pastikan file firebase_options.dart sudah ada dari hasil konfigurasi FlutterFire CLI
+import 'package:matrix_sphere/navigations/app_router.dart';
+import 'services/deep_linking.dart';
 import 'services/firebase_options.dart';
-// Sesuaikan path import ini dengan lokasi file appRouter milikmu
-import 'navigations/app_router.dart'; 
+import 'package:shared_services/shared_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-  // 1. Memastikan binding Flutter siap sebelum menjalankan kode asynchronous (Firebase)
   WidgetsFlutterBinding.ensureInitialized();
+  // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
+  try {
+    // 1. Aktifkan kembali inisialisasi Firebase agar tidak bernilai null
+    await AppInitializer.initializeFirebase(
+        DefaultFirebaseOptions.currentPlatform);
 
-  // 2. Menginisialisasi Firebase agar FirebaseAuth di appRouter tidak error saat aplikasi dibuka
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+    // 2. Ambil data status login dari penyimpanan lokal
+    final prefs = await SharedPreferences.getInstance();
+    final bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
 
-  // 3. Menjalankan aplikasi utama
-  runApp(const MatrixSphere());
+    // 3. Jalankan aplikasi utama sekali saja
+    runApp(MatrixSphere(isLoggedIn: isLoggedIn));
+  } catch (e) {
+    debugPrint('Terjadi kesalahan saat inisialisasi: $e');
+  }
 }
 
-class MatrixSphere extends StatelessWidget {
-  const MatrixSphere({super.key});
+
+class MatrixSphere extends StatefulWidget {
+  final bool isLoggedIn;
+  const MatrixSphere({super.key, required this.isLoggedIn});
+
+  @override
+  State<MatrixSphere> createState() => _MatrixSphereState();
+}
+
+// 2. State pendukung untuk MatrixSphere
+class _MatrixSphereState extends State<MatrixSphere> {
+  final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Memulai mendengarkan deep link saat aplikasi pertama kali aktif
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _deepLinkHandler.initDeepLinks(context, appRouter);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan MaterialApp.router agar navigasi dikendalikan sepenuhnya oleh go_router
+    // Langsung gunakan MaterialApp.router.
+    // GoRouter sekarang akan menangani semua logika navigasi dan otentikasi.
     return MaterialApp.router(
-      title: 'MatrixSphere',
-      debugShowCheckedModeBanner: false, // Menghilangkan pita "DEBUG" di pojok kanan atas
+      title: 'Matrix Sphere',
       theme: ThemeData.light(), // Tema terang Anda
       darkTheme: ThemeData.dark(), // Tema gelap Anda
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.system, // Atau sesuai preferensi Anda
+      // Konfigurasi router yang sudah diperbarui
       routerConfig: appRouter,
     );
   }
