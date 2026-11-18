@@ -194,17 +194,16 @@
         }
       }
     },
-    
     "company_profile": {
       ".read": "auth != null",
-      ".write": "auth != null && auth.token.isAdmin === true"
+      ".write": "auth != null && (auth.token.admin === true || auth.uid === 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')"
     },
     "users": {
       ".read": "auth != null",
       "$uid": {
         // Pengguna biasa hanya boleh mengubah data miliknya sendiri, 
         // TETAPI Admin utama (berdasarkan UID atau Email) berhak mengubah data siapa saja (termasuk jabatan pekerja)
-        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true || auth.uid === 'MASUKKAN_UID_ADMIN_UTAMA_DISINI')"
+        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true || auth.uid === 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')"
       }
     }
   }

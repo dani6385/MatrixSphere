@@ -35,7 +35,7 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
       route: '',
       onTap: () {
         if (Navigator.canPop(context)) {
-          Navigator.pop(context);
+          Scaffold.of(context).closeDrawer();
         }
       },
     ),

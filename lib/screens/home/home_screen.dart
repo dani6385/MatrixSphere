@@ -61,7 +61,7 @@ class HomeScreen extends StatelessWidget {
               accountEmail: Text(company.email),
               // Navigasi langsung ke halaman Profil Perusahaan saat header diketuk
               onDetailsPressed: () {
-                Navigator.pop(context); // Tutup drawer terlebih dahulu
+                Scaffold.of(context).closeDrawer(); // Tutup drawer terlebih dahulu
                 context
                     .goToCompanyProfile(); // Pindah ke halaman Company Profile
               },
@@ -103,7 +103,7 @@ class HomeScreen extends StatelessWidget {
               accountEmail: Text(email),
               onDetailsPressed: () {
                 // Tutup drawer terlebih dahulu sebelum berpindah halaman
-                Navigator.pop(context);
+                Scaffold.of(context).closeEndDrawer();
                 // Arahkan ke halaman profile menggunakan ekstensi navigasi
                 context.goToUserProfile();
               },

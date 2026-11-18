@@ -38,7 +38,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
           logger.i('Kelola Jabatan Pekerja tapped');
 
           if (Navigator.canPop(context)) {
-            Navigator.of(context).pop();
+            Scaffold.of(context).closeDrawer();
           }
           Future.delayed(const Duration(milliseconds: 100), () {
             if (context.mounted) {
@@ -55,7 +55,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
       onTap: () {
         logger.i('Status Toko tapped');
         if (Navigator.canPop(context)) {
-          Navigator.pop(context);
+          Scaffold.of(context).closeDrawer();
         }
       },
     ),
