@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:shared_providers/shared_providers.dart';
-import 'package:shared_screens/shared_screens.dart';
+//import 'package:shared_screens/shared_screens.dart';
 
 class AttendanceBody extends StatelessWidget {
   final bool isCameraInitialized;
