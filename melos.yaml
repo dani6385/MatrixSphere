@@ -12,3 +12,4 @@ scripts:
       melos bootstrap
       flutter pub get
     description: Membersihkan cache dan menginstal dependensi di semua paket.
+    
