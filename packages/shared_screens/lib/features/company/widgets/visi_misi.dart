@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/features/company/models/company_profile_model.dart';
+import 'package:shared_screens/features/company/models/company_profile_model.dart';
 
 class VisionMision extends StatelessWidget {
   final CompanyProfileModel company;

@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_navigations/navigations/app_routes.dart';
-import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_screens/shared_screens.dart';
-import 'package:shared_services/shared_services.dart';
+import 'app_routes.dart';
 
 /// Membangun rute fullscreen untuk modul autentikasi menggunakan shared_screens.
-List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
+List<RouteBase> authRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
   return [
-    GoRoute(
+    /*GoRoute(
       path: '/',
       builder: (context, state) => const AuthGate(),
-    ),
+    ),*/
     GoRoute(
       path: AppRoutes.login,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const LoginScreen(),
-    ),
+    ),/*
     GoRoute(
       path: AppRoutes.forgotPassword,
       parentNavigatorKey: rootNavigatorKey,
@@ -31,7 +29,7 @@ List<RouteBase> buildAuthRoutes({GlobalKey<NavigatorState>? rootNavigatorKey}) {
       path: AppRoutes.shopRegistration,
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const ShopRegistrationScreen(),
-    ),
+    ),*/
   ];
 }
 
@@ -60,26 +58,6 @@ List<StatefulShellBranch> authShellBranches({
         GoRoute(
           path: AppRoutes.login,
           builder: (context, state) => loginScreen ?? const LoginScreen(),
-        ),
-      ],
-    ),
-    StatefulShellBranch(
-      navigatorKey: homeNavigatorKey,
-      routes: [
-        GoRoute(
-          path: AppRoutes.userRegistration,
-          builder: (context, state) =>
-              registrationScreen ?? const UserRegistrationScreen(),
-        ),
-      ],
-    ),
-    StatefulShellBranch(
-      navigatorKey: homeNavigatorKey,
-      routes: [
-        GoRoute(
-          path: AppRoutes.forgotPassword,
-          builder: (context, state) =>
-              forgotScreen ?? const ForgotPasswordScreen(),
         ),
       ],
     ),

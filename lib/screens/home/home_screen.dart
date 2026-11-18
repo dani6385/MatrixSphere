@@ -8,7 +8,7 @@ import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_appbar.dart';
 import 'package:shared_navigations/shared_navigations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:matrix_sphere/features/company/models/company_profile_model.dart';
+import 'package:shared_screens/features/company/models/company_profile_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

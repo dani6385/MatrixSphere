@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_navigations/shared_navigations.dart';
-import 'package:matrix_sphere/features/profile/services/profile_image_service.dart';
+import 'package:shared_screens/features/profile/services/profile_image_service.dart';
 
 class EditCompanyProfile extends StatefulWidget {
   const EditCompanyProfile({super.key});

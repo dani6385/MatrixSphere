@@ -41,7 +41,7 @@ class AttendanceBody extends StatelessWidget {
         ),
         
         // Bingkai Lingkaran Wajah
-        const FaceOverlay(),
+        //const FaceOverlay(),
         
         // Panel Informasi & Tombol Absen
         ControlPanel(

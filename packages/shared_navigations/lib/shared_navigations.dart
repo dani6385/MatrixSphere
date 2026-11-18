@@ -7,7 +7,7 @@ export 'navigations/auth_router.dart';
 export 'navigations/fullscreen_routes.dart';
 export 'navigations/go_router_refresh_stream.dart';
 export 'navigations/route_guard.dart';
-export 'navigations/shell_route_config.dart';
+export 'navigations/shell_route.dart';
 export 'widgets/custom_transition_page.dart';
 export 'widgets/custom_bottom_nav_bar.dart';
 
