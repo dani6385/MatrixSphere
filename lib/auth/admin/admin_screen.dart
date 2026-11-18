@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 
-class AminScreen extends StatelessWidget {
-  const AminScreen({super.key});
+class AdminScreen extends StatelessWidget {
+  const AdminScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
