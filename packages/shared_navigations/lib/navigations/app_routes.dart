@@ -6,6 +6,7 @@ class AppRoutes {
   static const String userRegistration = '/user-registration';
   static const String shopRegistration = '/shop-registration';
   static const String verifyEmail = '/verify-email';
+  static const String manageUsers = '/manage-users';
   //secqurity
   static const String resetPassword = '/reset-password';
   static const String permissions = '/permissions';
@@ -13,7 +14,7 @@ class AppRoutes {
   static const String roles = '/roles';
 
   //main
-  static const String home = '/';
+  static const String home = '/home';
   static const String caseOScreen = '/case0';
   static const String case1Screen = '/case1';
   static const String case2Screen = '/case2';
@@ -35,7 +36,6 @@ class AppRoutes {
   //Client Connectivity
 
   //Admin Mikrotik
-
   static const String apiKeys = '/api-keys';
   static const String assets = '/assets';
   static const String attendanceHistory = '/attendance-history';
@@ -43,9 +43,8 @@ class AppRoutes {
   static const String billing = '/billing';
   static const String calendar = '/calendar';
   static const String contacts = '/contacts';
-  static const String editprofile = '/editprofile';
+
   static const String files = '/files';
-  static const String Integrations = '/integrations';
   static const String marketing = '/marketing';
   static const String messages = '/messages';
   static const String notifications = '/notifications';
@@ -64,9 +63,15 @@ class AppRoutes {
   static const String team = '/team';
   static const String templates = '/templates';
   static const String transactions = '/transactions';
-  static const String userProfile = '/user-profile';
-  static const String users = '/users';
   static const String vendors = '/vendors';
   static const String webhooks = '/webhooks';
   static const String workCalendar = '/work-calendar';
+  // profile
+  static const String users = '/users';
+  static const String profile = '/profile';
+  static const String userProfile = '/user-profile';
+  static const String userEditProfile = '/user-profile/edit';
+  static const String companyProfile = '/company-profile';
+  static const String companyEditProfile = '/company-profile/edit';
+
 }

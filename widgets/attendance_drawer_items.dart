@@ -51,7 +51,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
       route: AppRoutes.home,
       onTap: () {
         logger.i('Navigasi ke Home');
-        AppNavigation.goToTab(context, AppRoutes.caseOScreen);
+        //AppNavigation.goToTab(context, AppRoutes.caseOScreen);
       },
     ),
     MenuDrawer(
@@ -99,7 +99,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
       route: AppRoutes.userProfile,
       onTap: () {
         logger.i('Navigasi ke User Profile');
-        AppNavigation.pushToUserProfile(context);
+        //AppNavigation.pushToUserProfile(context);
       },
     ),
   ];

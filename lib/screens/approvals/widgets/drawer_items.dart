@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'package:shared_navigations/shared_navigations.dart';
+//import 'package:shared_navigations/shared_navigations.dart';
 
 final Logger logger = Logger();
 
@@ -34,7 +34,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
         Navigator.pop(context);
 
         // 2. Setelah drawer tertutup, baru arahkan kembali ke beranda
-        AppNavigation.goToHome(context);
+        //AppNavigation.goToHome(context);
       },
     ),
     MenuDrawer(

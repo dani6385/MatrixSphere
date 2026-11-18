@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_navigations/shared_navigations.dart';
+//import 'package:shared_navigations/shared_navigations.dart';
 import 'package:shared_screens/shared_screens.dart';
 
 class AuthGate extends StatelessWidget {
@@ -24,7 +24,7 @@ class AuthGate extends StatelessWidget {
         if (snapshot.hasData && snapshot.data != null) {
           // Anda bisa mengarahkan langsung ke halaman utama Anda
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            AppNavigation.goToTab(context, AppRoutes.caseOScreen); // Ganti dengan halaman utama/dashboard Anda
+            //AppNavigation.goToTab(context, AppRoutes.caseOScreen); // Ganti dengan halaman utama/dashboard Anda
           });
           
           // Kembalikan loading sementara proses perpindahan halaman berjalan
