@@ -2,17 +2,6 @@
   "rules": {
     ".read": false,
     ".write": false,
-    "users": {
-      "$uid": {
-        // Pengguna yang sudah login diizinkan membaca & mengubah data profilnya sendiri
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid"
-      }
-    },
-    "company_profile": {
-      ".read": "auth != null",
-      ".write": "auth != null && auth.token.isAdmin === true"
-    },
     "app_errors": {
       // Mengizinkan pengguna yang sudah login untuk mencatat dan memantau log error
       ".read": "auth != null",
@@ -203,6 +192,19 @@
             ".validate": "true"
           }
         }
+      }
+    },
+    
+    "company_profile": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.isAdmin === true"
+    },
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        // Pengguna biasa hanya boleh mengubah data miliknya sendiri, 
+        // TETAPI Admin utama (berdasarkan UID atau Email) berhak mengubah data siapa saja (termasuk jabatan pekerja)
+        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true || auth.uid === 'MASUKKAN_UID_ADMIN_UTAMA_DISINI')"
       }
     }
   }

@@ -30,5 +30,9 @@ List<RouteBase> getFullScreen() {
         ),
       ],
     ),
+    GoRoute(
+      path: AppRoutes.manageUsers,
+      builder: (context, state) => const AminScreen(),
+    ),
   ];
 }

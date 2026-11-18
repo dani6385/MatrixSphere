@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'models/company_profile_model.dart';
 import 'widgets/company_info_card.dart';
+import 'widgets/visi_misi.dart';
 
 class CompanyProfile extends StatefulWidget {
   const CompanyProfile({super.key});
@@ -39,8 +40,9 @@ class _CompanyProfileState extends State<CompanyProfile> {
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseReference companyRef =
-        FirebaseDatabase.instance.ref('company_profile');
+    final DatabaseReference companyRef = FirebaseDatabase.instance.ref(
+      'company_profile',
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -93,7 +95,11 @@ class _CompanyProfileState extends State<CompanyProfile> {
                         : null,
                   ),
                   child: !company.hasLogo
-                      ? const Icon(Icons.apartment, size: 56, color: Colors.blue)
+                      ? const Icon(
+                          Icons.apartment,
+                          size: 56,
+                          color: Colors.blue,
+                        )
                       : null,
                 ),
                 const SizedBox(height: 16),
@@ -118,7 +124,12 @@ class _CompanyProfileState extends State<CompanyProfile> {
                 // Kartu Informasi Lengkap
                 CompanyInfoCard(company: company),
                 const SizedBox(height: 24),
+                CompanyInfoCard(company: company),
+                const SizedBox(height: 16),
 
+                // 4. KARTU VISI & MISI (TAMBAHKAN INI)
+                VisionMision(company: company),
+                const SizedBox(height: 24),
                 // Tombol Edit Bawah (Khusus Admin)
                 if (_isAdmin)
                   SizedBox(

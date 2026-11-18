@@ -6,6 +6,7 @@ class AppRoutes {
   static const String userRegistration = '/user-registration';
   static const String shopRegistration = '/shop-registration';
   static const String verifyEmail = '/verify-email';
+  static const String manageUsers = '/manage-users';
   //secqurity
   static const String resetPassword = '/reset-password';
   static const String permissions = '/permissions';
@@ -35,7 +36,6 @@ class AppRoutes {
   //Client Connectivity
 
   //Admin Mikrotik
-
   static const String apiKeys = '/api-keys';
   static const String assets = '/assets';
   static const String attendanceHistory = '/attendance-history';

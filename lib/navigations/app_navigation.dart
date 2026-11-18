@@ -25,4 +25,6 @@ extension AppNavigation on BuildContext {
 
   /// Berpindah ke halaman login
   void goToLogin() => go(AppRoutes.login);
+  //admin
+  void pushToManageUsers() => push(AppRoutes.manageUsers);
 }

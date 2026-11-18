@@ -1,8 +1,10 @@
 // lib/navigation/widgets/app_drawer_items.dart
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // Tambahkan go_router untuk navigasi
 import 'package:logger/logger.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_ui/shared_ui.dart'; // Impor shared_ui agar kita bisa menggunakan SideMenuItem
 
 final Logger logger = Logger();
@@ -24,7 +26,20 @@ class MenuDrawer {
 
 // Daftar seluruh item menu drawer lokal
 List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
+  final String? currentUid = FirebaseAuth.instance.currentUser?.uid;
+
   return [
+    if (currentUid == 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')
+      MenuDrawer(
+        title: 'Kelola Jabatan Pekerja',
+        icon: Icons.admin_panel_settings,
+        label: 'Mengatur jabatan dan status kerja setiap akun karyawan.',
+        onTap: () {
+          logger.i('Kelola Jabatan Pekerja tapped');
+          Navigator.pop(context); // Tutup laci navigasi terlebih dahulu
+          context.pushToManageUsers(); // Buka halaman AminScreen
+        },
+      ),
     MenuDrawer(
       title: 'Status Toko',
       icon: Icons.info_outline,
