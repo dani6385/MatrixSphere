@@ -1,8 +1,5 @@
-// 1. Konfigurasi buildscript di paling atas untuk AGP 9.1.1
+// 1. Konfigurasi buildscript untuk AGP 9.1.1
 buildscript {
-    // Jika ada plugin lama yang membaca variabel kotlin_version via extra, gunakan sintaks .kts ini:
-    val kotlinVersion by extra("1.9.24")
-
     repositories {
         google()
         mavenCentral()
@@ -27,7 +24,7 @@ val newBuildDir: Directory =
         .get()
 rootProject.layout.buildDirectory.value(newBuildDir)
 
-// 4. Menyelaraskan folder build dan compileSdk subproject
+// 4. Menyelaraskan direktori build dan compileSdk subproject Android
 val targetCompileSdk = 36
 
 subprojects {
