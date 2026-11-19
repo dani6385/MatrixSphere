@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 //import 'widgets/app_end_drawer_items.dart';
 import 'bottom_nav_bar.dart';
 
+
 class AppNavigator extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
