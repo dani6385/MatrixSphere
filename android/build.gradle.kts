@@ -1,4 +1,3 @@
-// 1. Letakkan buildscript di BAGIAN PALING ATAS file
 buildscript {
     val kotlin_version by extra("1.9.24")
     
@@ -8,10 +7,13 @@ buildscript {
     }
     
     dependencies {
-        // Tambahkan classpath plugin Android Gradle atau Kotlin di sini jika diperlukan
-        // Contoh: classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        // Gunakan classpath plugin Kotlin yang bersih, contoh:
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        
+        // Hapus atau pastikan TIDAK ADA fungsi module(...) di dalam blok ini
     }
 }
+
 
 // 2. Setelah itu baru diikuti oleh konfigurasi allprojects
 allprojects {
