@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RouteGuard {
   /// Memeriksa akses berdasarkan peran (role)
@@ -17,7 +17,7 @@ class RouteGuard {
     }
 
     // 2. Ambil data user dari Firestore untuk cek role
-    /*try {
+    try {
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUser.uid)
@@ -33,7 +33,7 @@ class RouteGuard {
     } catch (e) {
       debugPrint('Error pengecekan role: $e');
       return '/login';
-    }*/
+    }
 
     // 4. Jika semua valid, akses diizinkan
     return null;

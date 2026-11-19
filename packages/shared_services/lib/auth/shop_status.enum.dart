@@ -1,7 +1,7 @@
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart';
 // Enum untuk merepresentasikan status toko, agar lebih aman dari typo.
 enum ShopStatus {
   none,
@@ -21,7 +21,7 @@ class ShopService {
     required String ownerUid,
     required String shopName,
     required String pickupAddress,
-    //Position? coordinates, // Gunakan tipe data Position dari geolocator
+    Position? coordinates, // Gunakan tipe data Position dari geolocator
   }) async {
     try {
       // 1. Tentukan path di database. Sesuai aturan, kita menulis ke 'shops_pending_approval'.
@@ -33,12 +33,12 @@ class ShopService {
         'shopName': shopName,
         'email': FirebaseAuth.instance.currentUser?.email ?? '', // Ambil email dari user auth
         'pickupAddress': pickupAddress,
-        /*'pickupCoordinates': coordinates != null
+        'pickupCoordinates': coordinates != null
             ? {
                 'latitude': coordinates.latitude,
                 'longitude': coordinates.longitude,
               }
-            : null,*/
+            : null,
         'createdAt': ServerValue.timestamp, // Gunakan timestamp server untuk konsistensi
         'status': 'pending', // Status awal sesuai aturan RTDB
       };

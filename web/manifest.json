@@ -1,6 +1,6 @@
 {
-    "name": "matrix_sphere",
-    "short_name": "matrix_sphere",
+    "name": "matrixsphere",
+    "short_name": "matrixsphere",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -2,19 +2,19 @@
 
 //import 'dart:io';
 import 'package:flutter/material.dart';
-//import 'package:camera/camera.dart';
-//import 'package:geolocator/geolocator.dart';
+import 'package:camera/camera.dart';
+import 'package:geolocator/geolocator.dart';
 
 // Import dari paket bersama (shared packages) Anda
 //import 'package:shared_services/shared_services.dart';
 import 'package:shared_models/shared_models.dart';
-//import 'package:shared_utils/shared_utils.dart';
+import 'package:shared_utils/shared_utils.dart';
 
 class AttendanceController extends ChangeNotifier {
   ///final AttendanceService _attendanceService = AttendanceService();
 
-  //CameraController? cameraController;
-  //List<CameraDescription>? _cameras;
+  CameraController? cameraController;
+  List<CameraDescription>? _cameras;
 
   // LOKASI KANTOR (Konfigurasi Admin)
   final OfficeLocationModel officeLocation = OfficeLocationModel(
@@ -23,7 +23,7 @@ class AttendanceController extends ChangeNotifier {
     allowedRadiusInMeters: 100.0,
   );
 
-  //Position? currentPosition;
+  Position? currentPosition;
   double distanceToOffice = 0.0;
   bool isInRange = false;
   bool isLoadingLocation = true;
@@ -31,7 +31,7 @@ class AttendanceController extends ChangeNotifier {
   bool isProcessing = false;
 
   // Inisialisasi awal seluruh dependensi
-  /*Future<void> initialize(BuildContext context) async {
+  Future<void> initialize(BuildContext context) async {
     await initializeCamera(context);
     //await checkLocationAndPermission(context);
   }
@@ -59,7 +59,7 @@ class AttendanceController extends ChangeNotifier {
     } catch (e) {
       AppDialogs.showSnackBar(context, "Gagal menginisialisasi kamera: $e");
     }
-  }*/
+  }
 
   // Logika memeriksa posisi GPS pengguna
   /*Future<void> checkLocationAndPermission(BuildContext context) async {
@@ -117,11 +117,11 @@ class AttendanceController extends ChangeNotifier {
       isProcessing = false;
       notifyListeners();
     }
-  }
+  }*/
 
   @override
   void dispose() {
     cameraController?.dispose();
     super.dispose();
-  }*/
+  }
 }

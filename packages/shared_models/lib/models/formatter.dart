@@ -1,4 +1,4 @@
-/*import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
 
 /// Memformat angka menjadi string mata uang Rupiah (IDR).
 ///
@@ -12,4 +12,4 @@ String formatCurrency(num number, {String symbol = 'Rp '}) {
     decimalDigits: 0, // Menghilangkan angka di belakang koma
   );
   return formatter.format(number);
-}*/
+}

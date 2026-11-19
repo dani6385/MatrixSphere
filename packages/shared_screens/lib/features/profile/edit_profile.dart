@@ -1,12 +1,12 @@
 // lib/screens/profile/edit_profile.dart
 
-//import 'dart:io';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_navigations/shared_navigations.dart';
-//import 'services/profile_image_service.dart';
-//import 'widgets/edit_profile_avatar.dart';
+import 'services/profile_image_service.dart';
+import 'widgets/edit_profile_avatar.dart';
 import 'widgets/edit_profile_form.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _roleController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
-  //File? _selectedImageFile;
+  File? _selectedImageFile;
   String? _currentPhotoUrl;
   bool _isLoading = false;
   bool _isInitialLoading = true;
@@ -66,14 +66,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   /// Memilih gambar menggunakan service terpisah
-  /*Future<void> _handlePickImage() async {
+  Future<void> _handlePickImage() async {
     final imageFile = await ProfileImageService.pickAndCompressImage();
     if (imageFile != null) {
       setState(() {
         _selectedImageFile = imageFile;
       });
     }
-  }*/
+  }
 
   /// Menyimpan seluruh perubahan profil ke ImgBB, Firebase Auth, dan RTDB
   Future<void> _saveProfile() async {
@@ -88,14 +88,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       String? finalPhotoUrl = _currentPhotoUrl;
 
       // 1. Jika pengguna memilih foto baru, unggah ke ImgBB
-      /*if (_selectedImageFile != null) {
+      if (_selectedImageFile != null) {
         final uploadedUrl = await ProfileImageService.uploadImageToImgBB(_selectedImageFile!);
         if (uploadedUrl != null) {
           finalPhotoUrl = uploadedUrl;
         } else {
           throw Exception('Gagal mengunggah foto ke ImgBB. Periksa API Key atau koneksi internet.');
         }
-      }*/
+      }
 
       final String newName = _nameController.text.trim();
 
@@ -167,12 +167,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  /*EditProfileAvatar(
+                  EditProfileAvatar(
                     selectedImageFile: _selectedImageFile,
                     currentPhotoUrl: _currentPhotoUrl,
                     isLoading: _isLoading,
                     onCameraPressed: _handlePickImage,
-                  ),*/
+                  ),
                   const SizedBox(height: 24),
                   EditProfileForm(
                     formKey: _formKey,
