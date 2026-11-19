@@ -21,10 +21,36 @@ val newBuildDir: Directory =
         .get()
 rootProject.layout.buildDirectory.value(newBuildDir)
 
+val targetCompileSdk = 35
+
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
+
+    afterEvaluate {
+        val androidExt = extensions.findByName("android")
+        if (androidExt != null) {
+            try {
+                val setCompileSdk = androidExt.javaClass.getMethod(
+                    "compileSdk",
+                    Int::class.javaPrimitiveType
+                )
+                setCompileSdk.invoke(androidExt, 35)
+            } catch (_: Exception) {
+                try {
+                    val setCompileSdkVersion = androidExt.javaClass.getMethod(
+                        "setCompileSdkVersion",
+                        Int::class.javaPrimitiveType
+                    )
+                    setCompileSdkVersion.invoke(androidExt, 35)
+                } catch (_: Exception) {
+                    // Abaikan jika subproject bukan modul Android yang mendukung setter ini
+                }
+            }
+        }
+    }
 }
+
 subprojects {
     project.evaluationDependsOn(":app")
 }
