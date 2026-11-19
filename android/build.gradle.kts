@@ -21,7 +21,7 @@ val newBuildDir: Directory =
         .get()
 rootProject.layout.buildDirectory.value(newBuildDir)
 
-val targetCompileSdk = 35
+val targetCompileSdk = 36
 
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
