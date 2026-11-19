@@ -24,7 +24,8 @@ tasks.register<Delete>("clean") {
 }
 
 buildscript {
-    ext.kotlin_version = "1.9.24" // Sesuaikan dengan versi Kotlin stabil yang kompatibel
+    val kotlin_version by extra("1.9.24")
+ // Sesuaikan dengan versi Kotlin stabil yang kompatibel
     repositories {
         google()
         mavenCentral()
