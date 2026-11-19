@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
 import 'package:shared_models/shared_models.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -49,12 +49,12 @@ class AttendanceHistoryItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  /*Text(
                     DateFormat('EEEE, d MMMM yyyy', 'id_ID')
                         .format(record.date),
                     style: context.textTheme.bodyLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
+                        //?.copyWith(fontWeight: FontWeight.bold),
+                  ),*/
                   const SizedBox(height: 4),
                   Text(
                     'Masuk: ${record.clockInTime ?? '--:--'} • Pulang: ${record.clockOutTime ?? '--:--'}',

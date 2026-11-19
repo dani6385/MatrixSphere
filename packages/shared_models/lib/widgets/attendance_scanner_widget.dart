@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+//import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_models/widgets/attendance_active_scanner.dart';
 import 'package:shared_models/widgets/attendance_permission_request.dart';
@@ -8,7 +8,7 @@ import 'package:shared_models/widgets/attendance_permission_request.dart';
 class AttendanceScannerWidget extends StatelessWidget {
   final bool isScanning;
   final bool hasCameraPermission;
-  final CameraController? cameraController;
+  //final CameraController? cameraController;
   final Animation<double> laserAnimation;
   final String scanStatusMessage;
   final double scanProgress;
@@ -19,7 +19,7 @@ class AttendanceScannerWidget extends StatelessWidget {
     super.key,
     required this.isScanning,
     required this.hasCameraPermission,
-    this.cameraController,
+    //this.cameraController,
     required this.laserAnimation,
     required this.scanStatusMessage,
     required this.scanProgress,
@@ -39,7 +39,7 @@ class AttendanceScannerWidget extends StatelessWidget {
         color: Colors.black,
         child: hasCameraPermission
             ? AttendanceActiveScanner(
-                cameraController: cameraController,
+                //cameraController: cameraController,
                 laserAnimation: laserAnimation,
                 scanStatusMessage: scanStatusMessage,
                 scanProgress: scanProgress,

@@ -22,10 +22,10 @@ final appBranches = <StatefulShellBranch>[
     ),
   ]),
   StatefulShellBranch(routes: [
-    GoRoute(
+    /*GoRoute(
       path: AppRoutes.transactions, // Menggunakan '/transactions'
       builder: (context, state) => const ProjectScreen(),
-    ),
+    ),*/
   ]),
   StatefulShellBranch(routes: [
     GoRoute(

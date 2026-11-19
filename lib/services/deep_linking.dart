@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:app_links/app_links.dart';
+/*import 'package:flutter/material.dart';
+//import 'package:app_links/app_links.dart';
 import 'package:go_router/go_router.dart';
 
 class DeepLinkHandler {
@@ -38,4 +38,4 @@ class DeepLinkHandler {
       router.go(path);
     }
   }
-}
+}*/

@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+/*import 'package:flutter/material.dart';
+//import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 // 1. Impor pustaka Firebase Realtime Database dan UI-nya
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
@@ -18,7 +18,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
   String _statusMessage = 'Memantau status Shop & Seller...';
 
   // Fungsi simulasi untuk memeriksa kendala pada modul Shop atau Seller
-  Future<void> _periksaKendalaModul() async {
+  /*Future<void> _periksaKendalaModul() async {
     setState(() {
       _isLoading = true;
       _statusMessage = 'Menghubungkan ke server untuk memeriksa kendala...';
@@ -26,9 +26,9 @@ class _ProjectScreenState extends State<ProjectScreen> {
 
     try {
       // 1. Catat event analitik bahwa pemeriksaan kendala sedang dijalankan
-      await FirebaseAnalytics.instance.logEvent(
-        name: 'periksa_kendala_modul_dijalankan',
-      );
+      //await FirebaseAnalytics.instance.logEvent(
+      //  name: 'periksa_kendala_modul_dijalankan',
+      //);
 
       // Simulasi pengecekan data
       await Future.delayed(const Duration(seconds: 2));
@@ -52,7 +52,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
         _isLoading = false;
       });
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -136,4 +136,4 @@ class _ProjectScreenState extends State<ProjectScreen> {
       ),
     );
   }
-}
+}*/

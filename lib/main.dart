@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_router.dart';
-import 'services/deep_linking.dart';
-import 'services/firebase_options.dart';
-import 'package:shared_services/shared_services.dart';
+//import 'services/deep_linking.dart';
+//import 'services/firebase_options.dart';
+//import 'package:shared_services/shared_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -10,8 +10,8 @@ void main() async {
   // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
   try {
     // 1. Aktifkan kembali inisialisasi Firebase agar tidak bernilai null
-    await AppInitializer.initializeFirebase(
-        DefaultFirebaseOptions.currentPlatform);
+    /*await AppInitializer.initializeFirebase(
+        DefaultFirebaseOptions.currentPlatform);*/
 
     // 2. Ambil data status login dari penyimpanan lokal
     final prefs = await SharedPreferences.getInstance();
@@ -35,7 +35,7 @@ class MatrixSphere extends StatefulWidget {
 
 // 2. State pendukung untuk MatrixSphere
 class _MatrixSphereState extends State<MatrixSphere> {
-  final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
+  //final DeepLinkHandler _deepLinkHandler = DeepLinkHandler();
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _MatrixSphereState extends State<MatrixSphere> {
 
     // Memulai mendengarkan deep link saat aplikasi pertama kali aktif
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _deepLinkHandler.initDeepLinks(context, appRouter);
+      // _deepLinkHandler.initDeepLinks(context, appRouter);
     });
   }
 

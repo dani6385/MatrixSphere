@@ -1,11 +1,11 @@
 // lib/screens/attendance/widgets/attendance_active_scanner.dart
 
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
+//import 'package:camera/camera.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 class AttendanceActiveScanner extends StatelessWidget {
-  final CameraController? cameraController;
+  //final CameraController? cameraController;
   final Animation<double> laserAnimation;
   final String scanStatusMessage;
   final double scanProgress;
@@ -13,7 +13,7 @@ class AttendanceActiveScanner extends StatelessWidget {
 
   const AttendanceActiveScanner({
     super.key,
-    required this.cameraController,
+    //required this.cameraController,
     required this.laserAnimation,
     required this.scanStatusMessage,
     required this.scanProgress,
@@ -22,16 +22,16 @@ class AttendanceActiveScanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (cameraController == null || !cameraController!.value.isInitialized) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    //if (cameraController == null || !cameraController!.value.isInitialized) {
+    //  return const Center(child: CircularProgressIndicator());
+    //}
     return Stack(
       alignment: Alignment.center,
       children: [
         SizedBox(
           width: double.infinity,
           height: double.infinity,
-          child: CameraPreview(cameraController!),
+          //child: CameraPreview(cameraController!),
         ),
         AnimatedBuilder(
           animation: laserAnimation,

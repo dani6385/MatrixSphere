@@ -1,7 +1,7 @@
 
 // lib/screens/attendance/widgets/attendance_body.dart
 
-import 'package:camera/camera.dart';
+//import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_models/shared_models.dart';
 import 'package:shared_ui/shared_ui.dart';
@@ -10,7 +10,7 @@ class AttendanceBody extends StatelessWidget {
   final bool isScanning;
   final bool hasCameraPermission;
   final bool isCheckingLocation;
-  final CameraController? cameraController;
+  //final CameraController? cameraController;
   final Animation<double> laserAnimation;
   final String scanStatusMessage;
   final double scanProgress;
@@ -26,7 +26,7 @@ class AttendanceBody extends StatelessWidget {
     required this.isScanning,
     required this.hasCameraPermission,
     required this.isCheckingLocation,
-    this.cameraController,
+    //this.cameraController,
     required this.laserAnimation,
     required this.scanStatusMessage,
     required this.scanProgress,
