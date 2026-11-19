@@ -5,7 +5,6 @@ import 'services/firebase_options.dart';
 import 'package:shared_services/shared_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Pastikan Firebase diinisialisasi sebelum menjalankan aplikasi
