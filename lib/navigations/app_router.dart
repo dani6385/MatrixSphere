@@ -1,53 +1,61 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_navigations/shared_navigations.dart';
-import 'app_navigator.dart';
-import 'app_branches.dart';
 import 'package:logger/logger.dart';
+import 'app_branches.dart';
+import 'app_navigator.dart';
+import 'app_routes.dart';
+import 'fullscreen_routes.dart';
+import 'auth_routes.dart';
+import 'refresh_stream.dart';
+import 'shell_route.dart';
 
+/// Logger global untuk memantau alur navigasi dan redirect di terminal.
 final Logger logger = Logger();
-// Kunci global untuk navigator utama (root)
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
-// StreamListenable untuk memantau perubahan status autentikasi
-final _authChanges = GoRouterRefreshStream(
+
+/// Kunci global untuk navigator utama (root).
+/// Dibuat publik (tanpa garis bawah) agar bisa dipakai oleh rute fullscreen
+/// seperti ShopProfileScreen melalui `parentNavigatorKey: rootNavigatorKey`.
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
+/// Mendengarkan perubahan status login/logout dari FirebaseAuth
+/// agar GoRouter otomatis mengevaluasi ulang fungsi `redirect`.
+final RefreshStream _authChanges = RefreshStream(
   FirebaseAuth.instance.authStateChanges(),
 );
 
+/// Konfigurasi utama GoRouter untuk aplikasi Matrix Sphere.
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutes.login, // Kita arahkan eksplisit ke login dulu
+  initialLocation: AppRoutes.login,
   debugLogDiagnostics: true,
-  navigatorKey: _rootNavigatorKey,
+  navigatorKey: rootNavigatorKey,
   refreshListenable: _authChanges,
 
-  // SEMENTARA DIMATIKAN UNTUK WEB (Mencegah stuck di splash screen)
-  // observers: [
-  //   analyticsService.analitycsObserver,
-  // ],
+  // Pengecekan akses otomatis setiap kali rute berubah atau status auth berubah
   redirect: (BuildContext context, GoRouterState state) {
-    // ========================================================
-    // [!] TESTING BYPASS:
-    // Logika Firebase Auth dimatikan sementara agar Anda bisa
-    // masuk ke halaman utama tanpa di-block oleh router.
-    // ========================================================
-
     final bool loggedIn = FirebaseAuth.instance.currentUser != null;
-    final bool isLoggingIn = state.matchedLocation == '/login';
-    // Cetak log ini untuk debugging di konsol terminalmu
+    final bool isLoggingIn = state.matchedLocation == AppRoutes.login;
+
     logger.i(
       '--- REDIRECT CHECK --- LoggedIn: $loggedIn | Location: ${state.matchedLocation}',
     );
+
+    // Jika belum login dan mencoba membuka halaman selain login -> arahkan ke login
     if (!loggedIn && !isLoggingIn) {
       return AppRoutes.login;
     }
+
+    // Jika sudah login tapi masih berada di halaman login -> arahkan ke home
     if (loggedIn && isLoggingIn) {
       return AppRoutes.home;
     }
 
-    return null; // Membiarkan navigasi bebas berjalan
+    // Biarkan navigasi berjalan normal
+    return null;
   },
 
-  errorBuilder: (context, state) {
+  // Tampilan cadangan jika pengguna membuka alamat path yang tidak terdaftar
+  errorBuilder: (BuildContext context, GoRouterState state) {
     return Scaffold(
       appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
       body: Center(
@@ -68,7 +76,7 @@ final GoRouter appRouter = GoRouter(
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => context.goToHome(context),
+                onPressed: () => context.go(AppRoutes.home),
                 child: const Text('Kembali ke Home'),
               ),
             ],
@@ -77,14 +85,21 @@ final GoRouter appRouter = GoRouter(
       ),
     );
   },
+
+  // Daftar seluruh rute aplikasi
   routes: [
-    ...authRoutes(rootNavigatorKey: _rootNavigatorKey),
-    appShellRoute(
+    // 1. Rute autentikasi (Login, Register, dll.)
+    ...authRoutes(rootNavigatorKey: rootNavigatorKey),
+
+    // 2. Cangkang navigasi utama (Bottom Navbar + Drawer di AppNavigator)
+    shellRoute(
       shellBuilder: (context, state, navigationShell) {
         return AppNavigator(navigationShell: navigationShell);
       },
       branches: appBranches,
     ),
-    ...getFullScreen(),
+
+    // 3. Rute layar penuh di atas rootNavigatorKey (misal: shopProfile)
+    ...fullScreen(rootNavigatorKey: rootNavigatorKey),
   ],
 );

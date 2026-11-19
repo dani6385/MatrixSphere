@@ -1,36 +1,60 @@
-import 'package:shared_navigations/shared_navigations.dart';
-import 'app_extractor.dart';
 import 'package:go_router/go_router.dart';
 
-final appBranches = <StatefulShellBranch>[
-  StatefulShellBranch(routes: [
-    GoRoute(
-      path: '/home', // Jadikan ini sebagai rute default untuk shell
-      builder: (context, state) => const HomeScreen(),
-    ),
-  ]),
-  StatefulShellBranch(routes: [
-    GoRoute(
-      path: AppRoutes.approvals, // Menggunakan '/approvals'
-      builder: (context, state) => const ApprovalScreen(),
-    ),
-  ]),
-  StatefulShellBranch(routes: [
-    GoRoute(
-      path: AppRoutes.analytics, // Menggunakan '/analytics'
-      builder: (context, state) => const AnalyticScreen(),
-    ),
-  ]),
-  StatefulShellBranch(routes: [
-    GoRoute(
-      path: AppRoutes.transactions, // Menggunakan '/transactions'
-      builder: (context, state) => const ProjectScreen(),
-    ),
-  ]),
-  StatefulShellBranch(routes: [
-    GoRoute(
-      path: AppRoutes.attendance, // Menggunakan '/attendance'
-      builder: (context, state) => const AttendanceScreen(),
-    ),
-  ]),
+//import 'app_routes.dart';
+
+final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
+  // Branch 0: Beranda / Home (rute default di dalam shell)
+  /*StatefulShellBranch(
+    routes: <RouteBase>[
+      GoRoute(
+        path: AppRoutes.home,
+        name: 'home',
+        builder: (context, state) => const HomeScreen(),
+      ),
+    ],
+  ),
+
+  // Branch 1: Persetujuan / Approvals
+  StatefulShellBranch(
+    routes: <RouteBase>[
+      GoRoute(
+        path: AppRoutes.approvals,
+        name: 'approvals',
+        builder: (context, state) => const ApprovalScreen(),
+      ),
+    ],
+  ),
+
+  // Branch 2: Analitik / Analytics
+  StatefulShellBranch(
+    routes: <RouteBase>[
+      GoRoute(
+        path: AppRoutes.analytics,
+        name: 'analytics',
+        builder: (context, state) => const AnalyticScreen(),
+      ),
+    ],
+  ),
+
+  // Branch 3: Transaksi & Proyek / Transactions
+  StatefulShellBranch(
+    routes: <RouteBase>[
+      GoRoute(
+        path: AppRoutes.transactions,
+        name: 'transactions',
+        builder: (context, state) => const ProjectScreen(),
+      ),
+    ],
+  ),
+
+  // Branch 4: Kehadiran / Attendance
+  StatefulShellBranch(
+    routes: <RouteBase>[
+      GoRoute(
+        path: AppRoutes.attendance,
+        name: 'attendance',
+        builder: (context, state) => const AttendanceScreen(),
+      ),
+    ],
+  ),*/
 ];

@@ -8,7 +8,7 @@
 PRODUCT_NAME = matrixsphere
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.matrixsphere
+PRODUCT_BUNDLE_IDENTIFIER = com.matrix.sphere
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.matrix.sphere All rights reserved.
