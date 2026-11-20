@@ -19,6 +19,8 @@ class BottomNavBar extends StatelessWidget {
     required this.onTap,
   });
 
+  Color? get selectedIconColor => null;
+
   @override
   Widget build(BuildContext context) {
     // Mengambil skema warna tema aktif (terang / gelap) sebagai cadangan aman
@@ -79,6 +81,8 @@ class BottomNavBar extends StatelessWidget {
       onTap: onTap,
       tabs: tabs,
       items: const [],
+      selectedIconColor: selectedIconColor,
+      unselectedIconColor: selectedIconColor,
     );
   }
 }

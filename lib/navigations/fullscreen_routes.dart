@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-//import 'app_routes.dart';
+import 'app_routes.dart';
+import 'app_extractor.dart';
 
 List<RouteBase> fullScreen({
   required GlobalKey<NavigatorState> rootNavigatorKey,
@@ -20,13 +21,13 @@ List<RouteBase> fullScreen({
       name: 'userProfile',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const UserProfileScreen(),
-    ),
+    ),*/
     GoRoute(
       path: AppRoutes.companyProfile,
       name: 'companyProfile',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const CompanyProfileScreen(),
-    ),
+    ),/*
     GoRoute(
       path: AppRoutes.shopProfile,
       name: 'shopProfile',

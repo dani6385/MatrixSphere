@@ -124,6 +124,10 @@ class AppNavigation {
     context.push(AppRoutes.notifications);
   }
 
+  static void openMessages(BuildContext context) {
+    context.push(AppRoutes.messages);
+  }
+
   static void openScanQr(BuildContext context) {
     context.push(AppRoutes.scanQr);
   }

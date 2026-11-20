@@ -8,10 +8,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Judul yang ditampilkan di bilah atas aplikasi.
   final String title;
 
-  const HomeAppBar({
-    super.key,
-    this.title = 'Matrix Sphere',
-  });
+  const HomeAppBar({super.key, this.title = 'Matrix Sphere'});
 
   /// Menentukan tinggi standar AppBar Material (56.0 px).
   @override
@@ -39,7 +36,11 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.notifications_outlined),
           onPressed: () => AppNavigation.openNotifications(context),
         ),
-
+        IconButton(
+          tooltip: 'Chat',
+          icon: const Icon(Icons.chat_bubble),
+          onPressed: () => AppNavigation.openMessages(context),
+        ),
         // Tombol membuka endDrawer profil pengguna pada HomeScreen
         IconButton(
           tooltip: 'Profil & Akun',
