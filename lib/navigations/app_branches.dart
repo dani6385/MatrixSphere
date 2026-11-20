@@ -13,7 +13,7 @@ final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
       ),
     ],
   ),
-/*
+
   // Branch 1: Persetujuan / Approvals
   StatefulShellBranch(
     routes: <RouteBase>[
@@ -45,7 +45,7 @@ final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
         builder: (context, state) => const ProjectScreen(),
       ),
     ],
-  ),*/
+  ),
 
   // Branch 4: Kehadiran / Attendance
   StatefulShellBranch(
