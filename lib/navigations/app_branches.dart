@@ -45,7 +45,7 @@ final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
         builder: (context, state) => const ProjectScreen(),
       ),
     ],
-  ),
+  ),*/
 
   // Branch 4: Kehadiran / Attendance
   StatefulShellBranch(
@@ -56,5 +56,5 @@ final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
         builder: (context, state) => const AttendanceScreen(),
       ),
     ],
-  ),*/
+  ),
 ];
