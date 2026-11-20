@@ -5,8 +5,8 @@ import 'package:shared_ui/shared_ui.dart';
 
 /// Custom Bottom Navigation Bar for the main application shell.
 ///
-/// This widget wraps the [SharedBottomNavBar] from the `shared_navigations` package
-/// and provides the specific navigation items (tabs) for the application.
+/// Menyediakan item navigasi utama dengan pemisahan warna yang jelas
+/// antara tab yang sedang aktif (selected) dan tidak aktif (unselected).
 class BottomNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
   final int currentIndex;
@@ -21,30 +21,55 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define your navigation bar items here.
-    // These items should correspond to the branches defined in app_branches.dart.
-    // The order of these GButton items must match the order of StatefulShellBranch
-    // in app_branches.dart.
+    // Mengambil skema warna tema aktif (terang / gelap) sebagai cadangan aman
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    // 1. Konfigurasi warna tab yang TIDAK TERPILIH (unselected)
+    final Color unselectedColor = colorScheme.onSurfaceVariant;
+
+    // 2. Konfigurasi warna tab yang TERPILIH (selected)
+    // Menggunakan kBrandPrimary dari shared_ui agar selaras dengan tema aplikasi
+    final Color selectedColor = kBrandPrimary;
+
+    // 3. Warna latar belakang khusus untuk tab yang sedang aktif (selected)
+    final Color selectedBackgroundColor = kBrandPrimary.withValues(alpha: 0.14);
+
+    // Daftar tab harus sesuai urutan StatefulShellBranch pada app_branches.dart
     final List<GButton> tabs = [
-      const GButton(
+      GButton(
         icon: Icons.home,
         text: 'Home',
+        iconColor: unselectedColor,
+        iconActiveColor: selectedColor,
+        backgroundColor: selectedBackgroundColor,
       ),
-      const GButton(
+      GButton(
         icon: Icons.approval,
         text: 'Approvals',
+        iconColor: unselectedColor,
+        iconActiveColor: selectedColor,
+        backgroundColor: selectedBackgroundColor,
       ),
-      const GButton(
+      GButton(
         icon: Icons.analytics,
         text: 'Analytics',
+        iconColor: unselectedColor,
+        iconActiveColor: selectedColor,
+        backgroundColor: selectedBackgroundColor,
       ),
-      const GButton(
+      GButton(
         icon: Icons.receipt_long,
         text: 'Transactions',
+        iconColor: unselectedColor,
+        iconActiveColor: selectedColor,
+        backgroundColor: selectedBackgroundColor,
       ),
-      const GButton(
+      GButton(
         icon: Icons.access_time,
         text: 'Attendance',
+        iconColor: unselectedColor,
+        iconActiveColor: selectedColor,
+        backgroundColor: selectedBackgroundColor,
       ),
     ];
 
@@ -53,7 +78,7 @@ class BottomNavBar extends StatelessWidget {
       selectedIndex: currentIndex,
       onTap: onTap,
       tabs: tabs,
-      items: [],
+      items: const [],
     );
   }
 }
