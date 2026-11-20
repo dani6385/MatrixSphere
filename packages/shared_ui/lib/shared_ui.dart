@@ -27,5 +27,6 @@ export 'theme/app_theme.dart';
 export 'theme/app_spacing.dart';
 export 'theme/app_style.dart';
 export 'ui/custom_text_field.dart';
+export 'widgets/custom_bottom_nav_bar.dart';
 export 'widgets/shared_project_drawer.dart';
 export 'widgets/side_menu.dart';
