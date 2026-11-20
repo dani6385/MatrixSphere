@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-//import 'app_routes.dart';
+import 'app_routes.dart';
+import 'app_extractor.dart';
 
 List<RouteBase> authRoutes({
   required GlobalKey<NavigatorState> rootNavigatorKey,
 }) {
   return <RouteBase>[
     // Halaman masuk utama
-    /*GoRoute(
+    GoRoute(
       path: AppRoutes.login,
       name: 'login',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const LoginScreen(),
     ),
-
+    /*
     // Halaman pilihan metode masuk (opsional)
     GoRoute(
       path: AppRoutes.loginOption,

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-// Pastikan file firebase_options.dart sudah ada dari hasil konfigurasi FlutterFire CLI
 import 'services/firebase_options.dart';
-// Sesuaikan path import ini dengan lokasi file appRouter milikmu
 import 'navigations/app_router.dart'; 
 
 void main() async {
