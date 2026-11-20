@@ -1,10 +1,10 @@
 import 'package:go_router/go_router.dart';
-
-//import 'app_routes.dart';
+import 'app_routes.dart';
+import 'app_extractor.dart';
 
 final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
   // Branch 0: Beranda / Home (rute default di dalam shell)
-  /*StatefulShellBranch(
+  StatefulShellBranch(
     routes: <RouteBase>[
       GoRoute(
         path: AppRoutes.home,
@@ -13,7 +13,7 @@ final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
       ),
     ],
   ),
-
+/*
   // Branch 1: Persetujuan / Approvals
   StatefulShellBranch(
     routes: <RouteBase>[
