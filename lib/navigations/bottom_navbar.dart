@@ -23,19 +23,15 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mengambil skema warna tema aktif (terang / gelap) sebagai cadangan aman
+    
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
     // 1. Konfigurasi warna tab yang TIDAK TERPILIH (unselected)
     final Color unselectedColor = colorScheme.onSurfaceVariant;
-
     // 2. Konfigurasi warna tab yang TERPILIH (selected)
     // Menggunakan kBrandPrimary dari shared_ui agar selaras dengan tema aplikasi
     final Color selectedColor = kBrandPrimary;
-
     // 3. Warna latar belakang khusus untuk tab yang sedang aktif (selected)
     final Color selectedBackgroundColor = kBrandPrimary.withValues(alpha: 0.14);
-
     // Daftar tab harus sesuai urutan StatefulShellBranch pada app_branches.dart
     final List<GButton> tabs = [
       GButton(

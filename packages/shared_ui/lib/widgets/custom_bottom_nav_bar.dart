@@ -3,9 +3,8 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-/// Shared bottom navigation bar dengan bentuk melengkung (`CurvedNavigationBar`)
-/// dan dukungan pemisahan warna ikon saat terpilih (`selectedIconColor`)
-/// maupun tidak terpilih (`unselectedIconColor`).
+/// Widget navigasi bawah kustom dengan lengkungan ke atas dan pemisahan
+/// warna ikon antara item yang terpilih dan tidak terpilih.
 class CustomBottomNavBar extends StatelessWidget {
   const CustomBottomNavBar({
     super.key,
@@ -16,6 +15,7 @@ class CustomBottomNavBar extends StatelessWidget {
     required List<dynamic> items,
     this.selectedIconColor,
     this.unselectedIconColor,
+    this.curveHeight = 18.0,
   });
 
   /// Indeks tab aktif saat ini.
@@ -24,40 +24,44 @@ class CustomBottomNavBar extends StatelessWidget {
   /// Callback saat tab ditekan.
   final void Function(int) onTap;
 
-  /// Indeks item yang sedang terpilih pada bar.
+  /// Indeks item yang sedang terpilih.
   final int selectedIndex;
 
-  /// Daftar item tab sumber ikon.
+  /// Daftar tab sumber ikon.
   final List<GButton> tabs;
 
-  /// Warna ikon ketika item sedang dipilih (selected).
+  /// Warna ikon saat item terpilih (selected).
   final Color? selectedIconColor;
 
-  /// Warna ikon ketika item tidak dipilih (unselected).
+  /// Warna ikon saat item tidak terpilih (unselected).
   final Color? unselectedIconColor;
+
+  /// Tinggi lengkungan ke atas pada bagian atas bar.
+  final double curveHeight;
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    // Warna default jika parameter tidak dikirim dari BottomNavBar
-    final Color activeColor = selectedIconColor ?? kBrandPrimary;
-    final Color inactiveColor = unselectedIconColor ?? colorScheme.onSurfaceVariant;
+    // Warna ikon terpilih (default ke kBrandPrimary agar selaras dengan tema)
+    final Color activeIconColor = selectedIconColor ?? kBrandPrimary;
 
-    // Membuat daftar Icon berdasarkan posisi indeks terhadap selectedIndex
+    // Warna ikon tidak terpilih
+    final Color inactiveIconColor =
+        unselectedIconColor ?? colorScheme.onSurfaceVariant;
+
+    // Membangun daftar widget Icon dengan warna berbeda untuk item terpilih
     final List<Widget> items = List<Widget>.generate(tabs.length, (int index) {
       final bool isSelected = index == selectedIndex;
-      final IconData iconData = tabs[index].icon;
-
       return Icon(
-        iconData,
+        tabs[index].icon,
         size: 22,
-        color: isSelected ? activeColor : inactiveColor,
+        color: isSelected ? activeIconColor : inactiveIconColor,
       );
     });
 
     return ClipPath(
-      clipper: _BottomNavClipper(),
+      clipper: _UpwardCurveClipper(curveHeight: curveHeight),
       child: Container(
         height: 75.0,
         decoration: const BoxDecoration(
@@ -65,29 +69,42 @@ class CustomBottomNavBar extends StatelessWidget {
         ),
         child: CurvedNavigationBar(
           index: selectedIndex,
-          height: 50,
+          height: 52,
           items: items,
           onTap: onTap,
           color: kNeonCyan,
           buttonBackgroundColor: kDarkDivider,
           backgroundColor: Colors.transparent,
-          animationCurve: Curves.easeIn,
-          animationDuration: const Duration(milliseconds: 400),
+          animationCurve: Curves.easeInOut,
+          animationDuration: const Duration(milliseconds: 350),
         ),
       ),
     );
   }
 }
 
-/// CustomClipper untuk membentuk lengkungan bawah pada navigation bar.
-class _BottomNavClipper extends CustomClipper<Path> {
+/// Clipper untuk membentuk sisi atas yang melengkung ke atas (cembung ke atas).
+class _UpwardCurveClipper extends CustomClipper<Path> {
+  final double curveHeight;
+
+  const _UpwardCurveClipper({required this.curveHeight});
+
   @override
   Path getClip(Size size) {
-    final path = Path();
-    const double curveDepth = 20.0;
+    final Path path = Path();
 
-    path.moveTo(0, curveDepth);
-    path.quadraticBezierTo(size.width / 2, 0, size.width, curveDepth);
+    // Mulai dari kiri bawah area lengkungan atas
+    path.moveTo(0, curveHeight);
+
+    // Tarik kurva melengkung ke atas menuju titik tengah (y = 0) lalu turun ke kanan
+    path.quadraticBezierTo(
+      size.width / 2,
+      0,
+      size.width,
+      curveHeight,
+    );
+
+    // Tutup jalur hingga pojok kanan bawah dan kiri bawah
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
     path.close();
@@ -96,7 +113,7 @@ class _BottomNavClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
+  bool shouldReclip(_UpwardCurveClipper oldClipper) {
+    return oldClipper.curveHeight != curveHeight;
   }
 }
