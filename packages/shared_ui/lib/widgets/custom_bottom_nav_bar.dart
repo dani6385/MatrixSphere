@@ -73,7 +73,7 @@ class CustomBottomNavBar extends StatelessWidget {
           items: items,
           onTap: onTap,
           color: kNeonCyan,
-          buttonBackgroundColor: kDarkDivider,
+          buttonBackgroundColor: kBrandWhite,
           backgroundColor: Colors.transparent,
           animationCurve: Curves.easeInOut,
           animationDuration: const Duration(milliseconds: 350),
