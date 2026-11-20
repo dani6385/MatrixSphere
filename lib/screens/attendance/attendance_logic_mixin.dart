@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -10,6 +11,9 @@ mixin AttendanceLogicMixin<T extends StatefulWidget> on State<T> {
   double get targetOfficeLatitude;
   double get targetOfficeLongitude;
   double get maxAllowedRadiusMeters;
+
+  CameraController? cameraController;
+  List<CameraDescription> _cameras = <CameraDescription>[];
 
   bool isCameraInitialized = false;
   bool isLoadingLocation = true;
@@ -25,10 +29,7 @@ mixin AttendanceLogicMixin<T extends StatefulWidget> on State<T> {
 
   /// Menyiapkan kamera dan lokasi saat layar dibuka.
   Future<void> initializeAttendance() async {
-    await Future.wait([
-      initCamera(),
-      refreshLocation(),
-    ]);
+    await Future.wait([initCamera(), refreshLocation()]);
   }
 
   void updateSavedWorkNote(String newNote) {
@@ -41,6 +42,7 @@ mixin AttendanceLogicMixin<T extends StatefulWidget> on State<T> {
   /// Membersihkan controller saat widget dihapus.
   void disposeAttendanceResources() {
     noteController.dispose();
+    cameraController = null;
   }
 
   /// Mengubah mode antara Check-In (`false`) dan Check-Out (`true`)[cite: 12].
@@ -51,19 +53,80 @@ mixin AttendanceLogicMixin<T extends StatefulWidget> on State<T> {
     });
   }
 
-  /// Menginisialisasi kamera perangkat[cite: 12].
-  Future<void> initCamera() async {
+  /// Menginisialisasi kamera perangkat.
+  Future<void> initCamera({
+    CameraLensDirection preferredLens = CameraLensDirection.front,
+  }) async {
     if (!mounted) return;
     setState(() {
       isCameraInitialized = false;
     });
 
-    await Future<void>.delayed(const Duration(milliseconds: 600));
+    try {
+      _cameras = await availableCameras();
+      if (_cameras.isEmpty) {
+        if (!mounted) return;
+        showAttendanceMessage(
+          'Kamera tidak ditemukan pada perangkat.',
+          isError: true,
+        );
+        return;
+      }
 
-    if (!mounted) return;
-    setState(() {
-      isCameraInitialized = true;
-    });
+      // Pilih kamera sesuai arah yang diinginkan; jika tidak ada, pakai kamera pertama
+      final CameraDescription selectedCamera = _cameras.firstWhere(
+        (cam) => cam.lensDirection == preferredLens,
+        orElse: () => _cameras.first,
+      );
+
+      // Bersihkan controller lama bila sedang menginisialisasi ulang
+      await cameraController?.dispose();
+
+      final CameraController controller = CameraController(
+        selectedCamera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+      );
+
+      await controller.initialize();
+
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+
+      setState(() {
+        cameraController = controller;
+        isCameraInitialized = true;
+      });
+    } on CameraException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        isCameraInitialized = false;
+      });
+      showAttendanceMessage(
+        'Gagal mengaktifkan kamera: ${e.description ?? e.code}',
+        isError: true,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        isCameraInitialized = false;
+      });
+      showAttendanceMessage('Terjadi kesalahan kamera: $e', isError: true);
+    }
+  }
+
+  /// Mengambil foto bukti absensi jika kamera sudah siap.
+  Future<XFile?> captureAttendancePhoto() async {
+    final CameraController? controller = cameraController;
+    if (controller == null || !controller.value.isInitialized) {
+      return null;
+    }
+    if (controller.value.isTakingPicture) {
+      return null;
+    }
+    return controller.takePicture();
   }
 
   /// Memperbarui koordinat lokasi dan menghitung jarak ke titik kantor[cite: 12].
@@ -113,7 +176,8 @@ mixin AttendanceLogicMixin<T extends StatefulWidget> on State<T> {
     final double dLat = _degToRad(lat2 - lat1);
     final double dLon = _degToRad(lon2 - lon1);
 
-    final double a = sin(dLat / 2) * sin(dLat / 2) +
+    final double a =
+        sin(dLat / 2) * sin(dLat / 2) +
         cos(_degToRad(lat1)) *
             cos(_degToRad(lat2)) *
             sin(dLon / 2) *
@@ -171,7 +235,9 @@ mixin AttendanceLogicMixin<T extends StatefulWidget> on State<T> {
       noteController.clear();
 
       final String actionName = isCheckOutMode ? 'Check-Out' : 'Check-In';
-      final String noteInfo = workNote.isNotEmpty ? ' | Catatan: $workNote' : '';
+      final String noteInfo = workNote.isNotEmpty
+          ? ' | Catatan: $workNote'
+          : '';
       showAttendanceMessage(
         '$actionName berhasil dicatat pada pukul $formattedTime$noteInfo',
       );
