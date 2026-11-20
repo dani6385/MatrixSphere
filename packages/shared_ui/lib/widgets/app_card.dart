@@ -164,12 +164,7 @@ class AppCard extends StatelessWidget {
                     if (title != null)
                       Text(
                         title!,
-                        style: AppStyles.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: context.onSurface,
-                            ) ??
-                            TextStyle(
-                              fontSize: 16,
+                        style: AppStyles.titleMedium.copyWith(
                               fontWeight: FontWeight.w600,
                               color: context.onSurface,
                             ),
@@ -178,11 +173,7 @@ class AppCard extends StatelessWidget {
                       const SizedBox(height: AppSpacing.xxs),
                       Text(
                         subtitle!,
-                        style: AppStyles.bodySmall?.copyWith(
-                              color: context.onSurfaceVariant,
-                            ) ??
-                            TextStyle(
-                              fontSize: 12,
+                        style: AppStyles.bodySmall.copyWith(
                               color: context.onSurfaceVariant,
                             ),
                       ),

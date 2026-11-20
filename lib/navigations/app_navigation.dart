@@ -88,6 +88,9 @@ class AppNavigation {
     context.push(AppRoutes.companyProfile);
   }
 
+  static void openManagementUser(BuildContext context) {
+    context.push(AppRoutes.userManagement);
+  }
   static void openShopProfile(BuildContext context) {
     context.push(AppRoutes.shopProfile);
   }

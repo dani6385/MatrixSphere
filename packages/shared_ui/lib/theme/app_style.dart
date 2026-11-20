@@ -133,17 +133,17 @@ class AppStyles {
         ),
       );
 
-  static get bodyLarge => TextStyle(fontSize: 16, color: kDarkTextPrimary);
+  static TextStyle get bodyLarge => TextStyle(fontSize: 16, color: kDarkTextPrimary);
 
   static TextStyle? get titleLarge =>
       const TextStyle(fontSize: 22, color: kDarkTextPrimary);
 
-  static get titleMedium =>
+  static TextStyle get titleMedium =>
       const TextStyle(fontSize: 18, color: kDarkTextPrimary);
 
   static Color? get primaryContainer => kBrandPrimary.withValues(alpha: 0.1);
 
-  static get bodySmall => const TextStyle(fontSize: 12, color: kDarkTextPrimary);
+  static TextStyle get bodySmall => const TextStyle(fontSize: 12, color: kDarkTextPrimary);
 
   static ButtonStyle? get filledButton => FilledButton.styleFrom(
         backgroundColor: kBrandPrimary,

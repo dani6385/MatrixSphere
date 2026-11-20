@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
+//import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,11 +27,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!alreadyGranted) {
       // Meminta izin sesuai dengan konfigurasi di Info.plist
-      await [
+      /*await [
         Permission.camera,
         Permission.photos,
         Permission.locationWhenInUse,
-      ].request();
+      ].request();*/
       await prefs.setBool(_permFlagKey, true);
     }
   }

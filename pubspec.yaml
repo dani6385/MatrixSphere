@@ -40,6 +40,7 @@ dependencies:
   google_nav_bar: ^5.0.7
   firebase_database: ^13.1.0
   shared_ui: ^0.0.1
+  shared_preferences: ^2.5.6
 
 dev_dependencies:
   flutter_test:

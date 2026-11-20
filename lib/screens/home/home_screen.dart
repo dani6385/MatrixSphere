@@ -8,7 +8,7 @@ import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_appbar.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_screens/features/company/models/company_profile_model.dart';
+import 'package:matrix_sphere/features/company/models/company_profile_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -62,8 +62,7 @@ class HomeScreen extends StatelessWidget {
               // Navigasi langsung ke halaman Profil Perusahaan saat header diketuk
               onDetailsPressed: () {
                 Scaffold.of(context).closeEndDrawer(); // Tutup drawer terlebih dahulu
-                context
-                    .goToCompanyProfile(); // Pindah ke halaman Company Profile
+                AppNavigation.openCompanyProfile(context); // Pindah ke halaman Company Profile
               },
             ),
           );
@@ -105,7 +104,7 @@ class HomeScreen extends StatelessWidget {
                 // Tutup drawer terlebih dahulu sebelum berpindah halaman
                 Scaffold.of(context).closeDrawer();
                 // Arahkan ke halaman profile menggunakan ekstensi navigasi
-                context.goToUserProfile();
+                AppNavigation.openUserProfile(context);
               },
             ),
             menuBuilder: (context, currentRoute) {

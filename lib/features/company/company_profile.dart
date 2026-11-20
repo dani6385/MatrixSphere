@@ -1,0 +1,142 @@
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
+import 'models/company_profile_model.dart';
+
+/// Halaman Profil Perusahaan (`CompanyProfileScreen`) untuk Matrix Sphere.
+/// Membaca data real-time dari node `company_profile` di Firebase Realtime Database[cite: 6]
+/// dan menampilkannya menggunakan `CompanyProfileModel`.
+class CompanyProfileScreen extends StatelessWidget {
+  const CompanyProfileScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final DatabaseReference companyRef =
+        FirebaseDatabase.instance.ref('company_profile');
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profil Perusahaan'),
+        actions: [
+          IconButton(
+            tooltip: 'Edit Profil',
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: () => AppNavigation.openEditProfile(context),
+          ),
+        ],
+      ),
+      body: StreamBuilder<DatabaseEvent>(
+        stream: companyRef.onValue,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          Map<dynamic, dynamic>? rawData;
+          if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
+            rawData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+          }
+
+          final CompanyProfileModel company = CompanyProfileModel.fromMap(rawData);
+
+          return ListView(
+            padding: const EdgeInsets.all(20.0),
+            children: [
+              // Kartu Avatar & Identitas Utama Perusahaan
+              Center(
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 48,
+                      backgroundColor: colorScheme.primaryContainer,
+                      backgroundImage:
+                          company.hasLogo ? NetworkImage(company.logoUrl!) : null,
+                      child: !company.hasLogo
+                          ? Icon(
+                              Icons.apartment,
+                              size: 44,
+                              color: colorScheme.primary,
+                            )
+                          : null,
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      company.name,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      company.email,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Detail Informasi Perusahaan
+              _CompanyInfoTile(
+                icon: Icons.phone_outlined,
+                label: 'Telepon',
+                value: company.phone ?? 'Belum diatur',
+              ),
+              _CompanyInfoTile(
+                icon: Icons.location_on_outlined,
+                label: 'Alamat',
+                value: company.address ?? 'Belum diatur',
+              ),
+              _CompanyInfoTile(
+                icon: Icons.info_outline,
+                label: 'Deskripsi',
+                value: company.description ?? 'Belum ada deskripsi perusahaan.',
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CompanyInfoTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _CompanyInfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(
+          label,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(value),
+        ),
+      ),
+    );
+  }
+}

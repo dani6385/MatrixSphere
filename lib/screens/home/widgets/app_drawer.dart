@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // Tambahkan go_router untuk navigasi
 import 'package:logger/logger.dart';
-import 'package:shared_navigations/shared_navigations.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_ui/shared_ui.dart'; // Impor shared_ui agar kita bisa menggunakan SideMenuItem
 
 final Logger logger = Logger();
@@ -42,7 +42,7 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
           }
           Future.delayed(const Duration(milliseconds: 100), () {
             if (context.mounted) {
-              context.pushToManageUsers();
+              AppNavigation.openManagementUser(context);
             }
           });
         },

@@ -58,8 +58,8 @@ void showInfoDialog({
         content: Text(message),
         actions: <Widget>[
           TextButton(
-            child: Text(buttonText),
             onPressed: onPressed ?? () => Navigator.of(dialogContext).pop(),
+            child: Text(buttonText),
           ),
         ],
       );

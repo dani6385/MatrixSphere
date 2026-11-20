@@ -78,7 +78,7 @@ const Color kLightTextSecondary = AppColors.lightTextSecondary;
 // 4. WARNA STATUS & UMPAN BALIK (Feedback)
 // ==========================================
 const Color kSuccess = AppColors.success;
-const Color Kwarning = AppColors.warning;
+const Color kWarning = AppColors.warning;
 const Color kError = AppColors.error;
 const Color kInfo = AppColors.info;
 

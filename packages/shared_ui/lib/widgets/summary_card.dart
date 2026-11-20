@@ -40,7 +40,7 @@ class SummaryCard extends StatelessWidget {
                 Text(
                   label,
                   style: AppStyles.bodySmall
-                      ?.copyWith(color: context.onSurfaceVariant),
+                      .copyWith(color: context.onSurfaceVariant),
                 ),
               ],
             ),
