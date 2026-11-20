@@ -74,13 +74,14 @@ class _AttendanceScreenState extends State<AttendanceScreen>
 
   /// Membuka bottom sheet catatan kerja dan memperbarui tampilan bar catatan.
   Future<void> _handleOpenWorkNote() async {
-    await showWorkNoteSheet(
+    final String? updatedNote = await showWorkNoteSheet(
       context: context,
-      controller: noteController,
+      initialNote: savedWorkNote,
       isCheckOutMode: isCheckOutMode,
+      bottomBarClearance: 96.0,
     );
-    if (mounted) {
-      setState(() {});
+    if (updatedNote != null) {
+      updateSavedWorkNote(updatedNote);
     }
   }
 
@@ -90,8 +91,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
     final DatabaseReference userRef = currentUser != null
         ? FirebaseDatabase.instance.ref('users/${currentUser.uid}')
         : FirebaseDatabase.instance.ref('dummy');
-    final DatabaseReference companyRef =
-        FirebaseDatabase.instance.ref('company_profile');
+    final DatabaseReference companyRef = FirebaseDatabase.instance.ref(
+      'company_profile',
+    );
 
     return Scaffold(
       key: _scaffoldKey,
@@ -160,8 +162,9 @@ class _AttendanceScreenState extends State<AttendanceScreen>
             decoration: const BoxDecoration(color: Colors.blue),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
-              backgroundImage:
-                  company.hasLogo ? NetworkImage(company.logoUrl!) : null,
+              backgroundImage: company.hasLogo
+                  ? NetworkImage(company.logoUrl!)
+                  : null,
               child: !company.hasLogo
                   ? const Icon(Icons.apartment, size: 40, color: Colors.blue)
                   : null,
@@ -192,7 +195,8 @@ class _AttendanceScreenState extends State<AttendanceScreen>
           userData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
         }
 
-        final String displayName = userData['name']?.toString() ??
+        final String displayName =
+            userData['name']?.toString() ??
             currentUser?.displayName ??
             'Pengguna MatrixSphere';
         final String email = currentUser?.email ?? 'user@email.com';

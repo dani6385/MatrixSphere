@@ -1,8 +1,5 @@
-// lib/screens/attendance/attendance_logic_mixin.dart
-
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
 
@@ -23,6 +20,7 @@ mixin AttendanceLogicMixin<T extends StatefulWidget> on State<T> {
 
   String? checkInTimeText;
   String? checkOutTimeText;
+  String savedWorkNote = '';
   final TextEditingController noteController = TextEditingController();
 
   /// Menyiapkan kamera dan lokasi saat layar dibuka.
@@ -31,6 +29,13 @@ mixin AttendanceLogicMixin<T extends StatefulWidget> on State<T> {
       initCamera(),
       refreshLocation(),
     ]);
+  }
+
+  void updateSavedWorkNote(String newNote) {
+    if (!mounted) return;
+    setState(() {
+      savedWorkNote = newNote.trim();
+    });
   }
 
   /// Membersihkan controller saat widget dihapus.

@@ -17,9 +17,12 @@ class AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.blueAccent,
       actions: [
         IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: onRefreshLocation,
-        )
+          tooltip: 'Profil & Akun',
+          icon: const Icon(Icons.account_circle_outlined),
+          onPressed: () {
+            Scaffold.maybeOf(context)?.openEndDrawer();
+          },
+        ),
       ],
     );
   }
