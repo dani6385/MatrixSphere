@@ -65,7 +65,7 @@ class AttendanceScreen extends StatelessWidget {
               onDetailsPressed: () {
                 Scaffold.of(
                   context,
-                ).closeEndDrawer(); // Tutup drawer terlebih dahulu
+                ).closeDrawer(); // Tutup drawer terlebih dahulu
                 AppNavigation.openCompanyProfile(
                   context,
                 ); // Pindah ke halaman Company Profile
@@ -108,7 +108,7 @@ class AttendanceScreen extends StatelessWidget {
               accountEmail: Text(email),
               onDetailsPressed: () {
                 // Tutup drawer terlebih dahulu sebelum berpindah halaman
-                Scaffold.of(context).closeDrawer();
+                Scaffold.of(context).closeEndDrawer();
                 // Arahkan ke halaman profile menggunakan ekstensi navigasi
                 AppNavigation.openUserProfile(context);
               },
