@@ -2,7 +2,6 @@
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/screens/attendance/cards/attendance_action_card.dart';
 import 'package:matrix_sphere/screens/attendance/widgets/app_drawer.dart';
 import 'package:matrix_sphere/screens/attendance/widgets/app_enddrawer.dart';
 import 'package:matrix_sphere/screens/attendance/widgets/attendance_body.dart';
@@ -125,7 +124,6 @@ class AttendanceScreen extends StatelessWidget {
         },
       ),
       body: const AttendanceBody(),
-      floatingActionButton: const AttendanceActionCard(),
     );
   }
 }

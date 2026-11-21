@@ -25,7 +25,7 @@ class AttendanceActionCard extends StatefulWidget {
 class _AttendanceActionCardState extends State<AttendanceActionCard> {
   bool _isSaving = false;
   late String _activeDateKey;
-  Timer? _midnightCheckTimer;
+  Timer? _clockCheckTimer;
 
   @override
   void initState() {
@@ -33,22 +33,26 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     _activeDateKey = _getDateKey(DateTime.now());
     _handleMidnightTransitionIfNeeded(DateTime.now());
 
-    // Periksa pergantian hari (pukul 00:00) setiap 30 detik
-    _midnightCheckTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+    // Periksa waktu berjalan & pergantian hari setiap 15 detik
+    // agar tombol Check-In / Check-Out otomatis aktif/nonaktif tepat waktu
+    _clockCheckTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (!mounted) return;
       final DateTime now = DateTime.now();
       final String latestKey = _getDateKey(now);
-      if (latestKey != _activeDateKey && mounted) {
+      if (latestKey != _activeDateKey) {
         _handleMidnightTransitionIfNeeded(now);
         setState(() {
           _activeDateKey = latestKey;
         });
+      } else {
+        setState(() {});
       }
     });
   }
 
   @override
   void dispose() {
-    _midnightCheckTimer?.cancel();
+    _clockCheckTimer?.cancel();
     super.dispose();
   }
 
@@ -63,6 +67,47 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     final String hh = dt.hour.toString().padLeft(2, '0');
     final String mm = dt.minute.toString().padLeft(2, '0');
     return '$hh:$mm';
+  }
+
+  DateTime? _parseTodayTime(String hhmm, DateTime reference) {
+    final List<String> parts = hhmm.trim().split(':');
+    if (parts.length != 2) return null;
+    final int? hour = int.tryParse(parts[0]);
+    final int? minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return null;
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+    return DateTime(
+      reference.year,
+      reference.month,
+      reference.day,
+      hour,
+      minute,
+    );
+  }
+
+  Future<bool?> _showOvertimeConfirmationDialog({
+    required String workEndTime,
+    required String closeTimeText,
+  }) {
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Konfirmasi Absen Pulang'),
+        content: Text(
+          'Absen pulang dibuka pukul $workEndTime - $closeTimeText.\nApakah Anda melakukan lembur hari ini?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Tidak Lembur'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Ya, Lembur'),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Jika melewati pukul 00:00 dan hari kemarin ada Check-In namun lupa Check-Out,
@@ -116,8 +161,21 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     required DatabaseReference todayRef,
     required bool isCheckOutStep,
     required String dateKey,
+    required String workEndTime,
+    required String closeTimeText,
   }) async {
     if (_isSaving) return;
+
+    bool isOvertime = false;
+    if (isCheckOutStep) {
+      final bool? confirmedOvertime = await _showOvertimeConfirmationDialog(
+        workEndTime: workEndTime,
+        closeTimeText: closeTimeText,
+      );
+      // Jika dialog ditutup/dibatalkan, hentikan proses Check-Out
+      if (confirmedOvertime == null) return;
+      isOvertime = confirmedOvertime;
+    }
 
     setState(() {
       _isSaving = true;
@@ -134,6 +192,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
           'checkInTime': formattedTime,
           'checkInTimestamp': ServerValue.timestamp,
           'checkOutTime': null,
+          'isOvertime': false,
           'forgotCheckOut': false,
           'status': 'checked_in',
         });
@@ -142,10 +201,15 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
         await todayRef.update(<String, dynamic>{
           'checkOutTime': formattedTime,
           'checkOutTimestamp': ServerValue.timestamp,
+          'isOvertime': isOvertime,
           'forgotCheckOut': false,
           'status': 'completed',
         });
-        _showSnackBar('Check-Out berhasil dicatat pukul $formattedTime');
+        _showSnackBar(
+          isOvertime
+              ? 'Check-Out (Lembur) berhasil dicatat pukul $formattedTime'
+              : 'Check-Out berhasil dicatat pukul $formattedTime',
+        );
       }
     } catch (e) {
       _showSnackBar('Gagal menyimpan absensi: $e', isError: true);
@@ -242,6 +306,31 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
             final bool isCheckOutStep = hasCheckedIn && !hasCheckedOut;
             final bool isCompleted = hasCheckedIn && hasCheckedOut;
 
+            // Perhitungan jendela waktu Check-In dan Check-Out
+            final DateTime now = DateTime.now();
+            final DateTime? startDt = _parseTodayTime(workStartTime, now);
+            final DateTime? endDt = _parseTodayTime(workEndTime, now);
+
+            // Check-In aktif mulai 1 jam sebelum jam mulai kerja (misal 08:00 -> 07:00)
+            final DateTime? checkInOpenAt =
+                startDt?.subtract(const Duration(minutes: 60));
+            final String checkInOpenText =
+                checkInOpenAt != null ? _formatTime(checkInOpenAt) : workStartTime;
+            final bool isWithinCheckInWindow =
+                checkInOpenAt != null && !now.isBefore(checkInOpenAt);
+
+            // Check-Out aktif TEPAT saat jam selesai kerja hingga +1 jam (misal 17:00 - 18:00)
+            final DateTime? checkOutOpenAt = endDt;
+            final DateTime? checkOutCloseAt =
+                endDt?.add(const Duration(minutes: 60));
+            final String checkOutCloseText = checkOutCloseAt != null
+                ? _formatTime(checkOutCloseAt)
+                : workEndTime;
+            final bool isWithinCheckOutWindow = checkOutOpenAt != null &&
+                checkOutCloseAt != null &&
+                !now.isBefore(checkOutOpenAt) &&
+                !now.isAfter(checkOutCloseAt);
+
             final String statusTitle;
             final String statusSubtitle;
             final Color statusColor;
@@ -249,6 +338,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
             final String buttonLabel;
             final IconData buttonIcon;
             final Color buttonColor;
+            final bool isButtonDisabled;
 
             if (!isAttendanceEnabled) {
               statusTitle = 'Absensi $envLabel Sedang Dinonaktifkan';
@@ -259,6 +349,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
               buttonLabel = 'Absensi Nonaktif';
               buttonIcon = Icons.block;
               buttonColor = Colors.grey;
+              isButtonDisabled = true;
             } else if (isCompleted) {
               statusTitle = 'Absensi Hari Ini Selesai';
               statusSubtitle =
@@ -268,28 +359,52 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
               buttonLabel = 'Sudah Absen Pulang';
               buttonIcon = Icons.verified;
               buttonColor = Colors.green;
+              isButtonDisabled = true;
             } else if (isCheckOutStep) {
-              statusTitle = 'Belum Absen Pulang (Check-Out)';
-              statusSubtitle =
-                  'Masuk pukul $checkInTime (jam pulang $workEndTime). Reset otomatis 00:00 jika lupa.';
-              statusColor = Colors.deepOrange;
-              statusIcon = Icons.warning_amber_rounded;
-              buttonLabel = 'Check-Out Sekarang';
-              buttonIcon = Icons.logout;
-              buttonColor = Colors.deepOrange;
+              if (!isWithinCheckOutWindow) {
+                statusTitle = 'Belum Waktunya Absen Pulang';
+                statusSubtitle =
+                    'Masuk pukul $checkInTime. Tombol Check-Out aktif pukul $workEndTime - $checkOutCloseText.';
+                statusColor = Colors.grey.shade700;
+                statusIcon = Icons.schedule;
+                buttonLabel = 'Check-Out Aktif Pukul $workEndTime';
+                buttonIcon = Icons.lock_clock;
+                buttonColor = Colors.grey;
+                isButtonDisabled = true;
+              } else {
+                statusTitle = 'Waktunya Absen Pulang (Check-Out)';
+                statusSubtitle =
+                    'Masuk pukul $checkInTime. Absen pulang dibuka pukul $workEndTime - $checkOutCloseText.';
+                statusColor = Colors.deepOrange;
+                statusIcon = Icons.logout;
+                buttonLabel = 'Check-Out Sekarang';
+                buttonIcon = Icons.logout;
+                buttonColor = Colors.deepOrange;
+                isButtonDisabled = _isSaving;
+              }
             } else {
-              statusTitle = 'Belum Absen Masuk Hari Ini';
-              statusSubtitle =
-                  'Jam kerja $workStartTime - $workEndTime. Tekan Check-In saat mulai kerja.';
-              statusColor = kBrandPrimary;
-              statusIcon = Icons.login;
-              buttonLabel = 'Check-In Sekarang';
-              buttonIcon = Icons.login;
-              buttonColor = kBrandPrimary;
+              if (!isWithinCheckInWindow) {
+                statusTitle = 'Absen Masuk Belum Dibuka';
+                statusSubtitle =
+                    'Jam kerja $workStartTime - $workEndTime. Check-In dibuka mulai pukul $checkInOpenText.';
+                statusColor = Colors.grey.shade700;
+                statusIcon = Icons.schedule;
+                buttonLabel = 'Check-In Dibuka Pukul $checkInOpenText';
+                buttonIcon = Icons.lock_clock;
+                buttonColor = Colors.grey;
+                isButtonDisabled = true;
+              } else {
+                statusTitle = 'Belum Absen Masuk Hari Ini';
+                statusSubtitle =
+                    'Jam kerja $workStartTime - $workEndTime. Check-In dibuka sejak pukul $checkInOpenText.';
+                statusColor = kBrandPrimary;
+                statusIcon = Icons.login;
+                buttonLabel = 'Check-In Sekarang';
+                buttonIcon = Icons.login;
+                buttonColor = kBrandPrimary;
+                isButtonDisabled = _isSaving;
+              }
             }
-
-            final bool isButtonDisabled =
-                !isAttendanceEnabled || _isSaving || isCompleted;
 
             return Card(
               elevation: 4,
@@ -420,6 +535,8 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                                 todayRef: todayRef,
                                 isCheckOutStep: isCheckOutStep,
                                 dateKey: todayKey,
+                                workEndTime: workEndTime,
+                                closeTimeText: checkOutCloseText,
                               ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: buttonColor,
