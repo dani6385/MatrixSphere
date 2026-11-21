@@ -26,7 +26,7 @@ List<RouteBase> fullScreen({
       path: AppRoutes.companyProfile,
       name: 'companyProfile',
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const CompanyProfileScreen(),
+      builder: (context, state) => const CompanyProfile(),
     ),/*
     GoRoute(
       path: AppRoutes.shopProfile,

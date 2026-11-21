@@ -7,16 +7,18 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-/// Kartu absensi mandiri dengan 1 tombol (Check-In & Check-Out):
-/// 1. Terhubung ke Firebase RTDB (`history_attendance/{uid}/{YYYY-MM-DD}`).
-/// 2. Otomatis reset pada pukul 00:00 untuk siap Check-In di hari berikutnya.
-/// 3. Mengikuti pengaturan aktif/nonaktif dari node `company_profile`.
+/// Kartu absensi 1 tombol untuk Seller Sphere / pekerja:
+/// - Mengikuti jam kerja (`workStartTime`, `workEndTime`) & status `isAttendanceEnabled`
+///   dari node `company_profile`.
+/// - Otomatis reset saat pukul 00:00 untuk siap Check-In di hari berikutnya.
+/// - Jika pada hari sebelumnya lupa Check-Out, memberi keterangan otomatis
+///   saat melewati pergantian hari (`00:00`).
 class AttendanceActionCard extends StatefulWidget {
   final String title;
 
   const AttendanceActionCard({
     super.key,
-    this.title = 'Absensi Kerja Harian',
+    this.title = 'Absensi Pekerja',
   });
 
   @override
@@ -31,12 +33,15 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
   @override
   void initState() {
     super.initState();
-    _activeDateKey = _getTodayDateKey(DateTime.now());
+    _activeDateKey = _getDateKey(DateTime.now());
+    _handleMidnightTransitionIfNeeded(DateTime.now());
 
-    // Cek pergantian tanggal setiap 30 detik agar otomatis reset tepat saat 00:00
+    // Periksa setiap 30 detik apakah jam sudah melewati 00:00 (berganti hari)
     _midnightCheckTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      final String latestKey = _getTodayDateKey(DateTime.now());
+      final DateTime now = DateTime.now();
+      final String latestKey = _getDateKey(now);
       if (latestKey != _activeDateKey && mounted) {
+        _handleMidnightTransitionIfNeeded(now);
         setState(() {
           _activeDateKey = latestKey;
         });
@@ -50,22 +55,61 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     super.dispose();
   }
 
-  /// Menghasilkan kunci tanggal dengan format `YYYY-MM-DD`.
-  String _getTodayDateKey(DateTime now) {
-    final String yyyy = now.year.toString().padLeft(4, '0');
-    final String mm = now.month.toString().padLeft(2, '0');
-    final String dd = now.day.toString().padLeft(2, '0');
+  String _getDateKey(DateTime dt) {
+    final String yyyy = dt.year.toString().padLeft(4, '0');
+    final String mm = dt.month.toString().padLeft(2, '0');
+    final String dd = dt.day.toString().padLeft(2, '0');
     return '$yyyy-$mm-$dd';
   }
 
-  /// Memformat waktu menjadi `HH:mm`.
-  String _formatTime(DateTime now) {
-    final String hh = now.hour.toString().padLeft(2, '0');
-    final String mm = now.minute.toString().padLeft(2, '0');
+  String _formatTime(DateTime dt) {
+    final String hh = dt.hour.toString().padLeft(2, '0');
+    final String mm = dt.minute.toString().padLeft(2, '0');
     return '$hh:$mm';
   }
 
-  /// Menyimpan data Check-In atau Check-Out ke Firebase Realtime Database.
+  /// Jika melewati pukul 00:00 dan hari sebelumnya ada Check-In tapi lupa Check-Out,
+  /// beri keterangan otomatis pada record hari sebelumnya agar riwayat tetap jelas.
+  Future<void> _handleMidnightTransitionIfNeeded(DateTime now) async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final DateTime yesterday = now.subtract(const Duration(days: 1));
+    final String yesterdayKey = _getDateKey(yesterday);
+    final DatabaseReference yesterdayRef = FirebaseDatabase.instance
+        .ref('history_attendance/${user.uid}/$yesterdayKey');
+
+    try {
+      final DataSnapshot snap = await yesterdayRef.get();
+      if (snap.exists && snap.value is Map<dynamic, dynamic>) {
+        final Map<dynamic, dynamic> prevMap =
+            snap.value as Map<dynamic, dynamic>;
+        final String? checkIn = prevMap['checkInTime']?.toString();
+        final String? checkOut = prevMap['checkOutTime']?.toString();
+
+        final bool hadCheckIn = checkIn != null && checkIn.trim().isNotEmpty;
+        final bool hadCheckOut = checkOut != null && checkOut.trim().isNotEmpty;
+
+        if (hadCheckIn && !hadCheckOut) {
+          final String existingNote = prevMap['note']?.toString().trim() ?? '';
+          const String forgotNote =
+              'Lupa Check-Out (otomatis di-reset pukul 00:00 untuk hari baru)';
+          final String combinedNote = existingNote.isEmpty
+              ? forgotNote
+              : '$existingNote • $forgotNote';
+
+          await yesterdayRef.update(<String, dynamic>{
+            'note': combinedNote,
+            'forgotCheckOut': true,
+            'status': 'forgot_checkout_reset',
+          });
+        }
+      }
+    } catch (_) {
+      // Abaikan error jaringan sementara saat pengecekan latar belakang
+    }
+  }
+
   Future<void> _handleAttendanceTap({
     required DatabaseReference todayRef,
     required bool isCheckOutStep,
@@ -87,6 +131,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
           'checkInTime': formattedTime,
           'checkInTimestamp': ServerValue.timestamp,
           'checkOutTime': null,
+          'forgotCheckOut': false,
           'status': 'checked_in',
         });
         _showSnackBar('Check-In berhasil dicatat pukul $formattedTime');
@@ -94,6 +139,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
         await todayRef.update(<String, dynamic>{
           'checkOutTime': formattedTime,
           'checkOutTimestamp': ServerValue.timestamp,
+          'forgotCheckOut': false,
           'status': 'completed',
         });
         _showSnackBar('Check-Out berhasil dicatat pukul $formattedTime');
@@ -140,40 +186,44 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     final DatabaseReference todayRef = FirebaseDatabase.instance
         .ref('history_attendance/${user.uid}/$todayKey');
 
-    // 1. Dengarkan pengaturan dari node `company_profile`
     return StreamBuilder<DatabaseEvent>(
       stream: companyRef.onValue,
       builder: (context, companySnapshot) {
         Map<dynamic, dynamic> companyData = <dynamic, dynamic>{};
         if (companySnapshot.hasData &&
-            companySnapshot.data!.snapshot.value != null) {
-          final Object? rawCompany = companySnapshot.data!.snapshot.value;
-          if (rawCompany is Map<dynamic, dynamic>) {
-            companyData = rawCompany;
-          }
+            companySnapshot.data!.snapshot.value != null &&
+            companySnapshot.data!.snapshot.value is Map<dynamic, dynamic>) {
+          companyData =
+              companySnapshot.data!.snapshot.value as Map<dynamic, dynamic>;
         }
 
-        // Ambil pengaturan tombol absensi dari company_profile (default: true)
         final bool isAttendanceEnabled =
             companyData['isAttendanceEnabled'] is bool
                 ? companyData['isAttendanceEnabled'] as bool
                 : true;
-        final String companyTitle =
+        final String companyName =
             companyData['name']?.toString().trim().isNotEmpty == true
                 ? companyData['name'].toString()
                 : widget.title;
+        final String workStartTime =
+            companyData['workStartTime']?.toString().trim().isNotEmpty == true
+                ? companyData['workStartTime'].toString()
+                : '08:00';
+        final String workEndTime =
+            companyData['workEndTime']?.toString().trim().isNotEmpty == true
+                ? companyData['workEndTime'].toString()
+                : '17:00';
 
-        // 2. Dengarkan data absensi hari ini (`todayKey`)
         return StreamBuilder<DatabaseEvent>(
           stream: todayRef.onValue,
           builder: (context, attendanceSnapshot) {
             Map<dynamic, dynamic> data = <dynamic, dynamic>{};
             if (attendanceSnapshot.hasData &&
-                attendanceSnapshot.data!.snapshot.value != null) {
-              final Object? raw = attendanceSnapshot.data!.snapshot.value;
-              if (raw is Map<dynamic, dynamic>) {
-                data = raw;
-              }
+                attendanceSnapshot.data!.snapshot.value != null &&
+                attendanceSnapshot.data!.snapshot.value
+                    is Map<dynamic, dynamic>) {
+              data = attendanceSnapshot.data!.snapshot.value
+                  as Map<dynamic, dynamic>;
             }
 
             final String? checkInTime = data['checkInTime']?.toString();
@@ -196,9 +246,9 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
             final Color buttonColor;
 
             if (!isAttendanceEnabled) {
-              statusTitle = 'Absensi Dinonaktifkan Perusahaan';
+              statusTitle = 'Absensi Dinonaktifkan di Company Profile';
               statusSubtitle =
-                  'Tombol absensi saat ini dinonaktifkan melalui pengaturan Company Profile.';
+                  'Jam kerja terdaftar: $workStartTime - $workEndTime.';
               statusColor = Colors.grey.shade700;
               statusIcon = Icons.lock_outline;
               buttonLabel = 'Absensi Nonaktif';
@@ -207,16 +257,16 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
             } else if (isCompleted) {
               statusTitle = 'Absensi Hari Ini Selesai';
               statusSubtitle =
-                  'Jejak masuk & pulang tersimpan. Otomatis reset pukul 00:00.';
+                  'Jam kerja $workStartTime - $workEndTime. Reset otomatis pukul 00:00.';
               statusColor = Colors.green;
               statusIcon = Icons.check_circle;
               buttonLabel = 'Sudah Absen Pulang';
               buttonIcon = Icons.verified;
               buttonColor = Colors.green;
             } else if (isCheckOutStep) {
-              statusTitle = 'Perhatian: Anda Belum Absen Pulang';
+              statusTitle = 'Belum Absen Pulang (Check-Out)';
               statusSubtitle =
-                  'Anda sudah Check-In pukul $checkInTime. Tekan tombol di bawah saat selesai kerja.';
+                  'Masuk pukul $checkInTime (jam pulang $workEndTime). Reset otomatis 00:00 jika lupa.';
               statusColor = Colors.deepOrange;
               statusIcon = Icons.warning_amber_rounded;
               buttonLabel = 'Check-Out Sekarang';
@@ -225,7 +275,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
             } else {
               statusTitle = 'Belum Absen Masuk Hari Ini';
               statusSubtitle =
-                  'Tekan tombol Check-In di bawah untuk merekam jam mulai kerja.';
+                  'Jam kerja $workStartTime - $workEndTime. Tekan Check-In saat mulai kerja.';
               statusColor = kBrandPrimary;
               statusIcon = Icons.login;
               buttonLabel = 'Check-In Sekarang';
@@ -253,7 +303,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                       children: [
                         Expanded(
                           child: Text(
-                            companyTitle,
+                            companyName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -273,6 +323,15 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Jam Kerja: $workStartTime - $workEndTime',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Container(
