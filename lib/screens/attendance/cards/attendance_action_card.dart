@@ -1,17 +1,17 @@
 // lib/screens/Attendance/widgets/attendance_action_card.dart
 
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-/// Kartu absensi mandiri dengan 1 tombol (Check-In & Check-Out) yang terhubung
-/// langsung ke Firebase Realtime Database (`history_attendance`).
-///
-/// Dapat dipanggil langsung tanpa parameter wajib, seperti:
-/// `const AttendanceActionCard()`
+/// Kartu absensi mandiri dengan 1 tombol (Check-In & Check-Out):
+/// 1. Terhubung ke Firebase RTDB (`history_attendance/{uid}/{YYYY-MM-DD}`).
+/// 2. Otomatis reset pada pukul 00:00 untuk siap Check-In di hari berikutnya.
+/// 3. Mengikuti pengaturan aktif/nonaktif dari node `company_profile`.
 class AttendanceActionCard extends StatefulWidget {
-  /// Judul kartu absensi.
   final String title;
 
   const AttendanceActionCard({
@@ -25,9 +25,32 @@ class AttendanceActionCard extends StatefulWidget {
 
 class _AttendanceActionCardState extends State<AttendanceActionCard> {
   bool _isSaving = false;
+  late String _activeDateKey;
+  Timer? _midnightCheckTimer;
 
-  /// Menghasilkan kunci tanggal hari ini dengan format `YYYY-MM-DD`.
-  /// Otomatis berganti setiap pukul 00:00.
+  @override
+  void initState() {
+    super.initState();
+    _activeDateKey = _getTodayDateKey(DateTime.now());
+
+    // Cek pergantian tanggal setiap 30 detik agar otomatis reset tepat saat 00:00
+    _midnightCheckTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      final String latestKey = _getTodayDateKey(DateTime.now());
+      if (latestKey != _activeDateKey && mounted) {
+        setState(() {
+          _activeDateKey = latestKey;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _midnightCheckTimer?.cancel();
+    super.dispose();
+  }
+
+  /// Menghasilkan kunci tanggal dengan format `YYYY-MM-DD`.
   String _getTodayDateKey(DateTime now) {
     final String yyyy = now.year.toString().padLeft(4, '0');
     final String mm = now.month.toString().padLeft(2, '0');
@@ -35,14 +58,14 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     return '$yyyy-$mm-$dd';
   }
 
-  /// Memformat jam menjadi `HH:mm`.
+  /// Memformat waktu menjadi `HH:mm`.
   String _formatTime(DateTime now) {
     final String hh = now.hour.toString().padLeft(2, '0');
     final String mm = now.minute.toString().padLeft(2, '0');
     return '$hh:$mm';
   }
 
-  /// Menyimpan data Check-In atau Check-Out ke node `history_attendance`.
+  /// Menyimpan data Check-In atau Check-Out ke Firebase Realtime Database.
   Future<void> _handleAttendanceTap({
     required DatabaseReference todayRef,
     required bool isCheckOutStep,
@@ -59,7 +82,6 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
       final String formattedTime = _formatTime(now);
 
       if (!isCheckOutStep) {
-        // 1. Proses Check-In (mulai kerja)
         await todayRef.set(<String, dynamic>{
           'date': dateKey,
           'checkInTime': formattedTime,
@@ -69,7 +91,6 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
         });
         _showSnackBar('Check-In berhasil dicatat pukul $formattedTime');
       } else {
-        // 2. Proses Check-Out (pulang kerja)
         await todayRef.update(<String, dynamic>{
           'checkOutTime': formattedTime,
           'checkOutTimestamp': ServerValue.timestamp,
@@ -103,8 +124,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
   @override
   Widget build(BuildContext context) {
     final User? user = FirebaseAuth.instance.currentUser;
-    final DateTime now = DateTime.now();
-    final String todayKey = _getTodayDateKey(now);
+    final String todayKey = _activeDateKey;
 
     if (user == null) {
       return const Card(
@@ -115,221 +135,260 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
       );
     }
 
-    // Referensi data absensi hari ini di Firebase Realtime Database
-    final DatabaseReference todayRef =
-        FirebaseDatabase.instance.ref('history_attendance/${user.uid}/$todayKey');
+    final DatabaseReference companyRef =
+        FirebaseDatabase.instance.ref('company_profile');
+    final DatabaseReference todayRef = FirebaseDatabase.instance
+        .ref('history_attendance/${user.uid}/$todayKey');
 
+    // 1. Dengarkan pengaturan dari node `company_profile`
     return StreamBuilder<DatabaseEvent>(
-      stream: todayRef.onValue,
-      builder: (context, snapshot) {
-        Map<dynamic, dynamic> data = <dynamic, dynamic>{};
-        if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
-          final Object? raw = snapshot.data!.snapshot.value;
-          if (raw is Map<dynamic, dynamic>) {
-            data = raw;
+      stream: companyRef.onValue,
+      builder: (context, companySnapshot) {
+        Map<dynamic, dynamic> companyData = <dynamic, dynamic>{};
+        if (companySnapshot.hasData &&
+            companySnapshot.data!.snapshot.value != null) {
+          final Object? rawCompany = companySnapshot.data!.snapshot.value;
+          if (rawCompany is Map<dynamic, dynamic>) {
+            companyData = rawCompany;
           }
         }
 
-        final String? checkInTime = data['checkInTime']?.toString();
-        final String? checkOutTime = data['checkOutTime']?.toString();
+        // Ambil pengaturan tombol absensi dari company_profile (default: true)
+        final bool isAttendanceEnabled =
+            companyData['isAttendanceEnabled'] is bool
+                ? companyData['isAttendanceEnabled'] as bool
+                : true;
+        final String companyTitle =
+            companyData['name']?.toString().trim().isNotEmpty == true
+                ? companyData['name'].toString()
+                : widget.title;
 
-        final bool hasCheckedIn =
-            checkInTime != null && checkInTime.trim().isNotEmpty;
-        final bool hasCheckedOut =
-            checkOutTime != null && checkOutTime.trim().isNotEmpty;
+        // 2. Dengarkan data absensi hari ini (`todayKey`)
+        return StreamBuilder<DatabaseEvent>(
+          stream: todayRef.onValue,
+          builder: (context, attendanceSnapshot) {
+            Map<dynamic, dynamic> data = <dynamic, dynamic>{};
+            if (attendanceSnapshot.hasData &&
+                attendanceSnapshot.data!.snapshot.value != null) {
+              final Object? raw = attendanceSnapshot.data!.snapshot.value;
+              if (raw is Map<dynamic, dynamic>) {
+                data = raw;
+              }
+            }
 
-        final bool isCheckOutStep = hasCheckedIn && !hasCheckedOut;
-        final bool isCompleted = hasCheckedIn && hasCheckedOut;
+            final String? checkInTime = data['checkInTime']?.toString();
+            final String? checkOutTime = data['checkOutTime']?.toString();
 
-        final String statusTitle;
-        final String statusSubtitle;
-        final Color statusColor;
-        final IconData statusIcon;
-        final String buttonLabel;
-        final IconData buttonIcon;
-        final Color buttonColor;
+            final bool hasCheckedIn =
+                checkInTime != null && checkInTime.trim().isNotEmpty;
+            final bool hasCheckedOut =
+                checkOutTime != null && checkOutTime.trim().isNotEmpty;
 
-        if (isCompleted) {
-          statusTitle = 'Absensi Hari Ini Selesai';
-          statusSubtitle = 'Jejak masuk dan pulang Anda sudah tersimpan.';
-          statusColor = Colors.green;
-          statusIcon = Icons.check_circle;
-          buttonLabel = 'Sudah Absen Pulang';
-          buttonIcon = Icons.verified;
-          buttonColor = Colors.green;
-        } else if (isCheckOutStep) {
-          statusTitle = 'Perhatian: Anda Belum Absen Pulang';
-          statusSubtitle =
-              'Anda sudah Check-In pukul $checkInTime. Tekan tombol di bawah saat selesai kerja.';
-          statusColor = Colors.deepOrange;
-          statusIcon = Icons.warning_amber_rounded;
-          buttonLabel = 'Check-Out Sekarang';
-          buttonIcon = Icons.logout;
-          buttonColor = Colors.deepOrange;
-        } else {
-          statusTitle = 'Belum Absen Masuk Hari Ini';
-          statusSubtitle =
-              'Tekan tombol Check-In di bawah untuk merekam jam mulai kerja.';
-          statusColor = kBrandPrimary;
-          statusIcon = Icons.login;
-          buttonLabel = 'Check-In Sekarang';
-          buttonIcon = Icons.login;
-          buttonColor = kBrandPrimary;
-        }
+            final bool isCheckOutStep = hasCheckedIn && !hasCheckedOut;
+            final bool isCompleted = hasCheckedIn && hasCheckedOut;
 
-        return Card(
-          elevation: 4,
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Baris judul kartu & tanggal hari ini
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            final String statusTitle;
+            final String statusSubtitle;
+            final Color statusColor;
+            final IconData statusIcon;
+            final String buttonLabel;
+            final IconData buttonIcon;
+            final Color buttonColor;
+
+            if (!isAttendanceEnabled) {
+              statusTitle = 'Absensi Dinonaktifkan Perusahaan';
+              statusSubtitle =
+                  'Tombol absensi saat ini dinonaktifkan melalui pengaturan Company Profile.';
+              statusColor = Colors.grey.shade700;
+              statusIcon = Icons.lock_outline;
+              buttonLabel = 'Absensi Nonaktif';
+              buttonIcon = Icons.block;
+              buttonColor = Colors.grey;
+            } else if (isCompleted) {
+              statusTitle = 'Absensi Hari Ini Selesai';
+              statusSubtitle =
+                  'Jejak masuk & pulang tersimpan. Otomatis reset pukul 00:00.';
+              statusColor = Colors.green;
+              statusIcon = Icons.check_circle;
+              buttonLabel = 'Sudah Absen Pulang';
+              buttonIcon = Icons.verified;
+              buttonColor = Colors.green;
+            } else if (isCheckOutStep) {
+              statusTitle = 'Perhatian: Anda Belum Absen Pulang';
+              statusSubtitle =
+                  'Anda sudah Check-In pukul $checkInTime. Tekan tombol di bawah saat selesai kerja.';
+              statusColor = Colors.deepOrange;
+              statusIcon = Icons.warning_amber_rounded;
+              buttonLabel = 'Check-Out Sekarang';
+              buttonIcon = Icons.logout;
+              buttonColor = Colors.deepOrange;
+            } else {
+              statusTitle = 'Belum Absen Masuk Hari Ini';
+              statusSubtitle =
+                  'Tekan tombol Check-In di bawah untuk merekam jam mulai kerja.';
+              statusColor = kBrandPrimary;
+              statusIcon = Icons.login;
+              buttonLabel = 'Check-In Sekarang';
+              buttonIcon = Icons.login;
+              buttonColor = kBrandPrimary;
+            }
+
+            final bool isButtonDisabled =
+                !isAttendanceEnabled || _isSaving || isCompleted;
+
+            return Card(
+              elevation: 4,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      widget.title,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: kDarkTextPrimary,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            companyTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: kDarkTextPrimary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          todayKey,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: statusColor.withValues(alpha: 0.4),
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(statusIcon, color: statusColor, size: 22),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  statusTitle,
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: statusColor,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  statusSubtitle,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: kDarkTextPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      todayKey,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade600,
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Jam Masuk: ${checkInTime ?? '--:--'}',
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: kDarkTextPrimary,
+                            ),
+                          ),
+                          Text(
+                            'Jam Pulang: ${checkOutTime ?? '--:--'}',
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: kDarkTextPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    ElevatedButton.icon(
+                      onPressed: isButtonDisabled
+                          ? null
+                          : () => _handleAttendanceTap(
+                                todayRef: todayRef,
+                                isCheckOutStep: isCheckOutStep,
+                                dateKey: todayKey,
+                              ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: buttonColor,
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: Colors.grey.shade300,
+                        disabledForegroundColor: Colors.grey.shade700,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      icon: _isSaving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Icon(buttonIcon),
+                      label: Text(
+                        _isSaving ? 'Menyimpan...' : buttonLabel,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-
-                // Kotak pemberitahuan status (termasuk peringatan belum absen pulang)
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: statusColor.withValues(alpha: 0.4),
-                    ),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(statusIcon, color: statusColor, size: 22),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              statusTitle,
-                              style: TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.bold,
-                                color: statusColor,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              statusSubtitle,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: kDarkTextPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Ringkasan jejak jam Masuk & Pulang hari ini
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Jam Masuk: ${checkInTime ?? '--:--'}',
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                          color: kDarkTextPrimary,
-                        ),
-                      ),
-                      Text(
-                        'Jam Pulang: ${checkOutTime ?? '--:--'}',
-                        style: const TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                          color: kDarkTextPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 14),
-
-                // 1 Tombol Tunggal untuk Check-In dan Check-Out
-                ElevatedButton.icon(
-                  onPressed: (_isSaving || isCompleted)
-                      ? null
-                      : () => _handleAttendanceTap(
-                            todayRef: todayRef,
-                            isCheckOutStep: isCheckOutStep,
-                            dateKey: todayKey,
-                          ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonColor,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey.shade300,
-                    disabledForegroundColor: Colors.grey.shade700,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  icon: _isSaving
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Icon(buttonIcon),
-                  label: Text(
-                    _isSaving ? 'Menyimpan...' : buttonLabel,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
