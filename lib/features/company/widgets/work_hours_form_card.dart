@@ -156,7 +156,7 @@ class _WorkHoursFormCardState extends State<WorkHoursFormCard> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
-            'Jam kerja Matrix Sphere & Seller Sphere berhasil disimpan',
+            'Jam kerja Matrix Sphere',
           ),
           backgroundColor: kBrandPrimary,
           behavior: SnackBarBehavior.floating,
@@ -253,37 +253,6 @@ class _WorkHoursFormCardState extends State<WorkHoursFormCard> {
               ),
 
               const SizedBox(height: 16),
-
-              // 2. Bagian Seller Sphere
-              const Text(
-                'Seller Sphere (Pekerja)',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTimeTextField(
-                      controller: _sellerStartController,
-                      label: 'Jam Mulai',
-                      hint: '08:00',
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildTimeTextField(
-                      controller: _sellerEndController,
-                      label: 'Jam Selesai',
-                      hint: '17:00',
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 10),
 
               // Switch aktif/nonaktif tombol absensi pekerja
               SwitchListTile(
