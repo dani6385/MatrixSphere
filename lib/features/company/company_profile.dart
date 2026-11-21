@@ -41,7 +41,7 @@ class CompanyProfile extends StatelessWidget {
                 IconButton(
                   tooltip: 'Edit Profil',
                   icon: const Icon(Icons.edit_outlined),
-                  onPressed: () => AppNavigation.openEditProfile(context),
+                  onPressed: () => AppNavigation.openEditCompanyProfile(context),
                 ),
             ],
           ),
