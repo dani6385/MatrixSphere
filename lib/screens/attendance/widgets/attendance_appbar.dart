@@ -1,21 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 
+/// AppBar khusus untuk halaman utama (`AttendanceScreen`) pada Matrix Sphere.
+/// Mengimplementasikan `PreferredSizeWidget` agar dapat dipasang langsung pada
+/// properti `appBar: const AttendanceAppBar()` di dalam `Scaffold`.
 class AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final VoidCallback onRefreshLocation;
+  /// Judul yang ditampilkan di bilah atas aplikasi.
+  final String title;
 
-  const AttendanceAppBar({
-    super.key,
-    required this.onRefreshLocation,
-    required void Function() onOpenDrawer,
-    required void Function() onOpenEndDrawer,
-  });
+  const AttendanceAppBar({super.key, this.title = 'Matrix Sphere'});
+
+  /// Menentukan tinggi standar AppBar Material (56.0 px).
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
     return AppBar(
-      title: const Text("Absensi Wajah & Lokasi"),
-      backgroundColor: Colors.blueAccent,
+      elevation: 0,
+      backgroundColor: colorScheme.surface,
+      foregroundColor: colorScheme.onSurface,
+      title: Text(
+        title,
+        style: theme.textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       actions: [
+        // Tombol notifikasi -> mengarah ke halaman Notifications via AppNavigation
+        IconButton(
+          tooltip: 'Notifikasi',
+          icon: const Icon(Icons.notifications_outlined),
+          onPressed: () => AppNavigation.openNotifications(context),
+        ),
+        IconButton(
+          tooltip: 'Chat',
+          icon: const Icon(Icons.chat_bubble),
+          onPressed: () => AppNavigation.openMessages(context),
+        ),
+        // Tombol membuka endDrawer profil pengguna pada AttendanceScreen
         IconButton(
           tooltip: 'Profil & Akun',
           icon: const Icon(Icons.account_circle_outlined),
@@ -26,7 +52,4 @@ class AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
       ],
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
