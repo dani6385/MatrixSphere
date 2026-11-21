@@ -34,7 +34,6 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     _handleMidnightTransitionIfNeeded(DateTime.now());
 
     // Periksa waktu berjalan & pergantian hari setiap 15 detik
-    // agar tombol Check-In / Check-Out otomatis aktif/nonaktif tepat waktu
     _clockCheckTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       if (!mounted) return;
       final DateTime now = DateTime.now();
@@ -83,6 +82,31 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
       hour,
       minute,
     );
+  }
+
+  Future<String> _resolveUserName(User user) async {
+    try {
+      final DataSnapshot snap =
+          await FirebaseDatabase.instance.ref('users/${user.uid}/name').get();
+      final String? dbName = snap.value?.toString().trim();
+      if (dbName != null && dbName.isNotEmpty) {
+        return dbName;
+      }
+    } catch (_) {
+      // Gunakan fallback jika gagal membaca node users
+    }
+
+    final String? authName = user.displayName?.trim();
+    if (authName != null && authName.isNotEmpty) {
+      return authName;
+    }
+
+    final String? email = user.email?.trim();
+    if (email != null && email.contains('@')) {
+      return email.split('@').first;
+    }
+
+    return 'Pengguna';
   }
 
   Future<bool?> _showOvertimeConfirmationDialog({
@@ -147,7 +171,15 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
           await yesterdayRef.update(<String, dynamic>{
             'note': combinedNote,
             'forgotCheckOut': true,
-            'status': 'forgot_checkout_reset',
+            'status': 'Lupa Check-Out',
+            'statusCode': 'forgot_checkout_reset',
+          });
+
+          await FirebaseDatabase.instance
+              .ref('attendance/matrix/${user.uid}')
+              .update(<String, dynamic>{
+            'status': 'Lupa Check-Out',
+            'lastDate': yesterdayKey,
           });
         }
       }
@@ -157,7 +189,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
   }
 
   Future<void> _handleAttendanceTap({
-    required String uid,
+    required User user,
     required DatabaseReference todayRef,
     required bool isCheckOutStep,
     required String dateKey,
@@ -172,7 +204,6 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
         workEndTime: workEndTime,
         closeTimeText: closeTimeText,
       );
-      // Jika dialog ditutup/dibatalkan, hentikan proses Check-Out
       if (confirmedOvertime == null) return;
       isOvertime = confirmedOvertime;
     }
@@ -184,27 +215,51 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     try {
       final DateTime now = DateTime.now();
       final String formattedTime = _formatTime(now);
+      final String userName = await _resolveUserName(user);
+      final DatabaseReference uidSummaryRef =
+          FirebaseDatabase.instance.ref('attendance/matrix/${user.uid}');
 
       if (!isCheckOutStep) {
+        const String currentStatus = 'Masuk';
         await todayRef.set(<String, dynamic>{
-          'uid': uid,
+          'uid': user.uid,
+          'name': userName,
           'date': dateKey,
           'checkInTime': formattedTime,
           'checkInTimestamp': ServerValue.timestamp,
           'checkOutTime': null,
           'isOvertime': false,
           'forgotCheckOut': false,
-          'status': 'checked_in',
+          'status': currentStatus,
+          'statusCode': 'checked_in',
         });
+
+        await uidSummaryRef.update(<String, dynamic>{
+          'name': userName,
+          'status': currentStatus,
+          'lastDate': dateKey,
+        });
+
         _showSnackBar('Check-In berhasil dicatat pukul $formattedTime');
       } else {
+        final String currentStatus =
+            isOvertime ? 'Selesai (Lembur)' : 'Selesai';
         await todayRef.update(<String, dynamic>{
+          'name': userName,
           'checkOutTime': formattedTime,
           'checkOutTimestamp': ServerValue.timestamp,
           'isOvertime': isOvertime,
           'forgotCheckOut': false,
-          'status': 'completed',
+          'status': currentStatus,
+          'statusCode': 'completed',
         });
+
+        await uidSummaryRef.update(<String, dynamic>{
+          'name': userName,
+          'status': currentStatus,
+          'lastDate': dateKey,
+        });
+
         _showSnackBar(
           isOvertime
               ? 'Check-Out (Lembur) berhasil dicatat pukul $formattedTime'
@@ -297,6 +352,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
 
             final String? checkInTime = data['checkInTime']?.toString();
             final String? checkOutTime = data['checkOutTime']?.toString();
+            final String? recordedStatus = data['status']?.toString();
 
             final bool hasCheckedIn =
                 checkInTime != null && checkInTime.trim().isNotEmpty;
@@ -314,8 +370,9 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
             // Check-In aktif mulai 1 jam sebelum jam mulai kerja (misal 08:00 -> 07:00)
             final DateTime? checkInOpenAt =
                 startDt?.subtract(const Duration(minutes: 60));
-            final String checkInOpenText =
-                checkInOpenAt != null ? _formatTime(checkInOpenAt) : workStartTime;
+            final String checkInOpenText = checkInOpenAt != null
+                ? _formatTime(checkInOpenAt)
+                : workStartTime;
             final bool isWithinCheckInWindow =
                 checkInOpenAt != null && !now.isBefore(checkInOpenAt);
 
@@ -351,7 +408,8 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
               buttonColor = Colors.grey;
               isButtonDisabled = true;
             } else if (isCompleted) {
-              statusTitle = 'Absensi Hari Ini Selesai';
+              statusTitle =
+                  'Absensi Hari Ini ${recordedStatus ?? "Selesai"}';
               statusSubtitle =
                   'Jam kerja $workStartTime - $workEndTime. Reset otomatis pukul 00:00.';
               statusColor = Colors.green;
@@ -531,7 +589,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                       onPressed: isButtonDisabled
                           ? null
                           : () => _handleAttendanceTap(
-                                uid: user.uid,
+                                user: user,
                                 todayRef: todayRef,
                                 isCheckOutStep: isCheckOutStep,
                                 dateKey: todayKey,
