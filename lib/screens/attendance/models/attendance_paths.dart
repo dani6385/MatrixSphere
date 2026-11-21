@@ -1,58 +1,21 @@
-// lib/screens/Attendance/models/attendance_paths.dart
+// lib/screens/Attendance/models/matrix_attendance_paths.dart
 
-/// Kelas pembantu untuk menyusun jalur Firebase Realtime Database secara konsisten
-/// antara lingkungan **Matrix Sphere** dan **Seller Sphere** (per `sellerId` & `uid`).
+/// Jalur Firebase Realtime Database khusus untuk **Matrix Sphere**.
 class AttendancePaths {
-  static const String matrixEnv = 'matrix_sphere';
-  static const String sellerEnv = 'seller_sphere';
+  static const String environmentKey = 'matrix_sphere';
 
-  /// Menormalkan kunci lingkungan menjadi `'seller_sphere'` atau `'matrix_sphere'`.
-  static String normalizeEnvironment(String? environmentKey) {
-    final String value = (environmentKey ?? '').trim();
-    return value == sellerEnv ? sellerEnv : matrixEnv;
+  /// Jalur pengaturan jam kerja Matrix Sphere di RTDB:
+  /// `work_schedules/matrix_sphere`
+  static String workSchedule() {
+    return 'work_schedules/matrix_sphere';
   }
 
-  /// Menentukan `sellerId` efektif. Jika `sellerId` kosong, pakai `fallbackUid`.
-  static String resolveSellerId({
-    required String? sellerId,
-    required String fallbackUid,
-  }) {
-    final String cleaned = (sellerId ?? '').trim();
-    return cleaned.isNotEmpty ? cleaned : fallbackUid;
-  }
-
-  /// Jalur pengaturan jam kerja di RTDB:
-  /// - Matrix Sphere : `work_schedules/matrix_sphere`
-  /// - Seller Sphere : `work_schedules/seller_sphere/{sellerId}`
-  static String workSchedule({
-    required String environmentKey,
-    required String uid,
-    String? sellerId,
-  }) {
-    final String env = normalizeEnvironment(environmentKey);
-    if (env == sellerEnv) {
-      final String effectiveSellerId =
-          resolveSellerId(sellerId: sellerId, fallbackUid: uid);
-      return 'work_schedules/$sellerEnv/$effectiveSellerId';
-    }
-    return 'work_schedules/$matrixEnv';
-  }
-
-  /// Jalur riwayat absensi harian di RTDB:
-  /// - Matrix Sphere : `history_attendance/matrix_sphere/{uid}/{dateKey}`
-  /// - Seller Sphere : `history_attendance/seller_sphere/{sellerId}/{uid}/{dateKey}`
+  /// Jalur riwayat absensi harian Matrix Sphere di RTDB:
+  /// `attendance/matrix/{uid}/{dateKey}`
   static String attendanceDay({
-    required String environmentKey,
     required String uid,
     required String dateKey,
-    String? sellerId,
   }) {
-    final String env = normalizeEnvironment(environmentKey);
-    if (env == sellerEnv) {
-      final String effectiveSellerId =
-          resolveSellerId(sellerId: sellerId, fallbackUid: uid);
-      return 'history_attendance/$sellerEnv/$effectiveSellerId/$uid/$dateKey';
-    }
-    return 'history_attendance/$matrixEnv/$uid/$dateKey';
+    return 'attendance/matrix/$uid/$dateKey';
   }
 }

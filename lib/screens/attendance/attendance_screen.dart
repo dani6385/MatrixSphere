@@ -125,9 +125,7 @@ class AttendanceScreen extends StatelessWidget {
         },
       ),
       body: const AttendanceBody(),
-      floatingActionButton: const AttendanceActionCard(
-        environmentKey: 'matrix_sphere',
-      ),
+      floatingActionButton: const AttendanceActionCard(),
     );
   }
 }

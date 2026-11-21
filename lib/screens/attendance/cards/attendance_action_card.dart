@@ -9,18 +9,12 @@ import 'package:shared_ui/shared_ui.dart';
 
 import '../models/attendance_paths.dart';
 
-/// Kartu absensi 1 tombol (Check-In & Check-Out) yang di-share untuk:
-/// - **Matrix Sphere** (`environmentKey: 'matrix_sphere'`)
-/// - **Seller Sphere** (`environmentKey: 'seller_sphere'` + `sellerId`)
+/// Kartu absensi 1 tombol (Check-In & Check-Out) khusus **Matrix Sphere**.
 class AttendanceActionCard extends StatefulWidget {
-  final String environmentKey;
-  final String? sellerId;
   final String title;
 
   const AttendanceActionCard({
     super.key,
-    this.environmentKey = AttendancePaths.matrixEnv,
-    this.sellerId,
     this.title = 'Absensi Kerja',
   });
 
@@ -32,9 +26,6 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
   bool _isSaving = false;
   late String _activeDateKey;
   Timer? _midnightCheckTimer;
-
-  String get _normalizedEnv =>
-      AttendancePaths.normalizeEnvironment(widget.environmentKey);
 
   @override
   void initState() {
@@ -83,10 +74,8 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     final String yesterdayKey =
         _getDateKey(now.subtract(const Duration(days: 1)));
     final String yesterdayPath = AttendancePaths.attendanceDay(
-      environmentKey: _normalizedEnv,
       uid: user.uid,
       dateKey: yesterdayKey,
-      sellerId: widget.sellerId,
     );
     final DatabaseReference yesterdayRef =
         FirebaseDatabase.instance.ref(yesterdayPath);
@@ -124,7 +113,6 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
 
   Future<void> _handleAttendanceTap({
     required String uid,
-    required String effectiveSellerId,
     required DatabaseReference todayRef,
     required bool isCheckOutStep,
     required String dateKey,
@@ -138,12 +126,9 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     try {
       final DateTime now = DateTime.now();
       final String formattedTime = _formatTime(now);
-      final bool isSeller = _normalizedEnv == AttendancePaths.sellerEnv;
 
       if (!isCheckOutStep) {
         await todayRef.set(<String, dynamic>{
-          'environment': _normalizedEnv,
-          'sellerId': isSeller ? effectiveSellerId : null,
           'uid': uid,
           'date': dateKey,
           'checkInTime': formattedTime,
@@ -189,8 +174,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
   Widget build(BuildContext context) {
     final User? user = FirebaseAuth.instance.currentUser;
     final String todayKey = _activeDateKey;
-    final bool isSeller = _normalizedEnv == AttendancePaths.sellerEnv;
-    final String envLabel = isSeller ? 'Seller Sphere' : 'Matrix Sphere';
+    const String envLabel = 'Matrix Sphere';
 
     if (user == null) {
       return const Card(
@@ -201,23 +185,13 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
       );
     }
 
-    final String effectiveSellerId = AttendancePaths.resolveSellerId(
-      sellerId: widget.sellerId,
-      fallbackUid: user.uid,
-    );
     final DatabaseReference scheduleRef = FirebaseDatabase.instance.ref(
-      AttendancePaths.workSchedule(
-        environmentKey: _normalizedEnv,
-        uid: user.uid,
-        sellerId: effectiveSellerId,
-      ),
+      AttendancePaths.workSchedule(),
     );
     final DatabaseReference todayRef = FirebaseDatabase.instance.ref(
       AttendancePaths.attendanceDay(
-        environmentKey: _normalizedEnv,
         uid: user.uid,
         dateKey: todayKey,
-        sellerId: effectiveSellerId,
       ),
     );
 
@@ -278,7 +252,8 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
 
             if (!isAttendanceEnabled) {
               statusTitle = 'Absensi $envLabel Sedang Dinonaktifkan';
-              statusSubtitle = 'Jam kerja terdaftar: $workStartTime - $workEndTime.';
+              statusSubtitle =
+                  'Jam kerja terdaftar: $workStartTime - $workEndTime.';
               statusColor = Colors.grey.shade700;
               statusIcon = Icons.lock_outline;
               buttonLabel = 'Absensi Nonaktif';
@@ -356,9 +331,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      isSeller
-                          ? 'Jam Kerja Pedagang ($effectiveSellerId): $workStartTime - $workEndTime'
-                          : 'Jam Kerja Matrix: $workStartTime - $workEndTime',
+                      'Jam Kerja Matrix: $workStartTime - $workEndTime',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -444,7 +417,6 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                           ? null
                           : () => _handleAttendanceTap(
                                 uid: user.uid,
-                                effectiveSellerId: effectiveSellerId,
                                 todayRef: todayRef,
                                 isCheckOutStep: isCheckOutStep,
                                 dateKey: todayKey,

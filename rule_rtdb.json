@@ -114,96 +114,107 @@
         ".write": "auth != null && (
           (!data.exists() && root.child('shops').child(newData.child('shopId').val()).child('ownerUid').val() == auth.uid) ||
           (data.exists() && root.child('shops').child(data.child('shopId').val()).child('ownerUid').val() == auth.uid)
-        )",
-        "shopId": {
-          ".validate": "newData.isString() && newData.val().length > 0"
-        },
-        "name": {
-          ".validate": "newData.isString() && newData.val().length > 0"
-        },
-        "description": {
-          ".validate": "newData.isString()"
-        },
-        "price": {
-          ".validate": "newData.isNumber() && newData.val() >= 0"
-        },
-        "stock": {
-          ".validate": "newData.isNumber() && newData.val() >= 0"
-        },
-        "sellingPrice": {
-          ".validate": "newData.isNumber() && newData.val() >= 0"
-        },
-        "soldCount": {
-          ".validate": "newData.isNumber() && newData.val() >= 0"
-        },
-        "$other": {
-          ".validate": "true"
-        }
+        )","shopId": {".validate": "newData.isString() && newData.val().length > 0"
+      },
+      "name": {
+        ".validate": "newData.isString() && newData.val().length > 0"
+      },
+      "description": {
+        ".validate": "newData.isString()"
+      },
+      "price": {
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      },
+      "stock": {
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      },
+      "sellingPrice": {
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      },
+      "soldCount": {
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      },
+      "$other": {
+        ".validate": "true"
       }
-    },
-    "orders": {
-      "$orderId": {
-        ".read": "auth != null && (data.child('buyerId').val() == auth.uid || root.child('shops').child(data.child('shopId').val()).child('ownerUid').val() == auth.uid)",
-        ".write": "auth != null && root.child('shops').child(newData.child('shopId').val()).child('ownerUid').val() == auth.uid",
-        "shopId": {
-          ".validate": "newData.isString() && newData.val().length > 0"
-        },
-        "buyerId": {
-          ".validate": "newData.isString() && newData.val().length > 0"
-        },
-        "items": {
-          ".validate": "newData.hasChildren()"
-        },
-        "totalAmount": {
-          ".validate": "newData.isNumber() && newData.val() >= 0"
-        },
-        "createdAt": {
+    }
+  },
+  "orders": {
+    "$orderId": {
+      ".read": "auth != null && (data.child('buyerId').val() == auth.uid || root.child('shops').child(data.child('shopId').val()).child('ownerUid').val() == auth.uid)",
+      ".write": "auth != null && root.child('shops').child(newData.child('shopId').val()).child('ownerUid').val() == auth.uid",
+      "shopId": {
+        ".validate": "newData.isString() && newData.val().length > 0"
+      },
+      "buyerId": {
+        ".validate": "newData.isString() && newData.val().length > 0"
+      },
+      "items": {
+        ".validate": "newData.hasChildren()"
+      },
+      "totalAmount": {
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      },
+      "createdAt": {
+        ".validate": "newData.isNumber()"
+      },
+      "status": {
+        ".validate": "newData.isString() && (newData.val() == 'pending' || newData.val() == 'completed' || newData.val() == 'cancelled')"
+      },
+      "$other": {
+        ".validate": "true"
+      }
+    }
+  },
+  "stock_logs": {
+    "$productId": {
+      "$logId": {
+        ".read": "auth != null && root.child('shops').child(root.child('products').child($productId).child('shopId').val()).child('ownerUid').val() == auth.uid",
+        ".write": "auth != null && root.child('shops').child(root.child('products').child($productId).child('shopId').val()).child('ownerUid').val() == auth.uid",
+        "previousStock": {
           ".validate": "newData.isNumber()"
         },
-        "status": {
-          ".validate": "newData.isString() && (newData.val() == 'pending' || newData.val() == 'completed' || newData.val() == 'cancelled')"
+        "newStock": {
+          ".validate": "newData.isNumber()"
+        },
+        "change": {
+          ".validate": "newData.isNumber()"
+        },
+        "reason": {
+          ".validate": "newData.isString()"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber()"
         },
         "$other": {
           ".validate": "true"
         }
       }
-    },
-    "stock_logs": {
-      "$productId": {
-        "$logId": {
-          ".read": "auth != null && root.child('shops').child(root.child('products').child($productId).child('shopId').val()).child('ownerUid').val() == auth.uid",
-          ".write": "auth != null && root.child('shops').child(root.child('products').child($productId).child('shopId').val()).child('ownerUid').val() == auth.uid",
-          "previousStock": {
-            ".validate": "newData.isNumber()"
-          },
-          "newStock": {
-            ".validate": "newData.isNumber()"
-          },
-          "change": {
-            ".validate": "newData.isNumber()"
-          },
-          "reason": {
-            ".validate": "newData.isString()"
-          },
-          "timestamp": {
-            ".validate": "newData.isNumber()"
-          },
-          "$other": {
-            ".validate": "true"
-          }
-        }
+    }
+  },
+  "company_profile": {
+    ".read": "auth != null",
+    ".write": "auth != null && (auth.token.admin === true || auth.uid === 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')"
+  },
+  "users": {
+    ".read": "auth != null",
+    "$uid": {
+      // Pengguna biasa hanya boleh mengubah data miliknya sendiri, 
+      // TETAPI Admin utama (berdasarkan UID atau Email) berhak mengubah data siapa saja (termasuk jabatan pekerja)
+      ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true || auth.uid === 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')"
+    }
+  },
+  "attendance": {
+    "matrix": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
       }
     },
-    "company_profile": {
-      ".read": "auth != null",
-      ".write": "auth != null && (auth.token.admin === true || auth.uid === 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')"
-    },
-    "users": {
-      ".read": "auth != null",
+    "seller": {
       "$uid": {
-        // Pengguna biasa hanya boleh mengubah data miliknya sendiri, 
-        // TETAPI Admin utama (berdasarkan UID atau Email) berhak mengubah data siapa saja (termasuk jabatan pekerja)
-        ".write": "auth != null && (auth.uid === $uid || auth.token.admin === true || auth.uid === 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')"
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
       }
     }
   }
