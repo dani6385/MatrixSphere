@@ -7,18 +7,21 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-/// Kartu absensi 1 tombol untuk Seller Sphere / pekerja:
-/// - Mengikuti jam kerja (`workStartTime`, `workEndTime`) & status `isAttendanceEnabled`
-///   dari node `company_profile`.
-/// - Otomatis reset saat pukul 00:00 untuk siap Check-In di hari berikutnya.
-/// - Jika pada hari sebelumnya lupa Check-Out, memberi keterangan otomatis
-///   saat melewati pergantian hari (`00:00`).
+import '../models/attendance_paths.dart';
+
+/// Kartu absensi 1 tombol (Check-In & Check-Out) yang di-share untuk:
+/// - **Matrix Sphere** (`environmentKey: 'matrix_sphere'`)
+/// - **Seller Sphere** (`environmentKey: 'seller_sphere'` + `sellerId`)
 class AttendanceActionCard extends StatefulWidget {
+  final String environmentKey;
+  final String? sellerId;
   final String title;
 
   const AttendanceActionCard({
     super.key,
-    this.title = 'Absensi Pekerja',
+    this.environmentKey = AttendancePaths.matrixEnv,
+    this.sellerId,
+    this.title = 'Absensi Kerja',
   });
 
   @override
@@ -30,13 +33,16 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
   late String _activeDateKey;
   Timer? _midnightCheckTimer;
 
+  String get _normalizedEnv =>
+      AttendancePaths.normalizeEnvironment(widget.environmentKey);
+
   @override
   void initState() {
     super.initState();
     _activeDateKey = _getDateKey(DateTime.now());
     _handleMidnightTransitionIfNeeded(DateTime.now());
 
-    // Periksa setiap 30 detik apakah jam sudah melewati 00:00 (berganti hari)
+    // Periksa pergantian hari (pukul 00:00) setiap 30 detik
     _midnightCheckTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       final DateTime now = DateTime.now();
       final String latestKey = _getDateKey(now);
@@ -68,16 +74,22 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     return '$hh:$mm';
   }
 
-  /// Jika melewati pukul 00:00 dan hari sebelumnya ada Check-In tapi lupa Check-Out,
-  /// beri keterangan otomatis pada record hari sebelumnya agar riwayat tetap jelas.
+  /// Jika melewati pukul 00:00 dan hari kemarin ada Check-In namun lupa Check-Out,
+  /// beri keterangan otomatis pada data hari kemarin lalu siapkan Check-In hari baru.
   Future<void> _handleMidnightTransitionIfNeeded(DateTime now) async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final DateTime yesterday = now.subtract(const Duration(days: 1));
-    final String yesterdayKey = _getDateKey(yesterday);
-    final DatabaseReference yesterdayRef = FirebaseDatabase.instance
-        .ref('history_attendance/${user.uid}/$yesterdayKey');
+    final String yesterdayKey =
+        _getDateKey(now.subtract(const Duration(days: 1)));
+    final String yesterdayPath = AttendancePaths.attendanceDay(
+      environmentKey: _normalizedEnv,
+      uid: user.uid,
+      dateKey: yesterdayKey,
+      sellerId: widget.sellerId,
+    );
+    final DatabaseReference yesterdayRef =
+        FirebaseDatabase.instance.ref(yesterdayPath);
 
     try {
       final DataSnapshot snap = await yesterdayRef.get();
@@ -106,11 +118,13 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
         }
       }
     } catch (_) {
-      // Abaikan error jaringan sementara saat pengecekan latar belakang
+      // Abaikan gangguan koneksi sementara saat cek latar belakang
     }
   }
 
   Future<void> _handleAttendanceTap({
+    required String uid,
+    required String effectiveSellerId,
     required DatabaseReference todayRef,
     required bool isCheckOutStep,
     required String dateKey,
@@ -124,9 +138,13 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     try {
       final DateTime now = DateTime.now();
       final String formattedTime = _formatTime(now);
+      final bool isSeller = _normalizedEnv == AttendancePaths.sellerEnv;
 
       if (!isCheckOutStep) {
         await todayRef.set(<String, dynamic>{
+          'environment': _normalizedEnv,
+          'sellerId': isSeller ? effectiveSellerId : null,
+          'uid': uid,
           'date': dateKey,
           'checkInTime': formattedTime,
           'checkInTimestamp': ServerValue.timestamp,
@@ -171,6 +189,8 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
   Widget build(BuildContext context) {
     final User? user = FirebaseAuth.instance.currentUser;
     final String todayKey = _activeDateKey;
+    final bool isSeller = _normalizedEnv == AttendancePaths.sellerEnv;
+    final String envLabel = isSeller ? 'Seller Sphere' : 'Matrix Sphere';
 
     if (user == null) {
       return const Card(
@@ -181,37 +201,48 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
       );
     }
 
-    final DatabaseReference companyRef =
-        FirebaseDatabase.instance.ref('company_profile');
-    final DatabaseReference todayRef = FirebaseDatabase.instance
-        .ref('history_attendance/${user.uid}/$todayKey');
+    final String effectiveSellerId = AttendancePaths.resolveSellerId(
+      sellerId: widget.sellerId,
+      fallbackUid: user.uid,
+    );
+    final DatabaseReference scheduleRef = FirebaseDatabase.instance.ref(
+      AttendancePaths.workSchedule(
+        environmentKey: _normalizedEnv,
+        uid: user.uid,
+        sellerId: effectiveSellerId,
+      ),
+    );
+    final DatabaseReference todayRef = FirebaseDatabase.instance.ref(
+      AttendancePaths.attendanceDay(
+        environmentKey: _normalizedEnv,
+        uid: user.uid,
+        dateKey: todayKey,
+        sellerId: effectiveSellerId,
+      ),
+    );
 
     return StreamBuilder<DatabaseEvent>(
-      stream: companyRef.onValue,
-      builder: (context, companySnapshot) {
-        Map<dynamic, dynamic> companyData = <dynamic, dynamic>{};
-        if (companySnapshot.hasData &&
-            companySnapshot.data!.snapshot.value != null &&
-            companySnapshot.data!.snapshot.value is Map<dynamic, dynamic>) {
-          companyData =
-              companySnapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+      stream: scheduleRef.onValue,
+      builder: (context, scheduleSnapshot) {
+        Map<dynamic, dynamic> scheduleData = <dynamic, dynamic>{};
+        if (scheduleSnapshot.hasData &&
+            scheduleSnapshot.data!.snapshot.value != null &&
+            scheduleSnapshot.data!.snapshot.value is Map<dynamic, dynamic>) {
+          scheduleData =
+              scheduleSnapshot.data!.snapshot.value as Map<dynamic, dynamic>;
         }
 
         final bool isAttendanceEnabled =
-            companyData['isAttendanceEnabled'] is bool
-                ? companyData['isAttendanceEnabled'] as bool
+            scheduleData['isAttendanceEnabled'] is bool
+                ? scheduleData['isAttendanceEnabled'] as bool
                 : true;
-        final String companyName =
-            companyData['name']?.toString().trim().isNotEmpty == true
-                ? companyData['name'].toString()
-                : widget.title;
         final String workStartTime =
-            companyData['workStartTime']?.toString().trim().isNotEmpty == true
-                ? companyData['workStartTime'].toString()
+            scheduleData['workStartTime']?.toString().trim().isNotEmpty == true
+                ? scheduleData['workStartTime'].toString()
                 : '08:00';
         final String workEndTime =
-            companyData['workEndTime']?.toString().trim().isNotEmpty == true
-                ? companyData['workEndTime'].toString()
+            scheduleData['workEndTime']?.toString().trim().isNotEmpty == true
+                ? scheduleData['workEndTime'].toString()
                 : '17:00';
 
         return StreamBuilder<DatabaseEvent>(
@@ -246,9 +277,8 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
             final Color buttonColor;
 
             if (!isAttendanceEnabled) {
-              statusTitle = 'Absensi Dinonaktifkan di Company Profile';
-              statusSubtitle =
-                  'Jam kerja terdaftar: $workStartTime - $workEndTime.';
+              statusTitle = 'Absensi $envLabel Sedang Dinonaktifkan';
+              statusSubtitle = 'Jam kerja terdaftar: $workStartTime - $workEndTime.';
               statusColor = Colors.grey.shade700;
               statusIcon = Icons.lock_outline;
               buttonLabel = 'Absensi Nonaktif';
@@ -303,11 +333,11 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                       children: [
                         Expanded(
                           child: Text(
-                            companyName,
+                            '${widget.title} • $envLabel',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 17,
+                              fontSize: 16.5,
                               fontWeight: FontWeight.bold,
                               color: kDarkTextPrimary,
                             ),
@@ -326,7 +356,9 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Jam Kerja: $workStartTime - $workEndTime',
+                      isSeller
+                          ? 'Jam Kerja Pedagang ($effectiveSellerId): $workStartTime - $workEndTime'
+                          : 'Jam Kerja Matrix: $workStartTime - $workEndTime',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -411,6 +443,8 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                       onPressed: isButtonDisabled
                           ? null
                           : () => _handleAttendanceTap(
+                                uid: user.uid,
+                                effectiveSellerId: effectiveSellerId,
                                 todayRef: todayRef,
                                 isCheckOutStep: isCheckOutStep,
                                 dateKey: todayKey,

@@ -2,6 +2,7 @@
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:matrix_sphere/features/company/widgets/environment_work_hours_card.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 
 import 'models/company_profile_model.dart';
@@ -13,8 +14,9 @@ class CompanyProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseReference companyRef =
-        FirebaseDatabase.instance.ref('company_profile');
+    final DatabaseReference companyRef = FirebaseDatabase.instance.ref(
+      'company_profile',
+    );
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
 
@@ -41,7 +43,9 @@ class CompanyProfile extends StatelessWidget {
             rawData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
           }
 
-          final CompanyProfileModel company = CompanyProfileModel.fromMap(rawData);
+          final CompanyProfileModel company = CompanyProfileModel.fromMap(
+            rawData,
+          );
 
           final String matrixStart =
               rawData?['matrixSphereWorkStart']?.toString() ?? '08:00';
@@ -53,8 +57,8 @@ class CompanyProfile extends StatelessWidget {
               rawData?['sellerSphereWorkEnd']?.toString() ?? '17:00';
           final bool isAttendanceEnabled =
               rawData?['isAttendanceEnabled'] is bool
-                  ? rawData!['isAttendanceEnabled'] as bool
-                  : true;
+              ? rawData!['isAttendanceEnabled'] as bool
+              : true;
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
@@ -66,8 +70,9 @@ class CompanyProfile extends StatelessWidget {
                     CircleAvatar(
                       radius: 48,
                       backgroundColor: colorScheme.primaryContainer,
-                      backgroundImage:
-                          company.hasLogo ? NetworkImage(company.logoUrl!) : null,
+                      backgroundImage: company.hasLogo
+                          ? NetworkImage(company.logoUrl!)
+                          : null,
                       child: !company.hasLogo
                           ? Icon(
                               Icons.apartment,
@@ -105,7 +110,13 @@ class CompanyProfile extends StatelessWidget {
                 initialSellerEnd: sellerEnd,
                 initialAttendanceEnabled: isAttendanceEnabled,
               ),
-
+              const EnvironmentWorkHoursCard(
+                environmentKey: 'matrix_sphere',
+                environmentLabel: 'Matrix Sphere',
+                roleDescription:
+                    'Jam kerja pekerja di lingkungan Matrix Sphere',
+              ),
+              const SizedBox(height: 24),
               // Detail Informasi Perusahaan[cite: 6]
               _CompanyInfoTile(
                 icon: Icons.phone_outlined,
