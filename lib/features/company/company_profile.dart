@@ -4,16 +4,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
+
 import 'models/company_profile_model.dart';
 import 'widgets/work_hours_form_card.dart';
 
-/// Halaman Profil Perusahaan (`CompanyProfile`) untuk Matrix Sphere & Seller Sphere.
+/// Halaman Profil Perusahaan (`CompanyProfile`) khusus Matrix Sphere.
 class CompanyProfile extends StatelessWidget {
   const CompanyProfile({super.key});
 
-  bool _checkIsAdmin(Object? rawRole) {
-    final String role = rawRole?.toString().trim().toLowerCase() ?? '';
-    return role == 'admin' || role == 'superadmin' || role == 'owner';
+  static const String _permanentAdminUid = 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22';
+
+  Future<bool> _checkIsMatrixAdmin(User? user) async {
+    if (user == null) return false;
+    if (user.uid == _permanentAdminUid) return true;
+
+    final IdTokenResult tokenResult = await user.getIdTokenResult(true);
+    final Map<String, dynamic>? claims = tokenResult.claims;
+    return claims?['admin'] == true || claims?['isAdmin'] == true;
   }
 
   @override
@@ -21,20 +28,14 @@ class CompanyProfile extends StatelessWidget {
     final DatabaseReference companyRef = FirebaseDatabase.instance.ref(
       'company_profile',
     );
-    final String? currentUid = FirebaseAuth.instance.currentUser?.uid;
-    final DatabaseReference? roleRef = currentUid != null
-        ? FirebaseDatabase.instance.ref('users/$currentUid/role')
-        : null;
-
+    final User? currentUser = FirebaseAuth.instance.currentUser;
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
 
-    return StreamBuilder<DatabaseEvent>(
-      stream: roleRef?.onValue,
-      builder: (context, roleSnapshot) {
-        final bool isAdmin = _checkIsAdmin(
-          roleSnapshot.data?.snapshot.value,
-        );
+    return FutureBuilder<bool>(
+      future: _checkIsMatrixAdmin(currentUser),
+      builder: (context, adminSnapshot) {
+        final bool isAdmin = adminSnapshot.data ?? false;
 
         return Scaffold(
           appBar: AppBar(
@@ -68,11 +69,7 @@ class CompanyProfile extends StatelessWidget {
               final String matrixStart =
                   rawData?['matrixSphereWorkStart']?.toString() ?? '08:00';
               final String matrixEnd =
-                  rawData?['matrixSphereWorkEnd']?.toString() ?? '17:00';
-              final String sellerStart =
-                  rawData?['sellerSphereWorkStart']?.toString() ?? '08:00';
-              final String sellerEnd =
-                  rawData?['sellerSphereWorkEnd']?.toString() ?? '17:00';
+                  rawData?['matrixSphereWorkEnd']?.toString() ?? '16:00';
               final bool isAttendanceEnabled =
                   rawData?['isAttendanceEnabled'] is bool
                   ? rawData!['isAttendanceEnabled'] as bool
@@ -81,7 +78,6 @@ class CompanyProfile extends StatelessWidget {
               return ListView(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
                 children: [
-                  // Kartu Avatar & Identitas Utama Perusahaan
                   Center(
                     child: Column(
                       children: [
@@ -120,17 +116,14 @@ class CompanyProfile extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Hanya mempertahankan form atas (tanpa EnvironmentWorkHoursCard duplikat)
+                  // Jam kerja hanya untuk Matrix Sphere
                   WorkHoursFormCard(
                     initialMatrixStart: matrixStart,
                     initialMatrixEnd: matrixEnd,
-                    initialSellerStart: sellerStart,
-                    initialSellerEnd: sellerEnd,
                     initialAttendanceEnabled: isAttendanceEnabled,
                   ),
                   const SizedBox(height: 24),
 
-                  // Detail Informasi Perusahaan
                   _CompanyInfoTile(
                     icon: Icons.phone_outlined,
                     label: 'Telepon',
