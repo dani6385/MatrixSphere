@@ -1,14 +1,10 @@
-// lib/features/company/company_profile.dart
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
-
 import 'models/company_profile_model.dart';
-import 'widgets/work_hours_form_card.dart';
 
-/// Halaman Profil Perusahaan (`CompanyProfile`) khusus Matrix Sphere.
+/// Halaman Profil Perusahaan (`CompanyProfile`) khusus tampilan & navigasi edit.
 class CompanyProfile extends StatelessWidget {
   const CompanyProfile({super.key});
 
@@ -69,7 +65,7 @@ class CompanyProfile extends StatelessWidget {
               final String matrixStart =
                   rawData?['matrixSphereWorkStart']?.toString() ?? '08:00';
               final String matrixEnd =
-                  rawData?['matrixSphereWorkEnd']?.toString() ?? '16:00';
+                  rawData?['matrixSphereWorkEnd']?.toString() ?? '17:00';
               final bool isAttendanceEnabled =
                   rawData?['isAttendanceEnabled'] is bool
                   ? rawData!['isAttendanceEnabled'] as bool
@@ -116,11 +112,11 @@ class CompanyProfile extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Jam kerja hanya untuk Matrix Sphere
-                  WorkHoursFormCard(
-                    initialMatrixStart: matrixStart,
-                    initialMatrixEnd: matrixEnd,
-                    initialAttendanceEnabled: isAttendanceEnabled,
+                  // Ringkasan Jam Kerja Matrix (tanpa tombol simpan di halaman lihat)
+                  _MatrixWorkHoursSummaryCard(
+                    workStart: matrixStart,
+                    workEnd: matrixEnd,
+                    isAttendanceEnabled: isAttendanceEnabled,
                   ),
                   const SizedBox(height: 24),
 
@@ -146,6 +142,50 @@ class CompanyProfile extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _MatrixWorkHoursSummaryCard extends StatelessWidget {
+  final String workStart;
+  final String workEnd;
+  final bool isAttendanceEnabled;
+
+  const _MatrixWorkHoursSummaryCard({
+    required this.workStart,
+    required this.workEnd,
+    required this.isAttendanceEnabled,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Jam Kerja Matrix Sphere',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text('Jam Operasional: $workStart - $workEnd'),
+            const SizedBox(height: 4),
+            Text(
+              'Tombol Absensi: ${isAttendanceEnabled ? "Aktif" : "Nonaktif"}',
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

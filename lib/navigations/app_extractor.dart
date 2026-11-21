@@ -7,5 +7,6 @@ export 'package:matrix_sphere/screens/projects/project_screen.dart';
 export 'package:matrix_sphere/screens/attendance/attendance_screen.dart';
 
 export 'package:matrix_sphere/features/company/company_profile.dart';
+export 'package:matrix_sphere/features/company/edit_company.dart';
 export 'package:matrix_sphere/features/profile/user_management.dart';
 
