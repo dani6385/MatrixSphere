@@ -27,6 +27,9 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   late final TextEditingController _descriptionController;
   late final TextEditingController _matrixStartController;
   late final TextEditingController _matrixEndController;
+  late final TextEditingController _latitudeController;
+  late final TextEditingController _longitudeController;
+  late final TextEditingController _radiusMetersController;
 
   bool _isAttendanceEnabled = true;
   bool _isCheckingAdmin = true;
@@ -44,8 +47,25 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     _descriptionController = TextEditingController(text: c?.description ?? '');
     _matrixStartController = TextEditingController(text: '08:00');
     _matrixEndController = TextEditingController(text: '17:00');
+    _latitudeController = TextEditingController();
+    _longitudeController = TextEditingController();
+    _radiusMetersController = TextEditingController(text: '100');
 
     _verifyAdminAndLoadData();
+  }
+
+  String _readTextOrDefault(
+    Map<dynamic, dynamic> data,
+    List<String> keys, {
+    String fallback = '',
+  }) {
+    for (final String key in keys) {
+      final dynamic val = data[key];
+      if (val != null && val.toString().trim().isNotEmpty) {
+        return val.toString().trim();
+      }
+    }
+    return fallback;
   }
 
   Future<void> _verifyAdminAndLoadData() async {
@@ -81,6 +101,19 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
           data['matrixSphereWorkStart']?.toString() ?? '08:00';
       _matrixEndController.text =
           data['matrixSphereWorkEnd']?.toString() ?? '17:00';
+      _latitudeController.text = _readTextOrDefault(
+        data,
+        ['latitude', 'lat'],
+      );
+      _longitudeController.text = _readTextOrDefault(
+        data,
+        ['longitude', 'lng'],
+      );
+      _radiusMetersController.text = _readTextOrDefault(
+        data,
+        ['radiusMeters', 'radius_meters', 'radius', 'attendanceRadius'],
+        fallback: '100',
+      );
       if (data['isAttendanceEnabled'] is bool) {
         _isAttendanceEnabled = data['isAttendanceEnabled'] as bool;
       }
@@ -97,6 +130,10 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     if (!_isAdmin || _isSaving) return;
     if (!_formKey.currentState!.validate()) return;
 
+    final double? lat = double.tryParse(_latitudeController.text.trim());
+    final double? lng = double.tryParse(_longitudeController.text.trim());
+    final double? radius = double.tryParse(_radiusMetersController.text.trim());
+
     setState(() => _isSaving = true);
 
     try {
@@ -108,12 +145,17 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
         'description': _descriptionController.text.trim(),
         'matrixSphereWorkStart': _matrixStartController.text.trim(),
         'matrixSphereWorkEnd': _matrixEndController.text.trim(),
+        'latitude': lat,
+        'longitude': lng,
+        'radiusMeters': radius,
         'isAttendanceEnabled': _isAttendanceEnabled,
       });
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profil & jam kerja berhasil disimpan.')),
+        const SnackBar(
+          content: Text('Profil, jam kerja & lokasi absensi berhasil disimpan.'),
+        ),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
@@ -137,6 +179,9 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     _descriptionController.dispose();
     _matrixStartController.dispose();
     _matrixEndController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
+    _radiusMetersController.dispose();
     super.dispose();
   }
 
@@ -148,7 +193,6 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
       );
     }
 
-    // Tidak ada tombol ceklis/save jika bukan admin
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profil Perusahaan'),
@@ -236,7 +280,82 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
               ],
             ),
             const SizedBox(height: 24),
-            // Tombol simpan utama hanya muncul untuk Admin
+            Text(
+              'Lokasi & Radius Absensi',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _latitudeController,
+                    readOnly: !_isAdmin,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: 'Latitude (contoh: -6.200000)',
+                    ),
+                    validator: (v) {
+                      final String raw = v?.trim() ?? '';
+                      if (raw.isEmpty) return 'Latitude wajib diisi';
+                      final double? parsed = double.tryParse(raw);
+                      if (parsed == null || parsed < -90 || parsed > 90) {
+                        return 'Latitude tidak valid (-90 s.d. 90)';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _longitudeController,
+                    readOnly: !_isAdmin,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: 'Longitude (contoh: 106.816666)',
+                    ),
+                    validator: (v) {
+                      final String raw = v?.trim() ?? '';
+                      if (raw.isEmpty) return 'Longitude wajib diisi';
+                      final double? parsed = double.tryParse(raw);
+                      if (parsed == null || parsed < -180 || parsed > 180) {
+                        return 'Longitude tidak valid (-180 s.d. 180)';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _radiusMetersController,
+              readOnly: !_isAdmin,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                labelText: 'Radius Absensi (meter)',
+                hintText: 'Contoh: 100',
+              ),
+              validator: (v) {
+                final String raw = v?.trim() ?? '';
+                if (raw.isEmpty) return 'Radius wajib diisi';
+                final double? parsed = double.tryParse(raw);
+                if (parsed == null || parsed <= 0) {
+                  return 'Radius harus lebih dari 0 meter';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
             if (_isAdmin)
               FilledButton(
                 onPressed: _isSaving ? null : _saveCompanyChanges,

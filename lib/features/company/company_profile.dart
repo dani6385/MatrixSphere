@@ -19,6 +19,12 @@ class CompanyProfile extends StatelessWidget {
     return claims?['admin'] == true || claims?['isAdmin'] == true;
   }
 
+  double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString().trim());
+  }
+
   @override
   Widget build(BuildContext context) {
     final DatabaseReference companyRef = FirebaseDatabase.instance.ref(
@@ -71,6 +77,30 @@ class CompanyProfile extends StatelessWidget {
                   ? rawData!['isAttendanceEnabled'] as bool
                   : true;
 
+              // Baca koordinat titik pusat & radius absensi dari company_profile
+              final double? officeLat = _parseDouble(
+                rawData?['latitude'] ?? rawData?['lat'],
+              );
+              final double? officeLng = _parseDouble(
+                rawData?['longitude'] ?? rawData?['lng'],
+              );
+              final double? radiusMeters = _parseDouble(
+                rawData?['radiusMeters'] ??
+                    rawData?['radius_meters'] ??
+                    rawData?['radius'] ??
+                    rawData?['attendanceRadius'],
+              );
+
+              final bool hasLocationConfig =
+                  officeLat != null && officeLng != null;
+              final String coordinateText = hasLocationConfig
+                  ? '${officeLat.toStringAsFixed(6)}, ${officeLng.toStringAsFixed(6)}'
+                  : 'Belum diatur';
+              final String radiusText =
+                  (radiusMeters != null && radiusMeters > 0)
+                  ? '${radiusMeters.round()} meter'
+                  : 'Belum diatur (default 100 meter)';
+
               return ListView(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
                 children: [
@@ -112,11 +142,13 @@ class CompanyProfile extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Ringkasan Jam Kerja Matrix (tanpa tombol simpan di halaman lihat)
+                  // Ringkasan Jam Kerja & Lokasi Radius Absensi Matrix
                   _MatrixWorkHoursSummaryCard(
                     workStart: matrixStart,
                     workEnd: matrixEnd,
                     isAttendanceEnabled: isAttendanceEnabled,
+                    coordinateText: coordinateText,
+                    radiusText: radiusText,
                   ),
                   const SizedBox(height: 24),
 
@@ -129,6 +161,11 @@ class CompanyProfile extends StatelessWidget {
                     icon: Icons.location_on_outlined,
                     label: 'Alamat',
                     value: company.address ?? 'Belum diatur',
+                  ),
+                  _CompanyInfoTile(
+                    icon: Icons.my_location_outlined,
+                    label: 'Koordinat & Radius Absensi',
+                    value: 'Titik: $coordinateText • Radius: $radiusText',
                   ),
                   _CompanyInfoTile(
                     icon: Icons.info_outline,
@@ -150,11 +187,15 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
   final String workStart;
   final String workEnd;
   final bool isAttendanceEnabled;
+  final String coordinateText;
+  final String radiusText;
 
   const _MatrixWorkHoursSummaryCard({
     required this.workStart,
     required this.workEnd,
     required this.isAttendanceEnabled,
+    required this.coordinateText,
+    required this.radiusText,
   });
 
   @override
@@ -172,13 +213,17 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Jam Kerja Matrix Sphere',
+              'Jam Kerja & Lokasi Matrix Sphere',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text('Jam Operasional: $workStart - $workEnd'),
+            const SizedBox(height: 4),
+            Text('Titik Koordinat: $coordinateText'),
+            const SizedBox(height: 4),
+            Text('Batas Radius: $radiusText'),
           ],
         ),
       ),
