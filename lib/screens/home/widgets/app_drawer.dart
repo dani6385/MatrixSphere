@@ -3,8 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:matrix_sphere/navigations/app_navigation.dart';
-import 'package:matrix_sphere/navigations/drawer_navigation_helper.dart';
+//import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();
@@ -34,11 +33,6 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
         label: 'Mengatur jabatan dan status kerja setiap akun karyawan.',
         onTap: () {
           logger.i('Kelola Jabatan Pekerja tapped');
-          DrawerNavigationHelper.runAfterClose(
-            context,
-            () => AppNavigation.openManagementUser(context),
-            closeEndDrawer: false,
-          );
         },
       ),
     MenuDrawer(
@@ -48,11 +42,6 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
           'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
       onTap: () {
         logger.i('Status Toko tapped');
-        DrawerNavigationHelper.runAfterClose(
-          context,
-          () {},
-          closeEndDrawer: false,
-        );
       },
     ),
   ];

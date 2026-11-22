@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
-import 'package:matrix_sphere/navigations/drawer_navigation_helper.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();
@@ -32,15 +31,7 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
       icon: Icons.dark_mode,
       label: 'Mengubah tema tampilan aplikasi menjadi mode gelap atau terang.',
       route: '',
-      onTap: () {
-        DrawerNavigationHelper.runAfterClose(
-          context,
-          () {
-            // Pasang logika pengubah tema (ThemeMode) kamu di sini
-          },
-          closeStartDrawer: false,
-        );
-      },
+      onTap: () {},
     ),
     MenuDrawer(
       title: 'Logout',
@@ -49,12 +40,6 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
       route: '',
       onTap: () async {
         try {
-          DrawerNavigationHelper.runAfterClose(
-            context,
-            () {},
-            closeStartDrawer: false,
-          );
-
           await FirebaseAuth.instance.signOut();
           logger.i('Berhasil logout dari akun.');
 
