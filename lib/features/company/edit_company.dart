@@ -235,14 +235,6 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            SwitchListTile(
-              title: const Text('Aktifkan Tombol Absensi'),
-              value: _isAttendanceEnabled,
-              onChanged: !_isAdmin
-                  ? null
-                  : (val) => setState(() => _isAttendanceEnabled = val),
-            ),
             const SizedBox(height: 24),
             // Tombol simpan utama hanya muncul untuk Admin
             if (_isAdmin)

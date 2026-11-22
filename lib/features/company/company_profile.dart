@@ -179,10 +179,6 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text('Jam Operasional: $workStart - $workEnd'),
-            const SizedBox(height: 4),
-            Text(
-              'Tombol Absensi: ${isAttendanceEnabled ? "Aktif" : "Nonaktif"}',
-            ),
           ],
         ),
       ),

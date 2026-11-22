@@ -249,27 +249,6 @@ class _WorkHoursFormCardState extends State<WorkHoursFormCard> {
                 ],
               ),
 
-              const SizedBox(height: 16),
-
-              // Switch aktif/nonaktif tombol absensi pekerja
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text(
-                  'Aktifkan Tombol Absensi',
-                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
-                ),
-                subtitle: const Text(
-                  'Mengontrol aktif tidaknya tombol Check-In / Check-Out',
-                  style: TextStyle(fontSize: 11.5),
-                ),
-                value: _isAttendanceEnabled,
-                onChanged: (bool val) {
-                  setState(() {
-                    _isAttendanceEnabled = val;
-                  });
-                },
-              ),
-
               const SizedBox(height: 8),
 
               ElevatedButton.icon(
