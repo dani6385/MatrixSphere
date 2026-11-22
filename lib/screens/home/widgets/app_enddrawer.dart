@@ -9,11 +9,10 @@ import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();
 
-// Definisi struktur data untuk item menu EndDrawer yang ditambah properti 'label'
 class MenuDrawer {
   final String title;
   final IconData icon;
-  final String label; // Properti untuk menyimpan keterangan fungsi
+  final String label;
   final String route;
   final VoidCallback? onTap;
 
@@ -26,7 +25,6 @@ class MenuDrawer {
   });
 }
 
-// Daftar rekomendasi item menu EndDrawer khusus saat di Halaman Home
 List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
   return [
     MenuDrawer(
@@ -35,9 +33,13 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
       label: 'Mengubah tema tampilan aplikasi menjadi mode gelap atau terang.',
       route: '',
       onTap: () {
-          DrawerNavigationHelper.navigateToHome(context, () {
-            AppNavigation.openManagementUser(context);
-          });
+        DrawerNavigationHelper.runAfterClose(
+          context,
+          () {
+            // Pasang logika pengubah tema (ThemeMode) kamu di sini
+          },
+          closeStartDrawer: false,
+        );
       },
     ),
     MenuDrawer(
@@ -47,19 +49,16 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
       route: '',
       onTap: () async {
         try {
-          // Tutup laci navigasi terlebih dahulu jika terbuka
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
+          DrawerNavigationHelper.runAfterClose(
+            context,
+            () {},
+            closeStartDrawer: false,
+          );
 
-          // Keluar dari sesi Firebase Auth
           await FirebaseAuth.instance.signOut();
           logger.i('Berhasil logout dari akun.');
 
-          // Pastikan widget/halaman masih aktif sebelum pindah halaman
           if (!context.mounted) return;
-
-          // Arahkan langsung ke halaman login menggunakan GoRouter
           AppNavigation.goToLogin(context);
         } catch (e) {
           logger.e('Gagal melakukan logout: $e');
@@ -87,11 +86,9 @@ List<SideMenuItem> getEndDrawerSideMenuItems(
       title: item.title,
       icon: item.icon,
       label: item.label,
-      route: '', // Sesuaikan rute jika diperlukan
+      route: '',
       isSelected: false,
-      onTap:
-          item.onTap ??
-          () {}, // Provide an empty function if item.onTap is null
+      onTap: item.onTap ?? () {},
     );
   }).toList();
 }

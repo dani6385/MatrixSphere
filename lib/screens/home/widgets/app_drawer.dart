@@ -2,15 +2,13 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// Tambahkan go_router untuk navigasi
 import 'package:logger/logger.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:matrix_sphere/navigations/drawer_navigation_helper.dart';
-import 'package:shared_ui/shared_ui.dart'; // Impor shared_ui agar kita bisa menggunakan SideMenuItem
+import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();
 
-// Definisi struktur data untuk item menu lokal
 class MenuDrawer {
   final String title;
   final IconData icon;
@@ -25,7 +23,6 @@ class MenuDrawer {
   });
 }
 
-// Daftar seluruh item menu drawer lokal
 List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
   final String? currentUid = FirebaseAuth.instance.currentUser?.uid;
 
@@ -37,9 +34,11 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
         label: 'Mengatur jabatan dan status kerja setiap akun karyawan.',
         onTap: () {
           logger.i('Kelola Jabatan Pekerja tapped');
-          DrawerNavigationHelper.navigateToHome(context, () {
-            AppNavigation.openManagementUser(context);
-          });
+          DrawerNavigationHelper.runAfterClose(
+            context,
+            () => AppNavigation.openManagementUser(context),
+            closeEndDrawer: false,
+          );
         },
       ),
     MenuDrawer(
@@ -49,15 +48,16 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
           'Melihat status persetujuan toko, rating, dan informasi penting lainnya.',
       onTap: () {
         logger.i('Status Toko tapped');
-        if (Navigator.canPop(context)) {
-          Scaffold.of(context).closeEndDrawer();
-        }
+        DrawerNavigationHelper.runAfterClose(
+          context,
+          () {},
+          closeEndDrawer: false,
+        );
       },
     ),
   ];
 }
 
-/// Fungsi helper untuk mengubah MenuDrawer lokal menjadi SideMenuItem shared_ui
 List<SideMenuItem> getDrawerSideMenuItems(
   BuildContext context,
   String currentRoute,
@@ -69,11 +69,9 @@ List<SideMenuItem> getDrawerSideMenuItems(
       title: item.title,
       icon: item.icon,
       label: item.label,
-      route: '', // Sesuaikan rute jika diperlukan
+      route: '',
       isSelected: false,
-      onTap:
-          item.onTap ??
-          () {}, // Provide an empty function if item.onTap is null
+      onTap: item.onTap ?? () {},
     );
   }).toList();
 }
