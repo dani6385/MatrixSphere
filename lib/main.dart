@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'services/firebase_options.dart';
 import 'navigations/app_router.dart'; 
 
+
 void main() async {
   // 1. Memastikan binding Flutter siap sebelum menjalankan kode asynchronous (Firebase)
   WidgetsFlutterBinding.ensureInitialized();
