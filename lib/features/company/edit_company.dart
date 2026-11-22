@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'models/company_profile_model.dart';
+import 'package:matrix_sphere/screens/Attendance/services/attendance_location_service.dart';
+import 'package:matrix_sphere/screens/Attendance/widgets/location_pin_lock_dialog.dart';
 
 class EditCompanyPage extends StatefulWidget {
   final CompanyProfileModel? initialCompany;
@@ -19,6 +21,8 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   final DatabaseReference _companyRef = FirebaseDatabase.instance.ref(
     'company_profile',
   );
+  final AttendanceLocationService _locationService =
+      AttendanceLocationService();
 
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
@@ -31,10 +35,59 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   late final TextEditingController _longitudeController;
   late final TextEditingController _radiusMetersController;
 
+  final String _locationPin = '123456';
   bool _isAttendanceEnabled = true;
   bool _isCheckingAdmin = true;
   bool _isAdmin = false;
   bool _isSaving = false;
+  // PIN bisa dibaca dari company_profile (misal data['locationPin']) dengan fallback aman
+  bool _isFetchingLocation = false;
+
+  Future<void> _pickCurrentLocationWithPinLock() async {
+    if (_isFetchingLocation) return;
+
+    final bool pinValid = await LocationPinLockDialog.verify(
+      context,
+      expectedPin: _locationPin,
+      title: 'PIN Lock Pengambilan Lokasi',
+      subtitle:
+          'Masukkan PIN untuk mengambil koordinat GPS titik kantor saat ini.',
+    );
+
+    if (!pinValid || !mounted) return;
+
+    setState(() => _isFetchingLocation = true);
+    try {
+      final AttendanceLocationData loc = await _locationService
+          .getCurrentLocation();
+      if (!mounted) return;
+
+      _latitudeController.text = loc.latitude.toStringAsFixed(6);
+      _longitudeController.text = loc.longitude.toStringAsFixed(6);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Lokasi berhasil diambil (${loc.latitude.toStringAsFixed(6)}, ${loc.longitude.toStringAsFixed(6)}).',
+          ),
+        ),
+      );
+    } on AttendanceLocationException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal mengambil lokasi: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isFetchingLocation = false);
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -101,19 +154,17 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
           data['matrixSphereWorkStart']?.toString() ?? '08:00';
       _matrixEndController.text =
           data['matrixSphereWorkEnd']?.toString() ?? '17:00';
-      _latitudeController.text = _readTextOrDefault(
-        data,
-        ['latitude', 'lat'],
-      );
-      _longitudeController.text = _readTextOrDefault(
-        data,
-        ['longitude', 'lng'],
-      );
-      _radiusMetersController.text = _readTextOrDefault(
-        data,
-        ['radiusMeters', 'radius_meters', 'radius', 'attendanceRadius'],
-        fallback: '100',
-      );
+      _latitudeController.text = _readTextOrDefault(data, ['latitude', 'lat']);
+      _longitudeController.text = _readTextOrDefault(data, [
+        'longitude',
+        'lng',
+      ]);
+      _radiusMetersController.text = _readTextOrDefault(data, [
+        'radiusMeters',
+        'radius_meters',
+        'radius',
+        'attendanceRadius',
+      ], fallback: '100');
       if (data['isAttendanceEnabled'] is bool) {
         _isAttendanceEnabled = data['isAttendanceEnabled'] as bool;
       }
@@ -154,15 +205,17 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Profil, jam kerja & lokasi absensi berhasil disimpan.'),
+          content: Text(
+            'Profil, jam kerja & lokasi absensi berhasil disimpan.',
+          ),
         ),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal menyimpan perubahan: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal menyimpan perubahan: $e')));
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -188,9 +241,7 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   @override
   Widget build(BuildContext context) {
     if (_isCheckingAdmin) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -282,9 +333,9 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
             const SizedBox(height: 24),
             Text(
               'Lokasi & Radius Absensi',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Row(
@@ -340,7 +391,9 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
             TextFormField(
               controller: _radiusMetersController,
               readOnly: !_isAdmin,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(
                 labelText: 'Radius Absensi (meter)',
                 hintText: 'Contoh: 100',
@@ -356,11 +409,28 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
               },
             ),
             const SizedBox(height: 24),
-            if (_isAdmin)
-              FilledButton(
-                onPressed: _isSaving ? null : _saveCompanyChanges,
-                child: Text(_isSaving ? 'Menyimpan...' : 'Simpan Perubahan'),
+            if (_isAdmin) const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _isFetchingLocation
+                  ? null
+                  : _pickCurrentLocationWithPinLock,
+              icon: _isFetchingLocation
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.my_location),
+              label: Text(
+                _isFetchingLocation
+                    ? 'Mengambil Koordinat GPS...'
+                    : 'Ambil Lokasi Saat Ini (PIN Lock)',
               ),
+            ),
+            FilledButton(
+              onPressed: _isSaving ? null : _saveCompanyChanges,
+              child: Text(_isSaving ? 'Menyimpan...' : 'Simpan Perubahan'),
+            ),
           ],
         ),
       ),
