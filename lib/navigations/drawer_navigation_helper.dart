@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 /// Utilitas untuk menutup `drawer` atau `endDrawer` dengan aman sebelum
 /// mengeksekusi aksi navigasi pada frame berikutnya agar tidak terjadi
-/// tumpukan animasi/scrim saat berpindah antar drawer dan halaman.
+/// tumpukan animasi atau modal barrier/scrim saat berpindah antar drawer dan halaman.
 class DrawerNavigationHelper {
   DrawerNavigationHelper._();
 
@@ -17,11 +17,22 @@ class DrawerNavigationHelper {
     bool closeEndDrawer = true,
   }) {
     final ScaffoldState? scaffold = Scaffold.maybeOf(context);
+    final bool wasStartOpen =
+        closeStartDrawer && (scaffold?.isDrawerOpen ?? false);
+    final bool wasEndOpen =
+        closeEndDrawer && (scaffold?.isEndDrawerOpen ?? false);
 
-    if (closeStartDrawer && scaffold?.isDrawerOpen == true) {
+    if (wasStartOpen) {
       scaffold!.closeDrawer();
-    } else if (closeEndDrawer && scaffold?.isEndDrawerOpen == true) {
+    } else if (wasEndOpen) {
       scaffold!.closeEndDrawer();
+    }
+
+    // Jika drawer/endDrawer terbuka, pastikan rute popup/drawer di atasnya
+    // ikut dibersihkan dengan aman sebelum berpindah halaman.
+    if (wasStartOpen || wasEndOpen) {
+      final NavigatorState navigator = Navigator.of(context);
+      navigator.popUntil((route) => route is! PopupRoute || route.isFirst);
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
