@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:matrix_sphere/screens/attendance/widgets/app_drawer.dart';
 import 'package:matrix_sphere/screens/attendance/widgets/app_enddrawer.dart';
 import 'package:matrix_sphere/screens/attendance/widgets/attendance_body.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/attendance_history.dart';
 import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/screens/attendance/widgets/attendance_appbar.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
@@ -124,14 +123,7 @@ class AttendanceScreen extends StatelessWidget {
           );
         },
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: const [
-          AttendanceBody(),
-          SizedBox(height: 16),
-          AttendanceHistory(),
-        ],
-      ),
+      body: const AttendanceBody(),
     );
   }
 }

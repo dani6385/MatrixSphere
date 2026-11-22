@@ -1,6 +1,7 @@
 // lib/screens/attendance/widgets/Attendance_body.dart
 
 import 'package:flutter/material.dart';
+import 'package:matrix_sphere/screens/attendance/widgets/attendance_history.dart';
 import 'package:shared_ui/shared_ui.dart';
 import 'package:matrix_sphere/screens/attendance/cards/attendance_action_card.dart';
 
@@ -33,7 +34,7 @@ class AttendanceBody extends StatelessWidget {
         children: [
           const AttendanceActionCard(),
           const SizedBox(height: 16),
-
+          const AttendanceHistory(),
           // 2. KARTU INFORMASI PUTIH (Asli Anda, Tanpa Menggunakan Kelas Tidak Dikenal)
           Card(
             elevation: 4,
