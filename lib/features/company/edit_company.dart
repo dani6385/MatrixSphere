@@ -212,11 +212,6 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
               decoration: const InputDecoration(labelText: 'Deskripsi'),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Pengaturan Jam Kerja (Matrix Sphere)',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(

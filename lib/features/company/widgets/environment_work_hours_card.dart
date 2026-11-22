@@ -23,7 +23,7 @@ class EnvironmentWorkHoursCard extends StatefulWidget {
     super.key,
     required this.environmentKey,
     required this.environmentLabel,
-    this.roleDescription = 'Pengaturan jam kerja pekerja',
+    required this.roleDescription,
   });
 
   @override
@@ -33,17 +33,19 @@ class EnvironmentWorkHoursCard extends StatefulWidget {
 
 class _EnvironmentWorkHoursCardState extends State<EnvironmentWorkHoursCard> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _startTimeController =
-      TextEditingController(text: '08:00');
-  final TextEditingController _endTimeController =
-      TextEditingController(text: '17:00');
+  final TextEditingController _startTimeController = TextEditingController(
+    text: '08:00',
+  );
+  final TextEditingController _endTimeController = TextEditingController(
+    text: '17:00',
+  );
 
   bool _isAttendanceEnabled = true;
   bool _isSaving = false;
   bool _hasLoadedInitialFromDb = false;
 
-  DatabaseReference get _scheduleRef => FirebaseDatabase.instance
-      .ref('work_schedules/${widget.environmentKey}');
+  DatabaseReference get _scheduleRef =>
+      FirebaseDatabase.instance.ref('work_schedules/${widget.environmentKey}');
 
   @override
   void dispose() {
@@ -162,12 +164,12 @@ class _EnvironmentWorkHoursCardState extends State<EnvironmentWorkHoursCard> {
 
         final String dbStartTime =
             data['workStartTime']?.toString().trim().isNotEmpty == true
-                ? data['workStartTime'].toString()
-                : '08:00';
+            ? data['workStartTime'].toString()
+            : '08:00';
         final String dbEndTime =
             data['workEndTime']?.toString().trim().isNotEmpty == true
-                ? data['workEndTime'].toString()
-                : '17:00';
+            ? data['workEndTime'].toString()
+            : '17:00';
         final bool dbEnabled = data['isAttendanceEnabled'] is bool
             ? data['isAttendanceEnabled'] as bool
             : true;
@@ -232,8 +234,9 @@ class _EnvironmentWorkHoursCardState extends State<EnvironmentWorkHoursCard> {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest
-                          .withValues(alpha: 0.45),
+                      color: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.45,
+                      ),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -338,9 +341,7 @@ class _EnvironmentWorkHoursCardState extends State<EnvironmentWorkHoursCard> {
         labelText: label,
         hintText: hint,
         isDense: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         suffixIcon: IconButton(
           tooltip: 'Pilih Jam',
           icon: const Icon(Icons.access_time, size: 20),

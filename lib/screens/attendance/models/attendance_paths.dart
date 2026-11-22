@@ -4,7 +4,6 @@
 class AttendancePaths {
   static const String environmentKey = 'matrix_sphere';
 
-  /// Jalur pengaturan jam kerja Matrix Sphere di RTDB:
   /// `work_schedules/matrix_sphere`
   static String workSchedule() {
     return 'work_schedules/matrix_sphere';

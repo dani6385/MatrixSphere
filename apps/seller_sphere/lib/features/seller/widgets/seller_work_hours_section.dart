@@ -13,7 +13,7 @@ class SellerWorkHoursSection extends StatelessWidget {
     return const EnvironmentWorkHoursCard(
       environmentKey: 'seller_sphere',
       environmentLabel: 'Seller Sphere',
-      roleDescription: 'Jam kerja pekerja di lingkungan aplikasi anak Seller Sphere',
+      roleDescription: 'Seller Sphere',
     );
   }
 }
