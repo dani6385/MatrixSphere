@@ -4,7 +4,6 @@
 class AttendancePaths {
   static const String environmentKey = 'seller_sphere';
 
-  /// Jalur pengaturan jam kerja Seller Sphere di RTDB:
   /// `work_schedules/seller_sphere/{sellerId}`
   static String workSchedule({
     required String sellerId,

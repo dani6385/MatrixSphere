@@ -21,9 +21,7 @@ class AttendancePaths {
     return cleaned.isNotEmpty ? cleaned : fallbackUid;
   }
 
-  /// Jalur pengaturan jam kerja di RTDB:
   /// - Matrix Sphere : `work_schedules/matrix_sphere`
-  /// - Seller Sphere : `work_schedules/seller_sphere/{sellerId}`
   static String workSchedule({
     required String environmentKey,
     required String uid,

@@ -7,7 +7,6 @@ import 'package:shared_ui/shared_ui.dart';
 
 import '../models/attendance_paths.dart';
 
-/// Kartu pengaturan jam kerja khusus untuk pedagang aktif (`sellerId`) di Seller Sphere.
 /// Admin pedagang dapat mengisi Jam Mulai & Jam Selesai lewat `TextField`
 /// agar pekerja di bawah pedagang tersebut mengikuti jam kerja tokonya.
 class SellerScheduleSettingsCard extends StatefulWidget {

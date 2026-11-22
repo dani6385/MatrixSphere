@@ -272,7 +272,6 @@ class _WorkHoursFormCardState extends State<WorkHoursFormCard> {
 
               const SizedBox(height: 8),
 
-              // Tombol Simpan Pengaturan Jam Kerja
               ElevatedButton.icon(
                 onPressed: _isSaving ? null : _saveWorkHours,
                 style: ElevatedButton.styleFrom(

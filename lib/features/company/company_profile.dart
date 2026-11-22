@@ -62,6 +62,15 @@ class CompanyProfile extends StatelessWidget {
                 rawData,
               );
 
+              final String matrixStart =
+                  rawData?['matrixSphereWorkStart']?.toString() ?? '08:00';
+              final String matrixEnd =
+                  rawData?['matrixSphereWorkEnd']?.toString() ?? '17:00';
+              final bool isAttendanceEnabled =
+                  rawData?['isAttendanceEnabled'] is bool
+                  ? rawData!['isAttendanceEnabled'] as bool
+                  : true;
+
               return ListView(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
                 children: [
@@ -101,7 +110,14 @@ class CompanyProfile extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+                  const SizedBox(height: 24),
+
+                  // Ringkasan Jam Kerja Matrix (tanpa tombol simpan di halaman lihat)
+                  _MatrixWorkHoursSummaryCard(
+                    workStart: matrixStart,
+                    workEnd: matrixEnd,
+                    isAttendanceEnabled: isAttendanceEnabled,
+                  ),
                   const SizedBox(height: 24),
 
                   _CompanyInfoTile(
@@ -130,6 +146,49 @@ class CompanyProfile extends StatelessWidget {
   }
 }
 
+class _MatrixWorkHoursSummaryCard extends StatelessWidget {
+  final String workStart;
+  final String workEnd;
+  final bool isAttendanceEnabled;
+
+  const _MatrixWorkHoursSummaryCard({
+    required this.workStart,
+    required this.workEnd,
+    required this.isAttendanceEnabled,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Jam Kerja Matrix Sphere',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text('Jam Operasional: $workStart - $workEnd'),
+            const SizedBox(height: 4),
+            Text(
+              'Tombol Absensi: ${isAttendanceEnabled ? "Aktif" : "Nonaktif"}',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _CompanyInfoTile extends StatelessWidget {
   final IconData icon;
