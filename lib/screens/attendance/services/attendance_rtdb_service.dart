@@ -2,7 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-
+import 'attendance_location_service.dart';
 import '../models/attendance_paths.dart';
 import '../models/attendance_schedule_state.dart';
 
@@ -10,7 +10,7 @@ class AttendanceRtdbService {
   final FirebaseDatabase _db;
 
   AttendanceRtdbService({FirebaseDatabase? database})
-      : _db = database ?? FirebaseDatabase.instance;
+    : _db = database ?? FirebaseDatabase.instance;
 
   Future<String> resolveUserName(User user) async {
     try {
@@ -77,12 +77,12 @@ class AttendanceRtdbService {
             'statusCode': 'forgot_checkout_reset',
           });
 
-          await _db
-              .ref('attendance/matrix/${user.uid}')
-              .update(<String, dynamic>{
-                'status': 'Lupa Check-Out',
-                'lastDate': yesterdayKey,
-              });
+          await _db.ref('attendance/matrix/${user.uid}').update(
+            <String, dynamic>{
+              'status': 'Lupa Check-Out',
+              'lastDate': yesterdayKey,
+            },
+          );
         }
       }
     } catch (_) {
@@ -97,6 +97,7 @@ class AttendanceRtdbService {
     required String dateKey,
     required String formattedTime,
     required int lateMinutes,
+    AttendanceLocationData? location,
   }) async {
     final bool isLate = lateMinutes > 0;
     final DatabaseReference uidSummaryRef = _db.ref(
@@ -109,7 +110,9 @@ class AttendanceRtdbService {
       'date': dateKey,
       'checkInTime': formattedTime,
       'checkInTimestamp': ServerValue.timestamp,
+      'checkInLocation': location?.toMap(),
       'checkOutTime': null,
+      'checkOutLocation': null,
       'isLate': isLate,
       'lateMinutes': lateMinutes,
       'isOvertime': false,
@@ -134,6 +137,7 @@ class AttendanceRtdbService {
     required String dateKey,
     required String formattedTime,
     required bool isOvertime,
+    AttendanceLocationData? location,
   }) async {
     final String currentStatus = isOvertime ? 'Selesai (Lembur)' : 'Selesai';
     final DatabaseReference uidSummaryRef = _db.ref(
@@ -144,6 +148,7 @@ class AttendanceRtdbService {
       'name': userName,
       'checkOutTime': formattedTime,
       'checkOutTimestamp': ServerValue.timestamp,
+      'checkOutLocation': location?.toMap(),
       'isOvertime': isOvertime,
       'forgotCheckOut': false,
       'status': currentStatus,

@@ -10,6 +10,7 @@ import 'package:shared_ui/shared_ui.dart';
 import '../models/attendance_paths.dart';
 import '../models/attendance_schedule_state.dart';
 import '../services/attendance_rtdb_service.dart';
+import '../services/attendance_location_service.dart';
 import 'attendance_card_content.dart';
 import 'attendance_dialogs.dart';
 
@@ -25,7 +26,8 @@ class AttendanceActionCard extends StatefulWidget {
 
 class _AttendanceActionCardState extends State<AttendanceActionCard> {
   final AttendanceRtdbService _rtdbService = AttendanceRtdbService();
-
+  final AttendanceLocationService _locationService =
+      AttendanceLocationService();
   bool _isSaving = false;
   late String _activeDateKey;
   Timer? _clockCheckTimer;
@@ -74,10 +76,10 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     if (isCheckOutStep) {
       final bool? confirmedOvertime =
           await AttendanceDialogs.showOvertimeConfirmation(
-        context,
-        workEndTime: schedule.workEndTime,
-        closeTimeText: schedule.checkOutCloseText,
-      );
+            context,
+            workEndTime: schedule.workEndTime,
+            closeTimeText: schedule.checkOutCloseText,
+          );
       if (confirmedOvertime == null) return;
       isOvertime = confirmedOvertime;
     }
@@ -85,7 +87,17 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     setState(() {
       _isSaving = true;
     });
-
+    try {
+      await _locationService.getCurrentLocation();
+    } on AttendanceLocationException catch (e) {
+      _showSnackBar(e.message, isError: true);
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+      return;
+    }
     try {
       final DateTime now = DateTime.now();
       final String formattedTime = AttendanceScheduleEvaluator.formatTime(now);
@@ -199,10 +211,12 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
       );
     }
 
-    final DatabaseReference companyProfileRef =
-        FirebaseDatabase.instance.ref('company_profile');
-    final DatabaseReference legacyScheduleRef =
-        FirebaseDatabase.instance.ref(AttendancePaths.workSchedule());
+    final DatabaseReference companyProfileRef = FirebaseDatabase.instance.ref(
+      'company_profile',
+    );
+    final DatabaseReference legacyScheduleRef = FirebaseDatabase.instance.ref(
+      AttendancePaths.workSchedule(),
+    );
     final DatabaseReference todayRef = FirebaseDatabase.instance.ref(
       AttendancePaths.attendanceDay(uid: user.uid, dateKey: todayKey),
     );
@@ -254,22 +268,22 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
 
                 final AttendanceScheduleEvaluator schedule =
                     AttendanceScheduleEvaluator.fromSchedule(
-                  workStartTime: workStartTime,
-                  workEndTime: workEndTime,
-                  now: DateTime.now(),
-                );
+                      workStartTime: workStartTime,
+                      workEndTime: workEndTime,
+                      now: DateTime.now(),
+                    );
 
                 final AttendanceStatusDisplay statusDisplay =
                     AttendanceStatusDisplay.resolve(
-                  schedule: schedule,
-                  isCompleted: isCompleted,
-                  isCheckOutStep: isCheckOutStep,
-                  isSaving: _isSaving,
-                  checkInTime: checkInTime,
-                  recordedStatus: recordedStatus,
-                  isLateToday: isLateToday,
-                  lateMinutesToday: lateMinutesToday,
-                );
+                      schedule: schedule,
+                      isCompleted: isCompleted,
+                      isCheckOutStep: isCheckOutStep,
+                      isSaving: _isSaving,
+                      checkInTime: checkInTime,
+                      recordedStatus: recordedStatus,
+                      isLateToday: isLateToday,
+                      lateMinutesToday: lateMinutesToday,
+                    );
 
                 return AttendanceCardContent(
                   title: widget.title,
