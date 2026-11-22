@@ -124,8 +124,9 @@ class AttendanceScreen extends StatelessWidget {
           );
         },
       ),
-      body: const Column(
-        children: [
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: const [
           AttendanceBody(),
           SizedBox(height: 16),
           AttendanceHistory(),
