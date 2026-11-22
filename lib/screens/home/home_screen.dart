@@ -2,6 +2,7 @@
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:matrix_sphere/navigations/drawer_navigation_helper.dart';
 import 'package:matrix_sphere/screens/home/widgets/app_drawer.dart';
 import 'package:matrix_sphere/screens/home/widgets/app_enddrawer.dart';
 import 'package:shared_ui/shared_ui.dart';
@@ -61,8 +62,14 @@ class HomeScreen extends StatelessWidget {
               accountEmail: Text(company.email),
               // Navigasi langsung ke halaman Profil Perusahaan saat header diketuk
               onDetailsPressed: () {
-                Scaffold.of(context).closeDrawer(); // Tutup drawer terlebih dahulu
-                AppNavigation.openCompanyProfile(context); // Pindah ke halaman Company Profile
+                DrawerNavigationHelper.runAfterClose(
+                  context,
+                  () => AppNavigation.openCompanyProfile(context),
+                  closeEndDrawer: false,
+                );
+                AppNavigation.openCompanyProfile(
+                  context,
+                ); // Pindah ke halaman Company Profile
               },
             ),
           );
@@ -102,7 +109,11 @@ class HomeScreen extends StatelessWidget {
               accountEmail: Text(email),
               onDetailsPressed: () {
                 // Tutup drawer terlebih dahulu sebelum berpindah halaman
-                Scaffold.of(context).closeEndDrawer();
+                DrawerNavigationHelper.runAfterClose(
+                  context,
+                  () => AppNavigation.openCompanyProfile(context),
+                  closeEndDrawer: false,
+                );
                 // Arahkan ke halaman profile menggunakan ekstensi navigasi
                 AppNavigation.openUserProfile(context);
               },

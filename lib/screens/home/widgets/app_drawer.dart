@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 // Tambahkan go_router untuk navigasi
 import 'package:logger/logger.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
+import 'package:matrix_sphere/navigations/drawer_navigation_helper.dart';
 import 'package:shared_ui/shared_ui.dart'; // Impor shared_ui agar kita bisa menggunakan SideMenuItem
 
 final Logger logger = Logger();
@@ -36,14 +37,8 @@ List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
         label: 'Mengatur jabatan dan status kerja setiap akun karyawan.',
         onTap: () {
           logger.i('Kelola Jabatan Pekerja tapped');
-
-          if (Navigator.canPop(context)) {
-            Scaffold.of(context).closeEndDrawer();
-          }
-          Future.delayed(const Duration(milliseconds: 100), () {
-            if (context.mounted) {
-              AppNavigation.openManagementUser(context);
-            }
+          DrawerNavigationHelper.navigateToHome(context, () {
+            AppNavigation.openManagementUser(context);
           });
         },
       ),
