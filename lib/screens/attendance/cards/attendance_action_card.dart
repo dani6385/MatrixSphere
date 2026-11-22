@@ -193,6 +193,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
     required DatabaseReference todayRef,
     required bool isCheckOutStep,
     required String dateKey,
+    required String workStartTime,
     required String workEndTime,
     required String closeTimeText,
   }) async {
@@ -221,7 +222,13 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
       );
 
       if (!isCheckOutStep) {
-        const String currentStatus = 'Masuk';
+        final DateTime? startDt = _parseTodayTime(workStartTime, now);
+        final int lateMinutes = (startDt != null && now.isAfter(startDt))
+            ? now.difference(startDt).inMinutes
+            : 0;
+        final bool isLate = lateMinutes > 0;
+        final String lateDurationText = _formatLateDuration(lateMinutes);
+
         await todayRef.set(<String, dynamic>{
           'uid': user.uid,
           'name': userName,
@@ -229,23 +236,34 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
           'checkInTime': formattedTime,
           'checkInTimestamp': ServerValue.timestamp,
           'checkOutTime': null,
+          'isLate': isLate,
+          'lateMinutes': lateMinutes,
           'isOvertime': false,
           'forgotCheckOut': false,
-          'status': currentStatus,
+          'status': 'Masuk',
           'statusCode': 'checked_in',
         });
 
         await uidSummaryRef.update(<String, dynamic>{
           'name': userName,
-          'status': currentStatus,
+          'status': isLate ? 'Masuk (Terlambat)' : 'Masuk',
           'lastDate': dateKey,
         });
 
-        _showSnackBar('Check-In berhasil dicatat pukul $formattedTime');
+        if (isLate) {
+          _showSnackBar(
+            'Check-In dicatat pukul $formattedTime (Terlambat sekitar $lateDurationText)',
+            isError: true,
+          );
+          if (mounted) {
+            await _showLateWarningDialog(lateDurationText);
+          }
+        } else {
+          _showSnackBar('Check-In berhasil dicatat pukul $formattedTime');
+        }
       } else {
-        final String currentStatus = isOvertime
-            ? 'Selesai (Lembur)'
-            : 'Selesai';
+        final String currentStatus =
+            isOvertime ? 'Selesai (Lembur)' : 'Selesai';
         await todayRef.update(<String, dynamic>{
           'name': userName,
           'checkOutTime': formattedTime,
@@ -287,6 +305,41 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
         content: Text(message),
         backgroundColor: isError ? Colors.red.shade700 : kBrandPrimary,
         behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  String _formatLateDuration(int totalMinutes) {
+    if (totalMinutes < 60) {
+      return '$totalMinutes menit';
+    }
+    final int hours = totalMinutes ~/ 60;
+    final int minutes = totalMinutes % 60;
+    if (minutes == 0) {
+      return '$hours jam';
+    }
+    return '$hours jam $minutes menit';
+  }
+
+  Future<void> _showLateWarningDialog(String lateDurationText) {
+    return showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(
+          Icons.warning_amber_rounded,
+          color: Colors.amber,
+          size: 36,
+        ),
+        title: const Text('Peringatan Keterlambatan'),
+        content: Text(
+          'Anda terlambat sekitar $lateDurationText dari jam masuk.',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Mengerti'),
+          ),
+        ],
       ),
     );
   }
@@ -382,6 +435,9 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                 final String? checkInTime = data['checkInTime']?.toString();
                 final String? checkOutTime = data['checkOutTime']?.toString();
                 final String? recordedStatus = data['status']?.toString();
+                final bool isLateToday = data['isLate'] == true;
+                final int lateMinutesToday =
+                    int.tryParse(data['lateMinutes']?.toString() ?? '0') ?? 0;
 
                 final bool hasCheckedIn =
                     checkInTime != null && checkInTime.trim().isNotEmpty;
@@ -428,6 +484,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                 final IconData buttonIcon;
                 final Color buttonColor;
                 final bool isButtonDisabled;
+
                 if (isCompleted) {
                   statusTitle =
                       'Absensi Hari Ini ${recordedStatus ?? "Selesai"}';
@@ -440,10 +497,13 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                   buttonColor = Colors.green;
                   isButtonDisabled = true;
                 } else if (isCheckOutStep) {
+                  final String lateInfo = (isLateToday && lateMinutesToday > 0)
+                      ? ' (Terlambat ${_formatLateDuration(lateMinutesToday)})'
+                      : '';
                   if (!isWithinCheckOutWindow) {
                     statusTitle = 'Belum Waktunya Absen Pulang';
                     statusSubtitle =
-                        'Masuk pukul $checkInTime. Tombol Check-Out aktif pukul $workEndTime - $checkOutCloseText.';
+                        'Masuk pukul $checkInTime$lateInfo. Tombol Check-Out aktif pukul $workEndTime - $checkOutCloseText.';
                     statusColor = Colors.grey.shade700;
                     statusIcon = Icons.schedule;
                     buttonLabel = 'Check-Out Aktif Pukul $workEndTime';
@@ -453,7 +513,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                   } else {
                     statusTitle = 'Waktunya Absen Pulang (Check-Out)';
                     statusSubtitle =
-                        'Masuk pukul $checkInTime. Absen pulang dibuka pukul $workEndTime - $checkOutCloseText.';
+                        'Masuk pukul $checkInTime$lateInfo. Absen pulang dibuka pukul $workEndTime - $checkOutCloseText.';
                     statusColor = Colors.deepOrange;
                     statusIcon = Icons.logout;
                     buttonLabel = 'Check-Out Sekarang';
@@ -610,13 +670,14 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                           onPressed: isButtonDisabled
                               ? null
                               : () => _handleAttendanceTap(
-                                  user: user,
-                                  todayRef: todayRef,
-                                  isCheckOutStep: isCheckOutStep,
-                                  dateKey: todayKey,
-                                  workEndTime: workEndTime,
-                                  closeTimeText: checkOutCloseText,
-                                ),
+                                    user: user,
+                                    todayRef: todayRef,
+                                    isCheckOutStep: isCheckOutStep,
+                                    dateKey: todayKey,
+                                    workStartTime: workStartTime,
+                                    workEndTime: workEndTime,
+                                    closeTimeText: checkOutCloseText,
+                                  ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: buttonColor,
                             foregroundColor: Colors.white,
