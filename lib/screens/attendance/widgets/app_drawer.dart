@@ -1,28 +1,29 @@
-// lib/navigation/widgets/app_drawer_items.dart[cite: 9]
+// lib/navigation/widgets/app_drawer_items.dart
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:matrix_sphere/navigations/app_routes.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
+import 'package:matrix_sphere/navigations/app_routes.dart';
+import 'package:matrix_sphere/navigations/app_extractor.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();
 
-List<SideMenuItem> getDrawerSideMenuItems(
-    BuildContext context, String currentRoute) {
-  final drawerItems = getDrawerItems(context, currentRoute);
+void _closeDrawerSafely(BuildContext context) {
+  final ScaffoldState? scaffold = Scaffold.maybeOf(context);
+  if (scaffold != null && scaffold.isDrawerOpen) {
+    scaffold.closeDrawer();
+  }
+}
 
-  return drawerItems.map((item) {
-    return SideMenuItem(
-      title: item.title,
-      icon: item.icon,
-      label: item.label,
-      route: '', // Sesuaikan rute jika diperlukan
-      isSelected: false,
-      onTap: item.onTap ??
-          () {}, // Provide an empty function if item.onTap is null
+void _openScreenAfterClosingDrawer(BuildContext context, Widget page) {
+  _closeDrawerSafely(context);
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (!context.mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => page),
     );
-  }).toList();
+  });
 }
 
 // Definisi struktur data untuk item menu dengan tambahan properti 'label'
@@ -43,25 +44,61 @@ class MenuDrawer {
 }
 
 // Daftar rekomendasi item menu Drawer khusus saat berada di Halaman Attendance
-List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
+List<MenuDrawer> getDrawerItems(BuildContext context, String currentRoute) {
   return [
     MenuDrawer(
-      title: 'Hostory',
-      icon: Icons.home,
-      label: 'Pengguna melakukan absen yang tercatat',
+      title: 'Kalender Kehadiran',
+      icon: Icons.calendar_month,
+      label:
+          'Kalender bulanan berwarna untuk melihat tanggal sudah absen dan tidak absen.',
       route: AppRoutes.attendanceHistory,
       onTap: () {
-        logger.i('Navigasi ke Home');
-        AppNavigation.openAttendanceHistory(context);
+        logger.i('Navigasi ke Kalender Riwayat Absensi');
+        _openScreenAfterClosingDrawer(
+          context,
+          const AttendanceHistoryScreen(),
+        );
       },
     ),
     MenuDrawer(
-      title: 'Attendance History / Riwayat Kehadiran',
+      title: 'Riwayat Kehadiran',
       icon: Icons.history,
-      label: 'Melihat catatan riwayat jam masuk dan jam keluar presensi.',
-      route: '',
+      label: 'Melihat catatan riwayat jam masuk, jam pulang, dan status harian.',
+      route: AppRoutes.attendanceHistory,
       onTap: () {
-        logger.i('Menu Attendance History diklik!');
+        logger.i('Navigasi ke Riwayat Kehadiran');
+        _openScreenAfterClosingDrawer(
+          context,
+          const AttendanceHistoryScreen(),
+        );
+      },
+    ),
+    MenuDrawer(
+      title: 'Profil & Jam Kerja Kantor',
+      icon: Icons.apartment_outlined,
+      label:
+          'Memeriksa jam operasional Matrix Sphere, alamat, dan titik koordinat kantor.',
+      route: '/company-profile',
+      onTap: () {
+        logger.i('Navigasi ke Profil Perusahaan');
+        _openScreenAfterClosingDrawer(
+          context,
+          const CompanyProfile(),
+        );
+      },
+    ),
+    MenuDrawer(
+      title: 'Pengaturan Lokasi & Jam Kerja',
+      icon: Icons.edit_location_alt_outlined,
+      label:
+          'Mengatur jam masuk/pulang, titik koordinat kantor (PIN Lock), dan radius.',
+      route: '/edit-company',
+      onTap: () {
+        logger.i('Navigasi ke Edit Profil Perusahaan');
+        _openScreenAfterClosingDrawer(
+          context,
+          const EditCompanyPage(),
+        );
       },
     ),
     MenuDrawer(
@@ -70,7 +107,8 @@ List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
       label: 'Memeriksa jadwal shift kerja, hari libur, dan jadwal cuti.',
       route: '',
       onTap: () {
-        logger.i('Menu Work Calendar diklik!');
+        logger.i('Menu Work Calendar diklik');
+        _closeDrawerSafely(context);
       },
     ),
     MenuDrawer(
@@ -80,17 +118,8 @@ List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
           'Melihat daftar tugas atau target kerja harian yang harus diselesaikan.',
       route: '',
       onTap: () {
-        logger.i('Menu Tasks diklik!');
-      },
-    ),
-    MenuDrawer(
-      title: 'Calendar / Kalender',
-      icon: Icons.event,
-      label:
-          'Melihat agenda kegiatan atau acara operasional secara keseluruhan.',
-      route: '',
-      onTap: () {
-        logger.i('Menu Calendar diklik!');
+        logger.i('Menu Tasks diklik');
+        _closeDrawerSafely(context);
       },
     ),
     MenuDrawer(
@@ -100,8 +129,30 @@ List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
       route: AppRoutes.userProfile,
       onTap: () {
         logger.i('Navigasi ke User Profile');
-        AppNavigation.openUserProfile(context);
+        _closeDrawerSafely(context);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          AppNavigation.openUserProfile(context);
+        });
       },
     ),
   ];
+}
+
+List<SideMenuItem> getDrawerSideMenuItems(
+  BuildContext context,
+  String currentRoute,
+) {
+  final List<MenuDrawer> drawerItems = getDrawerItems(context, currentRoute);
+
+  return drawerItems.map((MenuDrawer item) {
+    return SideMenuItem(
+      title: item.title,
+      icon: item.icon,
+      label: item.label,
+      route: item.route,
+      isSelected: item.route.isNotEmpty && item.route == currentRoute,
+      onTap: item.onTap ?? () {},
+    );
+  }).toList();
 }

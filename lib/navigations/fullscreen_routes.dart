@@ -38,7 +38,7 @@ List<RouteBase> fullScreen({
       path: AppRoutes.attendanceHistory,
       name: 'Attendance History',
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const AttendanceHistoryCard(),
+      builder: (context, state) => const AttendanceHistoryScreen(),
     ),/*
     GoRoute(
       path: AppRoutes.editProfile,
