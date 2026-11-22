@@ -46,13 +46,13 @@ class MenuDrawer {
 List<MenuDrawer> getDrawerItems(BuildContext context,String currentRoute) {
   return [
     MenuDrawer(
-      title: 'Home / Beranda',
+      title: 'Hostory',
       icon: Icons.home,
-      label: 'Mengarahkan pengguna kembali ke halaman utama dashboard.',
-      route: AppRoutes.home,
+      label: 'Pengguna melakukan absen yang tercatat',
+      route: AppRoutes.attendanceHistory,
       onTap: () {
         logger.i('Navigasi ke Home');
-        //AppNavigation.goToTab(context, AppRoutes.caseOScreen);
+        AppNavigation.openAttendanceHistory(context);
       },
     ),
     MenuDrawer(

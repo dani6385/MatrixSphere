@@ -135,4 +135,8 @@ class AppNavigation {
   static void openScanFace(BuildContext context) {
     context.push(AppRoutes.scanFace);
   }
+
+  static void openAttendanceHistory(BuildContext context) {
+    context.push(AppRoutes.attendanceHistory);
+  }
 }
