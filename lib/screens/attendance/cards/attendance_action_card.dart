@@ -338,12 +338,6 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                       as Map<dynamic, dynamic>;
             }
 
-            final bool isAttendanceEnabled =
-                companyData['isAttendanceEnabled'] is bool
-                ? companyData['isAttendanceEnabled'] as bool
-                : (scheduleData['isAttendanceEnabled'] is bool
-                      ? scheduleData['isAttendanceEnabled'] as bool
-                      : true);
             final String rawStart =
                 companyData['matrixSphereWorkStart']
                         ?.toString()
@@ -434,18 +428,7 @@ class _AttendanceActionCardState extends State<AttendanceActionCard> {
                 final IconData buttonIcon;
                 final Color buttonColor;
                 final bool isButtonDisabled;
-
-                if (!isAttendanceEnabled) {
-                  statusTitle = 'Absensi $envLabel Sedang Dinonaktifkan';
-                  statusSubtitle =
-                      'Jam kerja terdaftar: $workStartTime - $workEndTime.';
-                  statusColor = Colors.grey.shade700;
-                  statusIcon = Icons.lock_outline;
-                  buttonLabel = 'Absensi Nonaktif';
-                  buttonIcon = Icons.block;
-                  buttonColor = Colors.grey;
-                  isButtonDisabled = true;
-                } else if (isCompleted) {
+                if (isCompleted) {
                   statusTitle =
                       'Absensi Hari Ini ${recordedStatus ?? "Selesai"}';
                   statusSubtitle =
