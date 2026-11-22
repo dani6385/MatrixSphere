@@ -33,13 +33,13 @@ List<RouteBase> fullScreen({
       name: 'Edit Company Profile',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const EditCompanyPage(),
-    ),/*
-    GoRoute(
-      path: AppRoutes.shopProfile,
-      name: 'shopProfile',
-      parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const ShopProfileScreen(),
     ),
+    GoRoute(
+      path: AppRoutes.attendanceHistory,
+      name: 'Attendance History',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const AttendanceHistoryCard(),
+    ),/*
     GoRoute(
       path: AppRoutes.editProfile,
       name: 'editProfile',

@@ -3,17 +3,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_ui/shared_ui.dart';
 
-// Sesuaikan path import ini dengan lokasi AttendanceHistoryScreen di proyekmu
-import '../attendance_history_screen.dart';
-
 /// Kartu ringkasan Riwayat Absensi untuk ditampilkan di `AttendanceScreen`.
-/// Mengetuk kartu ini akan membuka `AttendanceHistoryScreen` (halaman kalender).
-class AttendanceHistory extends StatelessWidget {
+/// Mengetuk kartu ini akan membuka `AttendanceHistoryCardScreen` (halaman kalender).
+class AttendanceHistoryCard extends StatelessWidget {
   final String title;
 
-  const AttendanceHistory({
+  const AttendanceHistoryCard({
     super.key,
     this.title = 'Riwayat Absensi',
   });
@@ -85,11 +83,7 @@ class AttendanceHistory extends StatelessWidget {
         return InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const AttendanceHistoryScreen(),
-              ),
-            );
+            AppNavigation.openAttendanceHistory(context);
           },
           child: Card(
             elevation: 4,
