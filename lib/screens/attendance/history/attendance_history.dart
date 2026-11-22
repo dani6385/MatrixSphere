@@ -1,4 +1,4 @@
-// lib/screens/Attendance/attendance_history.dart
+// lib/screens/attendance/attendance_history.dart
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';

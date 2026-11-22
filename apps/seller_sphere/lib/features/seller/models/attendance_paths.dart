@@ -1,4 +1,4 @@
-// lib/screens/Attendance/models/attendance_paths.dart
+// lib/screens/attendance/models/attendance_paths.dart
 
 /// Kelas pembantu untuk menyusun jalur Firebase Realtime Database secara konsisten
 /// antara lingkungan **Matrix Sphere** dan **Seller Sphere** (per `sellerId` & `uid`).

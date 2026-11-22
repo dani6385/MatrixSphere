@@ -1,4 +1,4 @@
-// lib/screens/Attendance/widgets/attendance_card_content.dart
+// lib/screens/attendance/widgets/attendance_card_content.dart
 
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';

@@ -1,4 +1,4 @@
-// lib/screens/Attendance/models/attendance_schedule_state.dart
+// lib/screens/attendance/models/attendance_schedule_state.dart
 
 import 'package:flutter/material.dart';
 import 'package:shared_ui/shared_ui.dart';

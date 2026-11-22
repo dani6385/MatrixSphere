@@ -1,4 +1,4 @@
-// lib/screens/Attendance/widgets/attendance_dialogs.dart
+// lib/screens/attendance/widgets/attendance_dialogs.dart
 
 import 'package:flutter/material.dart';
 

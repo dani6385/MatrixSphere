@@ -1,4 +1,4 @@
-// lib/screens/Attendance/services/attendance_location_service.dart
+// lib/screens/attendance/services/attendance_location_service.dart
 
 import 'package:geolocator/geolocator.dart';
 import '../models/attendance_radius_config.dart';

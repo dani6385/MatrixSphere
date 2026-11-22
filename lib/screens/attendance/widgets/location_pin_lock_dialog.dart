@@ -1,4 +1,4 @@
-// lib/screens/Attendance/widgets/location_pin_lock_dialog.dart
+// lib/screens/attendance/widgets/location_pin_lock_dialog.dart
 
 import 'package:flutter/material.dart';
 

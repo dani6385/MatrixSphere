@@ -1,4 +1,4 @@
-// lib/screens/Attendance/models/matrix_attendance_paths.dart
+// lib/screens/attendance/models/matrix_attendance_paths.dart
 
 /// Jalur Firebase Realtime Database khusus untuk **Matrix Sphere**.
 class AttendancePaths {

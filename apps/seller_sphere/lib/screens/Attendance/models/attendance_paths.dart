@@ -1,4 +1,4 @@
-// lib/screens/Attendance/models/seller_attendance_paths.dart
+// lib/screens/attendance/models/seller_attendance_paths.dart
 
 /// Jalur Firebase Realtime Database khusus untuk **Seller Sphere**.
 class AttendancePaths {

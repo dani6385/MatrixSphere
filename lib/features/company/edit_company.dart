@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'models/company_profile_model.dart';
-import 'package:matrix_sphere/screens/Attendance/services/attendance_location_service.dart';
-import 'package:matrix_sphere/screens/Attendance/widgets/location_pin_lock_dialog.dart';
+import 'package:matrix_sphere/screens/attendance/services/attendance_location_service.dart';
+import 'package:matrix_sphere/screens/attendance/widgets/location_pin_lock_dialog.dart';
 
 class EditCompanyPage extends StatefulWidget {
   final CompanyProfileModel? initialCompany;

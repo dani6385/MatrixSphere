@@ -1,4 +1,4 @@
-// lib/screens/Attendance/widgets/attendance_action_card.dart
+// lib/screens/attendance/widgets/attendance_action_card.dart
 
 import 'dart:async';
 
