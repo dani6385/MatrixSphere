@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/screens/Attendance/helpers/work_schedule_helper.dart';
+import 'package:matrix_sphere/screens/attendance/helpers/work_schedule_helper.dart';
 
 import 'edit_profile.dart';
 
