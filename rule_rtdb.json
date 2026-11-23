@@ -24,10 +24,12 @@
         ".write": "auth != null && auth.uid === $uid"
       }
     },
-    "matrix_members": {
-      "$uid": {
-        ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth.token.isAdmin === true"
+    "members": {
+      "matrix_member": {
+        "$uid": {
+          ".read": "auth != null && (auth.uid === $uid || auth.token.isAdmin === true || auth.token.admin === true || auth.uid === 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')",
+          ".write": "auth != null && (auth.uid === $uid || auth.token.isAdmin === true || auth.token.admin === true || auth.uid === 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22')"
+        }
       }
     },
     "approval": {
