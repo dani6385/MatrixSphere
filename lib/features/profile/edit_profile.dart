@@ -44,13 +44,13 @@ String formatIndonesianDate(DateTime date) {
 }
 
 /// Menyimpan tanggal mulai bekerja user (`startDate` format YYYY-MM-DD)
-/// ke node RTDB `matrix_member/$uid`.
+/// ke node RTDB `matrix_members/$uid`.
 Future<void> setUserStartDate({
   required String uid,
   required DateTime startDate,
 }) async {
   await FirebaseDatabase.instance
-      .ref('matrix_member/$uid')
+      .ref('matrix_members/$uid')
       .update(<String, dynamic>{
     'startDate': formatDateToIso(startDate),
   });
@@ -140,7 +140,7 @@ class _EditProfileState extends State<EditProfileScreen> {
     if (uid == null || uid.isEmpty) return;
 
     final DataSnapshot snap =
-        await FirebaseDatabase.instance.ref('matrix_member/$uid').get();
+        await FirebaseDatabase.instance.ref('matrix_members/$uid').get();
     if (!snap.exists || snap.value is! Map || !mounted) return;
 
     final Map<dynamic, dynamic> data = snap.value as Map<dynamic, dynamic>;
@@ -213,15 +213,15 @@ class _EditProfileState extends State<EditProfileScreen> {
     setState(() => _isSaving = true);
 
     try {
-      // 1. Simpan tanggal mulai bekerja ke matrix_member/$uid
+      // 1. Simpan tanggal mulai bekerja ke matrix_members/$uid
       await setUserStartDate(
         uid: uid,
         startDate: _selectedStartDate,
       );
 
-      // 2. Simpan informasi profil & kepegawaian ke matrix_member/$uid
+      // 2. Simpan informasi profil & kepegawaian ke matrix_members/$uid
       await FirebaseDatabase.instance
-          .ref('matrix_member/$uid')
+          .ref('matrix_members/$uid')
           .update(<String, dynamic>{
         'name': _nameController.text.trim(),
         'employeeId': _employeeIdController.text.trim(),

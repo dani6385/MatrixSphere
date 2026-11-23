@@ -65,9 +65,9 @@ class UserProfileScreen extends StatelessWidget {
       );
     }
 
-    // Membaca data profil & kepegawaian dari matrix_member/$uid
+    // Membaca data profil & kepegawaian dari matrix_members/$uid
     final DatabaseReference memberRef = FirebaseDatabase.instance.ref(
-      'matrix_member/$uid',
+      'matrix_members/$uid',
     );
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
