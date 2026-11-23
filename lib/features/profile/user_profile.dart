@@ -14,6 +14,42 @@ class UserProfileScreen extends StatelessWidget {
     this.targetUid,
   });
 
+  /// Menghitung lama masa kerja dari startDate hingga hari ini
+  String _calculateTenure(DateTime startDate) {
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
+
+    if (startDate.isAfter(today)) {
+      final int daysUntil = startDate.difference(today).inDays;
+      return 'Mulai dalam $daysUntil hari';
+    }
+
+    int years = today.year - startDate.year;
+    int months = today.month - startDate.month;
+    int days = today.day - startDate.day;
+
+    if (days < 0) {
+      months -= 1;
+      final DateTime prevMonth = DateTime(today.year, today.month, 0);
+      days += prevMonth.day;
+    }
+    if (months < 0) {
+      years -= 1;
+      months += 12;
+    }
+
+    final List<String> parts = <String>[];
+    if (years > 0) parts.add('$years tahun');
+    if (months > 0) parts.add('$months bulan');
+    if (days > 0 || parts.isEmpty) parts.add('$days hari');
+
+    return parts.join(' ');
+  }
+
+  String _readString(Map<dynamic, dynamic> map, String key, String fallback) {
+    final String? val = map[key]?.toString().trim();
+    return (val != null && val.isNotEmpty) ? val : fallback;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,47 +65,60 @@ class UserProfileScreen extends StatelessWidget {
       );
     }
 
-    final DatabaseReference matrixUserRef = FirebaseDatabase.instance.ref(
-      'attendance/matrix/$uid',
+    // Membaca data profil & kepegawaian dari matrix_member/$uid
+    final DatabaseReference memberRef = FirebaseDatabase.instance.ref(
+      'matrix_member/$uid',
     );
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
 
     return StreamBuilder<DatabaseEvent>(
-      stream: matrixUserRef.onValue,
+      stream: memberRef.onValue,
       builder: (context, snapshot) {
-        Map<dynamic, dynamic> matrixData = <dynamic, dynamic>{};
+        Map<dynamic, dynamic> memberData = <dynamic, dynamic>{};
         if (snapshot.hasData && snapshot.data!.snapshot.value is Map) {
-          matrixData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+          memberData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
         }
 
-        final String displayName =
-            (matrixData['name']?.toString().trim().isNotEmpty == true)
-                ? matrixData['name'].toString().trim()
-                : (currentUser?.displayName?.trim().isNotEmpty == true
-                    ? currentUser!.displayName!.trim()
-                    : 'Pengguna Matrix Sphere');
+        final String displayName = _readString(
+          memberData,
+          'name',
+          (currentUser?.displayName?.trim().isNotEmpty == true)
+              ? currentUser!.displayName!.trim()
+              : 'Pengguna Matrix Sphere',
+        );
 
-        final String email =
-            (matrixData['email']?.toString().trim().isNotEmpty == true)
-                ? matrixData['email'].toString().trim()
-                : (currentUser?.email?.trim().isNotEmpty == true
-                    ? currentUser!.email!.trim()
-                    : 'Belum diatur');
-
-        final String phone =
-            matrixData['phone']?.toString().trim().isNotEmpty == true
-                ? matrixData['phone'].toString().trim()
-                : 'Belum diatur';
-
+        final String employeeId =
+            _readString(memberData, 'employeeId', 'Belum diatur');
+        final String department =
+            _readString(memberData, 'department', 'Belum diatur');
         final String role =
-            matrixData['role']?.toString().trim().isNotEmpty == true
-                ? matrixData['role'].toString().trim()
-                : 'Staf / Karyawan';
+            _readString(memberData, 'role', 'Staf / Karyawan');
+        final String employmentStatus =
+            _readString(memberData, 'employmentStatus', 'Belum diatur');
+
+        final String email = _readString(
+          memberData,
+          'email',
+          (currentUser?.email?.trim().isNotEmpty == true)
+              ? currentUser!.email!.trim()
+              : 'Belum diatur',
+        );
+
+        final String phone = _readString(memberData, 'phone', 'Belum diatur');
+        final String address =
+            _readString(memberData, 'address', 'Belum diatur');
+
+        final String rawStartDate =
+            _readString(memberData, 'startDate', '');
+        final DateTime? parsedStartDate = parseIsoDate(rawStartDate);
+        final String startDateDisplay = parsedStartDate != null
+            ? '${formatIndonesianDate(parsedStartDate)} (${_calculateTenure(parsedStartDate)})'
+            : 'Belum diatur';
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Profil Pengguna'),
+            title: const Text('Profil Pekerja'),
             actions: [
               IconButton(
                 tooltip: 'Edit Profil',
@@ -80,9 +129,17 @@ class UserProfileScreen extends StatelessWidget {
                       builder: (_) => EditProfileScreen(
                         uid: uid,
                         initialName: displayName,
+                        initialEmployeeId:
+                            employeeId == 'Belum diatur' ? '' : employeeId,
                         initialEmail: email == 'Belum diatur' ? '' : email,
                         initialPhone: phone == 'Belum diatur' ? '' : phone,
+                        initialDepartment:
+                            department == 'Belum diatur' ? '' : department,
                         initialRole: role,
+                        initialEmploymentStatus: employmentStatus,
+                        initialAddress:
+                            address == 'Belum diatur' ? '' : address,
+                        initialStartDate: parsedStartDate,
                       ),
                     ),
                   );
@@ -123,15 +180,60 @@ class UserProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            role,
+                            department != 'Belum diatur'
+                                ? '$role • $department'
+                                : role,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
                           ),
+                          if (employmentStatus != 'Belum diatur') ...[
+                            const SizedBox(height: 8),
+                            Chip(
+                              label: Text(employmentStatus),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ],
                         ],
                       ),
                     ),
                     const SizedBox(height: 24),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        'Informasi Kepegawaian',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    _ProfileInfoCard(
+                      icon: Icons.event_available_outlined,
+                      label: 'Tanggal Mulai Bekerja & Masa Kerja',
+                      value: startDateDisplay,
+                    ),
+                    _ProfileInfoCard(
+                      icon: Icons.badge_outlined,
+                      label: 'NIP / ID Karyawan',
+                      value: employeeId,
+                    ),
+                    _ProfileInfoCard(
+                      icon: Icons.apartment_outlined,
+                      label: 'Departemen / Divisi',
+                      value: department,
+                    ),
+                    const SizedBox(height: 12),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        'Kontak & Identitas Sistem',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                     _ProfileInfoCard(
                       icon: Icons.email_outlined,
                       label: 'Email',
@@ -139,11 +241,16 @@ class UserProfileScreen extends StatelessWidget {
                     ),
                     _ProfileInfoCard(
                       icon: Icons.phone_outlined,
-                      label: 'Telepon',
+                      label: 'Telepon / WhatsApp',
                       value: phone,
                     ),
                     _ProfileInfoCard(
-                      icon: Icons.badge_outlined,
+                      icon: Icons.location_on_outlined,
+                      label: 'Alamat Domisili',
+                      value: address,
+                    ),
+                    _ProfileInfoCard(
+                      icon: Icons.fingerprint_outlined,
                       label: 'User ID (UID)',
                       value: uid,
                     ),
@@ -169,7 +276,7 @@ class _ProfileInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),

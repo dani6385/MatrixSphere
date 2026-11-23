@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 class AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Judul yang ditampilkan di bilah atas aplikasi.
   final String title;
-
   const AttendanceAppBar({super.key, this.title = 'Matrix Sphere'});
-
   /// Menentukan tinggi standar AppBar Material (56.0 px).
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
