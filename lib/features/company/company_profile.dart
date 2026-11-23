@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
+import 'package:shared_services/shared_services.dart';
+
 import 'models/company_profile_model.dart';
 
 /// Halaman Profil Perusahaan (`CompanyProfile`) khusus tampilan & navigasi edit.
@@ -25,11 +27,39 @@ class CompanyProfile extends StatelessWidget {
     return double.tryParse(value.toString().trim());
   }
 
+  int _parseInt(dynamic value, {int fallback = 0}) {
+    if (value == null) return fallback;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString().trim()) ?? fallback;
+  }
+
+  bool _parseBool(dynamic value, {bool fallback = false}) {
+    if (value is bool) return value;
+    if (value is String) {
+      final String lower = value.trim().toLowerCase();
+      if (lower == 'true') return true;
+      if (lower == 'false') return false;
+    }
+    return fallback;
+  }
+
+  String _formatPhotoType(String? rawType) {
+    switch (rawType?.trim()) {
+      case 'front_selfie':
+        return 'Kamera Depan (Selfie)';
+      case 'rear_site':
+        return 'Kamera Belakang (Bukti Lokasi/Kerja)';
+      case 'both':
+        return 'Kamera Depan & Belakang';
+      default:
+        return 'Kamera Depan (Selfie)';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final DatabaseReference companyRef = FirebaseDatabase.instance.ref(
-      'company_profile',
-    );
+    final DatabaseReference companyRef = rtdbService.ref('company_profile');
     final User? currentUser = FirebaseAuth.instance.currentUser;
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
@@ -47,7 +77,8 @@ class CompanyProfile extends StatelessWidget {
                 IconButton(
                   tooltip: 'Edit Profil',
                   icon: const Icon(Icons.edit_outlined),
-                  onPressed: () => AppNavigation.openEditCompanyProfile(context),
+                  onPressed: () =>
+                      AppNavigation.openEditCompanyProfile(context),
                 ),
             ],
           ),
@@ -59,7 +90,7 @@ class CompanyProfile extends StatelessWidget {
               }
 
               Map<dynamic, dynamic>? rawData;
-              if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
+              if (snapshot.hasData && snapshot.data!.snapshot.value is Map) {
                 rawData =
                     snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
               }
@@ -72,10 +103,31 @@ class CompanyProfile extends StatelessWidget {
                   rawData?['matrixSphereWorkStart']?.toString() ?? '08:00';
               final String matrixEnd =
                   rawData?['matrixSphereWorkEnd']?.toString() ?? '17:00';
-              final bool isAttendanceEnabled =
-                  rawData?['isAttendanceEnabled'] is bool
-                  ? rawData!['isAttendanceEnabled'] as bool
-                  : true;
+              final bool isAttendanceEnabled = _parseBool(
+                rawData?['isAttendanceEnabled'],
+                fallback: true,
+              );
+
+              // Kebutuhan absensi lokasi & kamera perusahaan
+              final bool requireLocation = _parseBool(
+                rawData?['requireLocationAttendance'],
+                fallback: true,
+              );
+              final bool requirePhoto = _parseBool(
+                rawData?['requirePhotoAttendance'],
+                fallback: true,
+              );
+              final bool allowOutsideRadius = _parseBool(
+                rawData?['allowOutsideRadius'],
+                fallback: false,
+              );
+              final int graceMinutes = _parseInt(
+                rawData?['graceMinutes'],
+                fallback: 15,
+              );
+              final String photoTypeLabel = _formatPhotoType(
+                rawData?['photoType']?.toString(),
+              );
 
               // Baca koordinat titik pusat & radius absensi dari company_profile
               final double? officeLat = _parseDouble(
@@ -142,11 +194,16 @@ class CompanyProfile extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Ringkasan Jam Kerja & Lokasi Radius Absensi Matrix
+                  // Ringkasan Jam Kerja, Lokasi & Kebutuhan Absensi Matrix
                   _MatrixWorkHoursSummaryCard(
                     workStart: matrixStart,
                     workEnd: matrixEnd,
                     isAttendanceEnabled: isAttendanceEnabled,
+                    requireLocation: requireLocation,
+                    requirePhoto: requirePhoto,
+                    allowOutsideRadius: allowOutsideRadius,
+                    graceMinutes: graceMinutes,
+                    photoTypeLabel: photoTypeLabel,
                     coordinateText: coordinateText,
                     radiusText: radiusText,
                   ),
@@ -168,10 +225,20 @@ class CompanyProfile extends StatelessWidget {
                     value: 'Titik: $coordinateText • Radius: $radiusText',
                   ),
                   _CompanyInfoTile(
+                    icon: Icons.camera_alt_outlined,
+                    label: 'Kebutuhan Lokasi & Kamera',
+                    value:
+                        'Lokasi: ${requireLocation ? 'Wajib' : 'Opsional'} • '
+                        'Kamera: ${requirePhoto ? 'Wajib ($photoTypeLabel)' : 'Opsional'} • '
+                        'Luar Radius: ${allowOutsideRadius ? 'Diizinkan (Review)' : 'Ditolak'} • '
+                        'Toleransi: $graceMinutes mnt',
+                  ),
+                  _CompanyInfoTile(
                     icon: Icons.info_outline,
                     label: 'Deskripsi',
                     value:
-                        company.description ?? 'Belum ada deskripsi perusahaan.',
+                        company.description ??
+                        'Belum ada deskripsi perusahaan.',
                   ),
                 ],
               );
@@ -187,6 +254,11 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
   final String workStart;
   final String workEnd;
   final bool isAttendanceEnabled;
+  final bool requireLocation;
+  final bool requirePhoto;
+  final bool allowOutsideRadius;
+  final int graceMinutes;
+  final String photoTypeLabel;
   final String coordinateText;
   final String radiusText;
 
@@ -194,6 +266,11 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
     required this.workStart,
     required this.workEnd,
     required this.isAttendanceEnabled,
+    required this.requireLocation,
+    required this.requirePhoto,
+    required this.allowOutsideRadius,
+    required this.graceMinutes,
+    required this.photoTypeLabel,
     required this.coordinateText,
     required this.radiusText,
   });
@@ -213,17 +290,31 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Jam Kerja & Lokasi Matrix Sphere',
+              'Jam Kerja, Lokasi & Aturan Absensi',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
+            Text(
+              'Status Absensi: ${isAttendanceEnabled ? 'Aktif' : 'Nonaktif'} • '
+              'Toleransi Terlambat: $graceMinutes menit',
+            ),
+            const SizedBox(height: 4),
             Text('Jam Operasional: $workStart - $workEnd'),
             const SizedBox(height: 4),
             Text('Titik Koordinat: $coordinateText'),
             const SizedBox(height: 4),
             Text('Batas Radius: $radiusText'),
+            const SizedBox(height: 4),
+            Text(
+              'Wajib GPS/Lokasi: ${requireLocation ? 'Ya' : 'Tidak'} • '
+              'Luar Radius: ${allowOutsideRadius ? 'Diizinkan' : 'Ditolak'}',
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Wajib Kamera/Foto: ${requirePhoto ? 'Ya ($photoTypeLabel)' : 'Tidak'}',
+            ),
           ],
         ),
       ),

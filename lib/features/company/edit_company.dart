@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_services/shared_services.dart';
+
 import 'models/company_profile_model.dart';
 
 class EditCompanyPage extends StatefulWidget {
@@ -16,9 +18,6 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   static const String _permanentAdminUid = 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22';
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final DatabaseReference _companyRef = FirebaseDatabase.instance.ref(
-    'company_profile',
-  );
 
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
@@ -30,15 +29,23 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   late final TextEditingController _latitudeController;
   late final TextEditingController _longitudeController;
   late final TextEditingController _radiusMetersController;
+  late final TextEditingController _graceMinutesController;
 
-  
+  static const Map<String, String> _photoTypeOptions = <String, String>{
+    'front_selfie': 'Kamera Depan (Selfie)',
+    'rear_site': 'Kamera Belakang (Bukti Lokasi/Kerja)',
+    'both': 'Kamera Depan & Belakang',
+  };
+
   bool _isAttendanceEnabled = true;
+  bool _requireLocationAttendance = true;
+  bool _requirePhotoAttendance = true;
+  bool _allowOutsideRadius = false;
+  String _selectedPhotoType = 'front_selfie';
+
   bool _isCheckingAdmin = true;
   bool _isAdmin = false;
   bool _isSaving = false;
-  // PIN bisa dibaca dari company_profile (misal data['locationPin']) dengan fallback aman
-  
-
 
   @override
   void initState() {
@@ -54,6 +61,7 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     _latitudeController = TextEditingController();
     _longitudeController = TextEditingController();
     _radiusMetersController = TextEditingController(text: '100');
+    _graceMinutesController = TextEditingController(text: '15');
 
     _verifyAdminAndLoadData();
   }
@@ -72,6 +80,16 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     return fallback;
   }
 
+  bool _parseBool(dynamic value, {required bool fallback}) {
+    if (value is bool) return value;
+    if (value is String) {
+      final String lower = value.trim().toLowerCase();
+      if (lower == 'true') return true;
+      if (lower == 'false') return false;
+    }
+    return fallback;
+  }
+
   Future<void> _verifyAdminAndLoadData() async {
     final User? user = FirebaseAuth.instance.currentUser;
     bool adminAccess = false;
@@ -86,7 +104,9 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
       }
     }
 
-    final DataSnapshot snapshot = await _companyRef.get();
+    final DataSnapshot snapshot = await rtdbService.getSnapshot(
+      'company_profile',
+    );
     if (snapshot.exists && snapshot.value is Map) {
       final Map<dynamic, dynamic> data =
           snapshot.value as Map<dynamic, dynamic>;
@@ -116,8 +136,32 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
         'radius',
         'attendanceRadius',
       ], fallback: '100');
-      if (data['isAttendanceEnabled'] is bool) {
-        _isAttendanceEnabled = data['isAttendanceEnabled'] as bool;
+      _graceMinutesController.text = _readTextOrDefault(data, [
+        'graceMinutes',
+        'grace_minutes',
+      ], fallback: '15');
+
+      _isAttendanceEnabled = _parseBool(
+        data['isAttendanceEnabled'],
+        fallback: true,
+      );
+      _requireLocationAttendance = _parseBool(
+        data['requireLocationAttendance'],
+        fallback: true,
+      );
+      _requirePhotoAttendance = _parseBool(
+        data['requirePhotoAttendance'],
+        fallback: true,
+      );
+      _allowOutsideRadius = _parseBool(
+        data['allowOutsideRadius'],
+        fallback: false,
+      );
+
+      final String rawPhotoType =
+          data['photoType']?.toString().trim() ?? 'front_selfie';
+      if (_photoTypeOptions.containsKey(rawPhotoType)) {
+        _selectedPhotoType = rawPhotoType;
       }
     }
 
@@ -135,38 +179,53 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     final double? lat = double.tryParse(_latitudeController.text.trim());
     final double? lng = double.tryParse(_longitudeController.text.trim());
     final double? radius = double.tryParse(_radiusMetersController.text.trim());
+    final int graceMinutes =
+        int.tryParse(_graceMinutesController.text.trim()) ?? 15;
 
     setState(() => _isSaving = true);
 
     try {
-      await _companyRef.update({
-        'name': _nameController.text.trim(),
-        'email': _emailController.text.trim(),
-        'phone': _phoneController.text.trim(),
-        'address': _addressController.text.trim(),
-        'description': _descriptionController.text.trim(),
-        'matrixSphereWorkStart': _matrixStartController.text.trim(),
-        'matrixSphereWorkEnd': _matrixEndController.text.trim(),
-        'latitude': lat,
-        'longitude': lng,
-        'radiusMeters': radius,
-        'isAttendanceEnabled': _isAttendanceEnabled,
-      });
+      await rtdbService.updateData(
+        'company_profile',
+        <String, Object?>{
+          'name': _nameController.text.trim(),
+          'email': _emailController.text.trim(),
+          'phone': _phoneController.text.trim(),
+          'address': _addressController.text.trim(),
+          'description': _descriptionController.text.trim(),
+          'matrixSphereWorkStart': _matrixStartController.text.trim(),
+          'matrixSphereWorkEnd': _matrixEndController.text.trim(),
+          'latitude': lat,
+          'longitude': lng,
+          'radiusMeters': radius,
+          'graceMinutes': graceMinutes,
+          'isAttendanceEnabled': _isAttendanceEnabled,
+          'requireLocationAttendance': _requireLocationAttendance,
+          'requirePhotoAttendance': _requirePhotoAttendance,
+          'allowOutsideRadius': _allowOutsideRadius,
+          'photoType': _selectedPhotoType,
+        },
+      );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Profil, jam kerja & lokasi absensi berhasil disimpan.',
+            'Profil, jam kerja & kebutuhan absensi berhasil disimpan.',
           ),
         ),
       );
       Navigator.of(context).pop(true);
-    } catch (e) {
+    } catch (e, stack) {
+      await rtdbService.logAppError(
+        source: 'EditCompanyPage._saveCompanyChanges',
+        error: e,
+        stackTrace: stack,
+      );
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Gagal menyimpan perubahan: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan perubahan: $e')),
+      );
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -186,6 +245,7 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     _latitudeController.dispose();
     _longitudeController.dispose();
     _radiusMetersController.dispose();
+    _graceMinutesController.dispose();
     super.dispose();
   }
 
@@ -281,6 +341,23 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _graceMinutesController,
+              readOnly: !_isAdmin,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Toleransi Keterlambatan (menit)',
+                hintText: 'Contoh: 15',
+              ),
+              validator: (v) {
+                final int? val = int.tryParse(v?.trim() ?? '');
+                if (val == null || val < 0) {
+                  return 'Masukkan angka >= 0';
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: 24),
             Text(
               'Lokasi & Radius Absensi',
@@ -360,8 +437,73 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
               },
             ),
             const SizedBox(height: 24),
+            Text(
+              'Kebutuhan Lokasi & Kamera Absensi',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Aktifkan Absensi Karyawan'),
+              value: _isAttendanceEnabled,
+              onChanged: _isAdmin
+                  ? (val) => setState(() => _isAttendanceEnabled = val)
+                  : null,
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Wajibkan Koordinat Lokasi (GPS)'),
+              value: _requireLocationAttendance,
+              onChanged: _isAdmin
+                  ? (val) => setState(() => _requireLocationAttendance = val)
+                  : null,
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Izinkan Absen di Luar Radius (Perlu Review)'),
+              value: _allowOutsideRadius,
+              onChanged: (_isAdmin && _requireLocationAttendance)
+                  ? (val) => setState(() => _allowOutsideRadius = val)
+                  : null,
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Wajibkan Bukti Foto Kamera'),
+              value: _requirePhotoAttendance,
+              onChanged: _isAdmin
+                  ? (val) => setState(() => _requirePhotoAttendance = val)
+                  : null,
+            ),
+            if (_requirePhotoAttendance) ...[
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedPhotoType,
+                decoration: const InputDecoration(
+                  labelText: 'Jenis Kamera / Bukti Foto',
+                  border: OutlineInputBorder(),
+                ),
+                items: _photoTypeOptions.entries
+                    .map(
+                      (entry) => DropdownMenuItem<String>(
+                        value: entry.key,
+                        child: Text(entry.value),
+                      ),
+                    )
+                    .toList(),
+                onChanged: _isAdmin
+                    ? (val) {
+                        if (val != null) {
+                          setState(() => _selectedPhotoType = val);
+                        }
+                      }
+                    : null,
+              ),
+            ],
+            const SizedBox(height: 24),
             FilledButton(
-              onPressed: _isSaving ? null : _saveCompanyChanges,
+              onPressed: (_isAdmin && !_isSaving) ? _saveCompanyChanges : null,
               child: Text(_isSaving ? 'Menyimpan...' : 'Simpan Perubahan'),
             ),
           ],
