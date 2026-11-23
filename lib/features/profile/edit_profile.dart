@@ -1,8 +1,13 @@
 // lib/features/profile/edit_profile.dart
 
-import 'package:shared_services/shared_services.dart';
+import 'dart:typed_data';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_services/shared_services.dart';
+
 /// Helper memformat DateTime menjadi YYYY-MM-DD
 String formatDateToIso(DateTime date) {
   final String y = date.year.toString().padLeft(4, '0');
@@ -49,10 +54,11 @@ Future<void> setUserStartDate({
   required DateTime startDate,
 }) async {
   await rtdbService.updateData(
-      'matrix_members/$uid',
-      <String, dynamic>{
-    'startDate': formatDateToIso(startDate),
-  },);
+    'matrix_members/$uid',
+    <String, dynamic>{
+      'startDate': formatDateToIso(startDate),
+    },
+  );
 }
 
 class EditProfileScreen extends StatefulWidget {
@@ -66,6 +72,8 @@ class EditProfileScreen extends StatefulWidget {
   final String? initialEmploymentStatus;
   final String? initialAddress;
   final DateTime? initialStartDate;
+  final String? initialPhotoUrl;
+  final String? initialBannerUrl;
 
   const EditProfileScreen({
     super.key,
@@ -79,6 +87,8 @@ class EditProfileScreen extends StatefulWidget {
     this.initialEmploymentStatus,
     this.initialAddress,
     this.initialStartDate,
+    this.initialPhotoUrl,
+    this.initialBannerUrl,
   });
 
   @override
@@ -87,6 +97,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final ImagePicker _picker = ImagePicker();
 
   late final TextEditingController _nameController;
   late final TextEditingController _employeeIdController;
@@ -106,7 +117,12 @@ class _EditProfileState extends State<EditProfileScreen> {
   late String _selectedStatus;
   late DateTime _selectedStartDate;
   bool _isSaving = false;
+  bool _isUploadingPhoto = false;
+  bool _isUploadingBanner = false;
   String? _targetUid;
+
+  String _photoUrl = '';
+  String _bannerUrl = '';
 
   @override
   void initState() {
@@ -124,10 +140,12 @@ class _EditProfileState extends State<EditProfileScreen> {
     _addressController =
         TextEditingController(text: widget.initialAddress ?? '');
 
-    _selectedStatus =
-        _statusOptions.contains(widget.initialEmploymentStatus)
-            ? widget.initialEmploymentStatus!
-            : _statusOptions.first;
+    _photoUrl = widget.initialPhotoUrl?.trim() ?? '';
+    _bannerUrl = widget.initialBannerUrl?.trim() ?? '';
+
+    _selectedStatus = _statusOptions.contains(widget.initialEmploymentStatus)
+        ? widget.initialEmploymentStatus!
+        : _statusOptions.first;
 
     _selectedStartDate = widget.initialStartDate ?? DateTime(2026, 11, 22);
 
@@ -168,6 +186,12 @@ class _EditProfileState extends State<EditProfileScreen> {
       if (_addressController.text.trim().isEmpty && data['address'] != null) {
         _addressController.text = data['address'].toString();
       }
+      if (_photoUrl.isEmpty && data['photoUrl'] != null) {
+        _photoUrl = data['photoUrl'].toString().trim();
+      }
+      if (_bannerUrl.isEmpty && data['bannerUrl'] != null) {
+        _bannerUrl = data['bannerUrl'].toString().trim();
+      }
       if (data['employmentStatus'] != null &&
           _statusOptions.contains(data['employmentStatus'].toString())) {
         _selectedStatus = data['employmentStatus'].toString();
@@ -179,6 +203,99 @@ class _EditProfileState extends State<EditProfileScreen> {
         }
       }
     });
+  }
+
+  /// Mengompres bytes gambar agar ukuran file kecil sebelum diunggah ke ImgBB
+  Future<Uint8List> _compressImageBytes(
+    Uint8List originalBytes, {
+    required int maxWidth,
+    required int maxHeight,
+    required int quality,
+  }) async {
+    final Uint8List compressed = await FlutterImageCompress.compressWithList(
+      originalBytes,
+      minWidth: maxWidth,
+      minHeight: maxHeight,
+      quality: quality,
+      format: CompressFormat.jpeg,
+    );
+
+    // Gunakan hasil kompresi jika ukurannya memang lebih kecil dari aslinya
+    return compressed.lengthInBytes < originalBytes.lengthInBytes
+        ? compressed
+        : originalBytes;
+  }
+
+  /// Memilih, mengompres, dan mengunggah gambar ke ImgBB
+  Future<void> _pickAndUploadImage({required bool isBanner}) async {
+    if (_isUploadingPhoto || _isUploadingBanner || _isSaving) return;
+
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile == null) return;
+
+    final String uid = _targetUid ?? 'user';
+
+    setState(() {
+      if (isBanner) {
+        _isUploadingBanner = true;
+      } else {
+        _isUploadingPhoto = true;
+      }
+    });
+
+    try {
+      final Uint8List rawBytes = await pickedFile.readAsBytes();
+
+      // Foto profil cukup 800x800; background/banner maksimal 1280x720
+      final Uint8List compressedBytes = await _compressImageBytes(
+        rawBytes,
+        maxWidth: isBanner ? 1280 : 800,
+        maxHeight: isBanner ? 720 : 800,
+        quality: isBanner ? 75 : 78,
+      );
+
+      final String prefix = isBanner ? 'banner' : 'avatar';
+      final String fileName =
+          '${prefix}_${uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      final ImgbbUploadResult uploadResult = await imgbbService.uploadBytes(
+        compressedBytes,
+        fileName: fileName,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        if (isBanner) {
+          _bannerUrl = uploadResult.displayUrl;
+        } else {
+          _photoUrl = uploadResult.displayUrl;
+        }
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isBanner
+                ? 'Background profil berhasil diunggah.'
+                : 'Foto profil berhasil diunggah.',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal mengunggah gambar: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploadingPhoto = false;
+          _isUploadingBanner = false;
+        });
+      }
+    }
   }
 
   Future<void> _pickStartDate() async {
@@ -198,7 +315,7 @@ class _EditProfileState extends State<EditProfileScreen> {
   }
 
   Future<void> _saveProfile() async {
-    if (_isSaving) return;
+    if (_isSaving || _isUploadingPhoto || _isUploadingBanner) return;
     if (!_formKey.currentState!.validate()) return;
 
     final String? uid = _targetUid;
@@ -218,7 +335,7 @@ class _EditProfileState extends State<EditProfileScreen> {
         startDate: _selectedStartDate,
       );
 
-      // 2. Simpan informasi profil & kepegawaian ke matrix_members/$uid
+      // 2. Simpan informasi profil, foto, banner & kepegawaian ke matrix_members/$uid
       await FirebaseDatabase.instance
           .ref('matrix_members/$uid')
           .update(<String, dynamic>{
@@ -230,6 +347,8 @@ class _EditProfileState extends State<EditProfileScreen> {
         'role': _roleController.text.trim(),
         'employmentStatus': _selectedStatus,
         'address': _addressController.text.trim(),
+        'photoUrl': _photoUrl,
+        'bannerUrl': _bannerUrl,
         'updatedAt': ServerValue.timestamp,
       });
 
@@ -245,6 +364,128 @@ class _EditProfileState extends State<EditProfileScreen> {
         setState(() => _isSaving = false);
       }
     }
+  }
+
+  Widget _buildMediaPreviewCard() {
+    final ColorScheme colors = Theme.of(context).colorScheme;
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Area Background / Banner Profil
+          Stack(
+            children: [
+              Container(
+                height: 140,
+                width: double.infinity,
+                color: colors.surfaceContainerHighest,
+                child: _bannerUrl.isNotEmpty
+                    ? Image.network(
+                        _bannerUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Center(
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          'Belum ada background profil',
+                          style: TextStyle(color: colors.onSurfaceVariant),
+                        ),
+                      ),
+              ),
+              Positioned(
+                right: 10,
+                bottom: 10,
+                child: FilledButton.tonalIcon(
+                  onPressed: _isUploadingBanner
+                      ? null
+                      : () => _pickAndUploadImage(isBanner: true),
+                  icon: _isUploadingBanner
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.wallpaper_outlined, size: 18),
+                  label: Text(
+                    _isUploadingBanner ? 'Mengunggah...' : 'Ubah Background',
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Area Foto Profil + Tombol Upload
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 36,
+                  backgroundColor: colors.primaryContainer,
+                  backgroundImage:
+                      _photoUrl.isNotEmpty ? NetworkImage(_photoUrl) : null,
+                  child: _photoUrl.isEmpty
+                      ? Icon(
+                          Icons.person,
+                          size: 36,
+                          color: colors.onPrimaryContainer,
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Foto & Background Profil',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Gambar otomatis dikompres sebelum diunggah ke ImgBB.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: _isUploadingPhoto
+                            ? null
+                            : () => _pickAndUploadImage(isBanner: false),
+                        icon: _isUploadingPhoto
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.camera_alt_outlined, size: 18),
+                        label: Text(
+                          _isUploadingPhoto
+                              ? 'Mengunggah...'
+                              : 'Pilih Foto Profil',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -283,6 +524,8 @@ class _EditProfileState extends State<EditProfileScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
+            _buildMediaPreviewCard(),
+            const SizedBox(height: 20),
             const Text(
               'Data Kepegawaian',
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
