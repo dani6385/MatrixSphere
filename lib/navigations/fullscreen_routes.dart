@@ -40,12 +40,12 @@ List<RouteBase> fullScreen({
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const EditCompanyPage(),
     ),
-    GoRoute(
+    /*GoRoute(
       path: AppRoutes.attendanceHistory,
       name: 'Attendance History',
       parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const AttendanceHistoryScreen(),
-    ),/*
+    ),
     GoRoute(
       path: AppRoutes.editProfile,
       name: 'editProfile',

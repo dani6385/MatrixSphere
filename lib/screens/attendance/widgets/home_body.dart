@@ -1,30 +1,12 @@
-// lib/screens/attendance/widgets/Attendance_body.dart
+// lib/screens/home/widgets/home_body.dart
 
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/screens/attendance/widgets/attendance_history.dart';
 import 'package:shared_ui/shared_ui.dart';
-import 'package:matrix_sphere/screens/attendance/cards/attendance_action_card.dart';
 
 //import '../contents/featured_card.dart'; // Impor banner biru Anda
 
-class AttendanceBody extends StatelessWidget {
-  final bool hasCheckedIn;
-  final bool hasCheckedOut;
-  final bool isProcessing;
-  final String? checkInTime;
-  final String? checkOutTime;
-  final VoidCallback? onCheckIn;
-  final VoidCallback? onCheckOut;
-  const AttendanceBody({
-    super.key,
-    this.hasCheckedIn = false,
-    this.hasCheckedOut = false,
-    this.isProcessing = false,
-    this.checkInTime,
-    this.checkOutTime,
-    this.onCheckIn,
-    this.onCheckOut,
-  });
+class HomeBody extends StatelessWidget {
+  const HomeBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +14,11 @@ class AttendanceBody extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: ListView(
         children: [
-          const AttendanceActionCard(),
+          // 1. BANNER BIRU UNGGULAN
+          //const FeaturedCard(), 
+          
           const SizedBox(height: 16),
-          const AttendanceHistory(),
+
           // 2. KARTU INFORMASI PUTIH (Asli Anda, Tanpa Menggunakan Kelas Tidak Dikenal)
           Card(
             elevation: 4,
@@ -57,8 +41,11 @@ class AttendanceBody extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Ini adalah widget body yang dipisahkan ke file lain agar kode AttendanceScreen tetap bersih dan mudah dibaca.',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    'Ini adalah widget body yang dipisahkan ke file lain agar kode HomeScreen tetap bersih dan mudah dibaca.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
                   ),
                 ],
               ),

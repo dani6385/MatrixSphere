@@ -4,9 +4,7 @@ export 'package:matrix_sphere/screens/home/home_screen.dart';
 export 'package:matrix_sphere/screens/analytics/analytic_screen.dart';
 export 'package:matrix_sphere/screens/approvals/approval_screen.dart';
 export 'package:matrix_sphere/screens/projects/project_screen.dart';
-export 'package:matrix_sphere/screens/attendance/attendance_screen.dart';
-export 'package:matrix_sphere/screens/attendance/widgets/attendance_history.dart';
-export 'package:matrix_sphere/screens/attendance/attendance_history_screen.dart';
+export 'package:matrix_sphere/screens/Attendance/atendance_screen.dart';
 
 export 'package:matrix_sphere/features/company/company_profile.dart';
 export 'package:matrix_sphere/features/company/edit_company.dart';

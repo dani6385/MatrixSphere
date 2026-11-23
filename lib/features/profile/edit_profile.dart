@@ -3,7 +3,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/screens/attendance/helpers/work_schedule_helper.dart';
 
 /// Menyimpan tanggal mulai bekerja user (`startDate` format YYYY-MM-DD)
 /// ke node RTDB `attendance/matrix/$uid`.
@@ -11,11 +10,9 @@ Future<void> setUserStartDate({
   required String uid,
   required DateTime startDate,
 }) async {
-  final String formattedStartDate = WorkScheduleHelper.toDateKey(startDate);
   await FirebaseDatabase.instance
       .ref('attendance/matrix/$uid')
       .update(<String, dynamic>{
-    'startDate': formattedStartDate,
   });
 }
 
@@ -77,9 +74,6 @@ class _EditProfileState extends State<EditProfileScreen> {
     if (!snap.exists || snap.value is! Map || !mounted) return;
 
     final Map<dynamic, dynamic> data = snap.value as Map<dynamic, dynamic>;
-    final DateTime? parsedStart = WorkScheduleHelper.parseDate(
-      data['startDate'] ?? data['start_date'],
-    );
 
     setState(() {
       if (_nameController.text.trim().isEmpty && data['name'] != null) {
@@ -93,9 +87,6 @@ class _EditProfileState extends State<EditProfileScreen> {
       }
       if (data['role'] != null && data['role'].toString().trim().isNotEmpty) {
         _roleController.text = data['role'].toString();
-      }
-      if (parsedStart != null) {
-        _selectedStartDate = parsedStart;
       }
     });
   }
@@ -148,13 +139,6 @@ class _EditProfileState extends State<EditProfileScreen> {
       });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Profil & tanggal mulai bekerja (${WorkScheduleHelper.toDateKey(_selectedStartDate)}) tersimpan.',
-          ),
-        ),
-      );
       Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;
@@ -179,7 +163,6 @@ class _EditProfileState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final String formattedDate = WorkScheduleHelper.toDateKey(_selectedStartDate);
 
     return Scaffold(
       appBar: AppBar(
@@ -247,13 +230,6 @@ class _EditProfileState extends State<EditProfileScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    formattedDate,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                   TextButton.icon(
                     onPressed: _pickStartDate,
                     icon: const Icon(Icons.calendar_today, size: 18),

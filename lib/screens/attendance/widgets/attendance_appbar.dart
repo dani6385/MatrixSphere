@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/navigations/app_navigation.dart';
 
 /// AppBar khusus untuk halaman utama (`AttendanceScreen`) pada Matrix Sphere.
 /// Mengimplementasikan `PreferredSizeWidget` agar dapat dipasang langsung pada
@@ -30,17 +29,6 @@ class AttendanceAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       actions: [
-        // Tombol notifikasi -> mengarah ke halaman Notifications via AppNavigation
-        IconButton(
-          tooltip: 'Notifikasi',
-          icon: const Icon(Icons.notifications_outlined),
-          onPressed: () => AppNavigation.openNotifications(context),
-        ),
-        IconButton(
-          tooltip: 'Chat',
-          icon: const Icon(Icons.chat_bubble),
-          onPressed: () => AppNavigation.openMessages(context),
-        ),
         // Tombol membuka endDrawer profil pengguna pada AttendanceScreen
         IconButton(
           tooltip: 'Profil & Akun',

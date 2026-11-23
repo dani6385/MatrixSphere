@@ -3,7 +3,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:matrix_sphere/screens/attendance/helpers/work_schedule_helper.dart';
 
 import 'edit_profile.dart';
 
@@ -15,25 +14,6 @@ class UserProfileScreen extends StatelessWidget {
     this.targetUid,
   });
 
-  String _formatIndonesianDate(DateTime? date) {
-    if (date == null) return 'Belum diatur';
-    const List<String> months = <String>[
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
-    final String day = date.day.toString().padLeft(2, '0');
-    return '$day ${months[date.month - 1]} ${date.year}';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,16 +67,6 @@ class UserProfileScreen extends StatelessWidget {
                 ? matrixData['role'].toString().trim()
                 : 'Staf / Karyawan';
 
-        final DateTime? parsedStartDate = WorkScheduleHelper.parseDate(
-          matrixData['startDate'] ?? matrixData['start_date'],
-        );
-        final String startDateKey = parsedStartDate != null
-            ? WorkScheduleHelper.toDateKey(parsedStartDate)
-            : (matrixData['startDate']?.toString().trim() ?? '-');
-        final String startDateLabel = parsedStartDate != null
-            ? '${_formatIndonesianDate(parsedStartDate)} ($startDateKey)'
-            : 'Belum diatur';
-
         return Scaffold(
           appBar: AppBar(
             title: const Text('Profil Pengguna'),
@@ -113,8 +83,6 @@ class UserProfileScreen extends StatelessWidget {
                         initialEmail: email == 'Belum diatur' ? '' : email,
                         initialPhone: phone == 'Belum diatur' ? '' : phone,
                         initialRole: role,
-                        initialStartDate:
-                            parsedStartDate ?? DateTime(2026, 11, 22),
                       ),
                     ),
                   );
@@ -164,11 +132,6 @@ class UserProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    _ProfileInfoCard(
-                      icon: Icons.event_available_outlined,
-                      label: 'Tanggal Mulai Bekerja',
-                      value: startDateLabel,
-                    ),
                     _ProfileInfoCard(
                       icon: Icons.email_outlined,
                       label: 'Email',
