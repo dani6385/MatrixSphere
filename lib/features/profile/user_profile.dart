@@ -45,10 +45,44 @@ class UserProfileScreen extends StatelessWidget {
     return parts.join(' ');
   }
 
-  /// Membaca nilai string dari Map dengan aman dan memakai fallback jika kosong
+  /// Membaca nilai string dari Map secara aman dengan fallback jika kosong
   String _readString(Map<dynamic, dynamic> map, String key, String fallback) {
     final String? val = map[key]?.toString().trim();
     return (val != null && val.isNotEmpty) ? val : fallback;
+  }
+
+  /// Membaca nilai angka (int) dari Map secara aman untuk kebutuhan seperti poin
+  int _readInt(Map<dynamic, dynamic> map, String key, {int fallback = 0}) {
+    final Object? raw = map[key];
+    if (raw is int) return raw;
+    if (raw is num) return raw.toInt();
+    if (raw != null) {
+      return int.tryParse(raw.toString().trim()) ?? fallback;
+    }
+    return fallback;
+  }
+
+  /// Mengambil Map dari snapshot DatabaseEvent secara aman
+  Map<dynamic, dynamic> _extractMap(AsyncSnapshot<DatabaseEvent> snapshot) {
+    final Object? rawValue = snapshot.data?.snapshot.value;
+    if (rawValue is Map) {
+      return rawValue;
+    }
+    return <dynamic, dynamic>{};
+  }
+
+  /// Mengambil sub-map secara aman (misalnya untuk `attendance_summary`)
+  Map<String, dynamic> _extractSubMap(
+    Map<dynamic, dynamic> parentMap,
+    String key,
+  ) {
+    final Object? rawChild = parentMap[key];
+    if (rawChild is Map) {
+      return rawChild.map(
+        (dynamic k, dynamic v) => MapEntry<String, dynamic>(k.toString(), v),
+      );
+    }
+    return <String, dynamic>{};
   }
 
   PreferredSizeWidget _buildAppBar({
@@ -63,6 +97,8 @@ class UserProfileScreen extends StatelessWidget {
     required String phone,
     required String address,
     required DateTime? parsedStartDate,
+    required String photoUrl,
+    required String bannerUrl,
   }) {
     return AppBar(
       title: const Text('Profil Pekerja'),
@@ -86,6 +122,8 @@ class UserProfileScreen extends StatelessWidget {
                   initialEmploymentStatus: employmentStatus,
                   initialAddress: address == 'Belum diatur' ? '' : address,
                   initialStartDate: parsedStartDate,
+                  initialPhotoUrl: photoUrl,
+                  initialBannerUrl: bannerUrl,
                 ),
               ),
             );
@@ -109,28 +147,39 @@ class UserProfileScreen extends StatelessWidget {
       );
     }
 
-    final DatabaseReference memberRef = rtdbService.ref('matrix_members/$uid');
+    // Path terpusat data pekerja Matrix: members/matrix_member/$uid
+    final DatabaseReference memberRef =
+        rtdbService.ref('members/matrix_member/$uid');
 
     return StreamBuilder<DatabaseEvent>(
       stream: memberRef.onValue,
       builder: (context, snapshot) {
-        Map<dynamic, dynamic> memberData = <dynamic, dynamic>{};
-        if (snapshot.hasData && snapshot.data!.snapshot.value is Map) {
-          memberData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
-        }
+        final Map<dynamic, dynamic> memberData = _extractMap(snapshot);
 
-        // URL gambar profil: utamakan dari database, lalu fallback ke FirebaseAuth
+        // Gambar profil & background profil dari members/matrix_member/$uid
         final String photoUrl = _readString(
           memberData,
           'photoUrl',
           currentUser?.photoURL?.trim() ?? '',
         );
-
-        // URL background/banner profil dari database
         final String bannerUrl = _readString(
           memberData,
           'bannerUrl',
           '',
+        );
+
+        // Menyiapkan pembacaan awal attendance_summary & points untuk masa depan
+        final Map<String, dynamic> attendanceSummary = _extractSubMap(
+          memberData,
+          'attendance_summary',
+        );
+        final int attendancePoints = _readInt(memberData, 'points', fallback: 0);
+
+        // Contoh bacaan opsional di dalam attendance_summary jika sudah tersedia
+        final int onTimeCount = _readInt(
+          attendanceSummary,
+          'onTimeCount',
+          fallback: 0,
         );
 
         final String displayName = _readString(
@@ -151,7 +200,8 @@ class UserProfileScreen extends StatelessWidget {
           'department',
           'Belum diatur',
         );
-        final String role = _readString(memberData, 'role', 'Staf / Karyawan');
+        final String role =
+            _readString(memberData, 'role', 'Staf / Karyawan');
         final String employmentStatus = _readString(
           memberData,
           'employmentStatus',
@@ -183,6 +233,12 @@ class UserProfileScreen extends StatelessWidget {
             snapshot.connectionState == ConnectionState.waiting &&
             !snapshot.hasData;
 
+        // Variabel attendanceSummary, attendancePoints, dan onTimeCount sudah siap
+        // dipakai jika UserProfileBody ingin menampilkannya.
+        debugPrint(
+          '[UserProfileScreen] uid=$uid | points=$attendancePoints | onTime=$onTimeCount',
+        );
+
         return Scaffold(
           appBar: _buildAppBar(
             context: context,
@@ -196,6 +252,8 @@ class UserProfileScreen extends StatelessWidget {
             phone: phone,
             address: address,
             parsedStartDate: parsedStartDate,
+            photoUrl: photoUrl,
+            bannerUrl: bannerUrl,
           ),
           body: UserProfileBody(
             isLoading: isLoading,
