@@ -1,6 +1,6 @@
 // lib/features/profile/edit_profile.dart
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_services/shared_services.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 /// Helper memformat DateTime menjadi YYYY-MM-DD
@@ -48,11 +48,11 @@ Future<void> setUserStartDate({
   required String uid,
   required DateTime startDate,
 }) async {
-  await FirebaseDatabase.instance
-      .ref('matrix_members/$uid')
-      .update(<String, dynamic>{
+  await rtdbService.updateData(
+      'matrix_members/$uid',
+      <String, dynamic>{
     'startDate': formatDateToIso(startDate),
-  });
+  },);
 }
 
 class EditProfileScreen extends StatefulWidget {
@@ -111,7 +111,7 @@ class _EditProfileState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _targetUid = widget.uid ?? FirebaseAuth.instance.currentUser?.uid;
+    _targetUid = widget.uid ?? rtdbService.currentUid;
     _nameController = TextEditingController(text: widget.initialName ?? '');
     _employeeIdController =
         TextEditingController(text: widget.initialEmployeeId ?? '');

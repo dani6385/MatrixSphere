@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_services/firebase/rtdb_service.dart';
 
 import 'edit_profile.dart';
 
@@ -54,7 +55,7 @@ class UserProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final User? currentUser = FirebaseAuth.instance.currentUser;
-    final String? uid = targetUid ?? currentUser?.uid;
+    final String? uid = targetUid ?? rtdbService.currentUid;
 
     if (uid == null || uid.isEmpty) {
       return Scaffold(
@@ -65,8 +66,8 @@ class UserProfileScreen extends StatelessWidget {
       );
     }
 
-    // Membaca data profil & kepegawaian dari matrix_members/$uid
-    final DatabaseReference memberRef = FirebaseDatabase.instance.ref(
+    // Membaca data profil & kepegawaian dari matrix_members/$uid melalui rtdbService
+    final DatabaseReference memberRef = rtdbService.ref(
       'matrix_members/$uid',
     );
     final ThemeData theme = Theme.of(context);

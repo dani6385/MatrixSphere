@@ -1,0 +1,1 @@
+export 'package:shared_services/firebase/rtdb_service.dart';
