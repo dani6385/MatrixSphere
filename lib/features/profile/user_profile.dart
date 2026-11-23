@@ -6,14 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_services/firebase/rtdb_service.dart';
 
 import 'edit_profile.dart';
+import 'widgets/user_profile_body.dart';
 
 class UserProfileScreen extends StatelessWidget {
   final String? targetUid;
 
-  const UserProfileScreen({
-    super.key,
-    this.targetUid,
-  });
+  const UserProfileScreen({super.key, this.targetUid});
 
   /// Menghitung lama masa kerja dari startDate hingga hari ini
   String _calculateTenure(DateTime startDate) {
@@ -47,9 +45,54 @@ class UserProfileScreen extends StatelessWidget {
     return parts.join(' ');
   }
 
+  /// Membaca nilai string dari Map dengan aman dan memakai fallback jika kosong
   String _readString(Map<dynamic, dynamic> map, String key, String fallback) {
     final String? val = map[key]?.toString().trim();
     return (val != null && val.isNotEmpty) ? val : fallback;
+  }
+
+  PreferredSizeWidget _buildAppBar({
+    required BuildContext context,
+    required String uid,
+    required String displayName,
+    required String employeeId,
+    required String department,
+    required String role,
+    required String employmentStatus,
+    required String email,
+    required String phone,
+    required String address,
+    required DateTime? parsedStartDate,
+  }) {
+    return AppBar(
+      title: const Text('Profil Pekerja'),
+      actions: [
+        IconButton(
+          tooltip: 'Edit Profil',
+          icon: const Icon(Icons.edit_outlined),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => EditProfileScreen(
+                  uid: uid,
+                  initialName: displayName,
+                  initialEmployeeId:
+                      employeeId == 'Belum diatur' ? '' : employeeId,
+                  initialEmail: email == 'Belum diatur' ? '' : email,
+                  initialPhone: phone == 'Belum diatur' ? '' : phone,
+                  initialDepartment:
+                      department == 'Belum diatur' ? '' : department,
+                  initialRole: role,
+                  initialEmploymentStatus: employmentStatus,
+                  initialAddress: address == 'Belum diatur' ? '' : address,
+                  initialStartDate: parsedStartDate,
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 
   @override
@@ -66,12 +109,7 @@ class UserProfileScreen extends StatelessWidget {
       );
     }
 
-    // Membaca data profil & kepegawaian dari matrix_members/$uid melalui rtdbService
-    final DatabaseReference memberRef = rtdbService.ref(
-      'matrix_members/$uid',
-    );
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
+    final DatabaseReference memberRef = rtdbService.ref('matrix_members/$uid');
 
     return StreamBuilder<DatabaseEvent>(
       stream: memberRef.onValue,
@@ -81,6 +119,20 @@ class UserProfileScreen extends StatelessWidget {
           memberData = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
         }
 
+        // URL gambar profil: utamakan dari database, lalu fallback ke FirebaseAuth
+        final String photoUrl = _readString(
+          memberData,
+          'photoUrl',
+          currentUser?.photoURL?.trim() ?? '',
+        );
+
+        // URL background/banner profil dari database
+        final String bannerUrl = _readString(
+          memberData,
+          'bannerUrl',
+          '',
+        );
+
         final String displayName = _readString(
           memberData,
           'name',
@@ -89,14 +141,22 @@ class UserProfileScreen extends StatelessWidget {
               : 'Pengguna Matrix Sphere',
         );
 
-        final String employeeId =
-            _readString(memberData, 'employeeId', 'Belum diatur');
-        final String department =
-            _readString(memberData, 'department', 'Belum diatur');
-        final String role =
-            _readString(memberData, 'role', 'Staf / Karyawan');
-        final String employmentStatus =
-            _readString(memberData, 'employmentStatus', 'Belum diatur');
+        final String employeeId = _readString(
+          memberData,
+          'employeeId',
+          'Belum diatur',
+        );
+        final String department = _readString(
+          memberData,
+          'department',
+          'Belum diatur',
+        );
+        final String role = _readString(memberData, 'role', 'Staf / Karyawan');
+        final String employmentStatus = _readString(
+          memberData,
+          'employmentStatus',
+          'Belum diatur',
+        );
 
         final String email = _readString(
           memberData,
@@ -107,193 +167,53 @@ class UserProfileScreen extends StatelessWidget {
         );
 
         final String phone = _readString(memberData, 'phone', 'Belum diatur');
-        final String address =
-            _readString(memberData, 'address', 'Belum diatur');
+        final String address = _readString(
+          memberData,
+          'address',
+          'Belum diatur',
+        );
 
-        final String rawStartDate =
-            _readString(memberData, 'startDate', '');
+        final String rawStartDate = _readString(memberData, 'startDate', '');
         final DateTime? parsedStartDate = parseIsoDate(rawStartDate);
         final String startDateDisplay = parsedStartDate != null
             ? '${formatIndonesianDate(parsedStartDate)} (${_calculateTenure(parsedStartDate)})'
             : 'Belum diatur';
 
+        final bool isLoading =
+            snapshot.connectionState == ConnectionState.waiting &&
+            !snapshot.hasData;
+
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Profil Pekerja'),
-            actions: [
-              IconButton(
-                tooltip: 'Edit Profil',
-                icon: const Icon(Icons.edit_outlined),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => EditProfileScreen(
-                        uid: uid,
-                        initialName: displayName,
-                        initialEmployeeId:
-                            employeeId == 'Belum diatur' ? '' : employeeId,
-                        initialEmail: email == 'Belum diatur' ? '' : email,
-                        initialPhone: phone == 'Belum diatur' ? '' : phone,
-                        initialDepartment:
-                            department == 'Belum diatur' ? '' : department,
-                        initialRole: role,
-                        initialEmploymentStatus: employmentStatus,
-                        initialAddress:
-                            address == 'Belum diatur' ? '' : address,
-                        initialStartDate: parsedStartDate,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+          appBar: _buildAppBar(
+            context: context,
+            uid: uid,
+            displayName: displayName,
+            employeeId: employeeId,
+            department: department,
+            role: role,
+            employmentStatus: employmentStatus,
+            email: email,
+            phone: phone,
+            address: address,
+            parsedStartDate: parsedStartDate,
           ),
-          body: snapshot.connectionState == ConnectionState.waiting &&
-                  !snapshot.hasData
-              ? const Center(child: CircularProgressIndicator())
-              : ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
-                  children: [
-                    Center(
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 44,
-                            backgroundColor: colorScheme.primaryContainer,
-                            child: Text(
-                              displayName.isNotEmpty
-                                  ? displayName[0].toUpperCase()
-                                  : 'U',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            displayName,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            department != 'Belum diatur'
-                                ? '$role • $department'
-                                : role,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          if (employmentStatus != 'Belum diatur') ...[
-                            const SizedBox(height: 8),
-                            Chip(
-                              label: Text(employmentStatus),
-                              visualDensity: VisualDensity.compact,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8),
-                      child: Text(
-                        'Informasi Kepegawaian',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    _ProfileInfoCard(
-                      icon: Icons.event_available_outlined,
-                      label: 'Tanggal Mulai Bekerja & Masa Kerja',
-                      value: startDateDisplay,
-                    ),
-                    _ProfileInfoCard(
-                      icon: Icons.badge_outlined,
-                      label: 'NIP / ID Karyawan',
-                      value: employeeId,
-                    ),
-                    _ProfileInfoCard(
-                      icon: Icons.apartment_outlined,
-                      label: 'Departemen / Divisi',
-                      value: department,
-                    ),
-                    const SizedBox(height: 12),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8),
-                      child: Text(
-                        'Kontak & Identitas Sistem',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    _ProfileInfoCard(
-                      icon: Icons.email_outlined,
-                      label: 'Email',
-                      value: email,
-                    ),
-                    _ProfileInfoCard(
-                      icon: Icons.phone_outlined,
-                      label: 'Telepon / WhatsApp',
-                      value: phone,
-                    ),
-                    _ProfileInfoCard(
-                      icon: Icons.location_on_outlined,
-                      label: 'Alamat Domisili',
-                      value: address,
-                    ),
-                    _ProfileInfoCard(
-                      icon: Icons.fingerprint_outlined,
-                      label: 'User ID (UID)',
-                      value: uid,
-                    ),
-                  ],
-                ),
+          body: UserProfileBody(
+            isLoading: isLoading,
+            uid: uid,
+            displayName: displayName,
+            photoUrl: photoUrl,
+            bannerUrl: bannerUrl,
+            role: role,
+            department: department,
+            employmentStatus: employmentStatus,
+            startDateDisplay: startDateDisplay,
+            employeeId: employeeId,
+            email: email,
+            phone: phone,
+            address: address,
+          ),
         );
       },
-    );
-  }
-}
-
-class _ProfileInfoCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _ProfileInfoCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-      ),
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(
-          label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(value),
-        ),
-      ),
     );
   }
 }

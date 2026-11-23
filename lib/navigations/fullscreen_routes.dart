@@ -14,13 +14,13 @@ List<RouteBase> fullScreen({
       path: AppRoutes.profile,
       name: 'profile',
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const ProfileScreen(),
+      builder: (context, state) =>  ProfileScreen(),
     ),*/
     GoRoute(
       path: AppRoutes.userProfile,
       name: 'userProfile',
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const UserProfileScreen(),
+      builder: (context, state) => UserProfileScreen(),
     ),
     GoRoute(
       path: AppRoutes.editUserProfile,
