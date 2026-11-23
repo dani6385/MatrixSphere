@@ -25,7 +25,8 @@ class SharedApiClient {
   }) : _client = client ?? http.Client();
 
   /// Membantu mengurai respons HTTP menjadi [Map<String, dynamic>].
-  Map<String, dynamic> _parseJsonMap(http.Response response, String method, Uri uri) {
+  Map<String, dynamic> _parseJsonMap(
+      http.Response response, String method, Uri uri) {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw HttpException(
         '$method ${uri.path} gagal dengan status ${response.statusCode}',
@@ -52,9 +53,8 @@ class SharedApiClient {
     Uri uri, {
     Map<String, String>? headers,
   }) async {
-    final http.Response response = await _client
-        .get(uri, headers: headers)
-        .timeout(timeout);
+    final http.Response response =
+        await _client.get(uri, headers: headers).timeout(timeout);
 
     return _parseJsonMap(response, 'GET', uri);
   }
