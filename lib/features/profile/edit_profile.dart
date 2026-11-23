@@ -8,7 +8,10 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_services/shared_services.dart';
 
-/// Helper memformat DateTime menjadi YYYY-MM-DD
+/// Path utama data pekerja di Realtime Database.
+const String kMatrixMemberBasePath = 'members/matrix_member';
+
+/// Helper memformat DateTime menjadi YYYY-MM-DD.
 String formatDateToIso(DateTime date) {
   final String y = date.year.toString().padLeft(4, '0');
   final String m = date.month.toString().padLeft(2, '0');
@@ -16,7 +19,7 @@ String formatDateToIso(DateTime date) {
   return '$y-$m-$d';
 }
 
-/// Helper mem-parsing string YYYY-MM-DD menjadi DateTime
+/// Helper mem-parsing string YYYY-MM-DD menjadi DateTime.
 DateTime? parseIsoDate(String? raw) {
   if (raw == null || raw.trim().isEmpty) return null;
   final List<String> parts = raw.trim().split('-');
@@ -28,7 +31,7 @@ DateTime? parseIsoDate(String? raw) {
   return DateTime(y, m, d);
 }
 
-/// Helper memformat tanggal ke tampilan Indonesia (contoh: 22 November 2026)
+/// Helper memformat tanggal ke tampilan Indonesia (contoh: 24 November 2026).
 String formatIndonesianDate(DateTime date) {
   const List<String> months = <String>[
     'Januari',
@@ -48,13 +51,13 @@ String formatIndonesianDate(DateTime date) {
 }
 
 /// Menyimpan tanggal mulai bekerja user (`startDate` format YYYY-MM-DD)
-/// ke node RTDB `matrix_members/$uid`.
+/// ke node RTDB `members/matrix_member/$uid`.
 Future<void> setUserStartDate({
   required String uid,
   required DateTime startDate,
 }) async {
   await rtdbService.updateData(
-    'matrix_members/$uid',
+    '$kMatrixMemberBasePath/$uid',
     <String, dynamic>{
       'startDate': formatDateToIso(startDate),
     },
@@ -147,17 +150,20 @@ class _EditProfileState extends State<EditProfileScreen> {
         ? widget.initialEmploymentStatus!
         : _statusOptions.first;
 
-    _selectedStartDate = widget.initialStartDate ?? DateTime(2026, 11, 22);
+    _selectedStartDate = widget.initialStartDate ?? DateTime(2026, 11, 24);
 
     _loadExistingProfileData();
   }
 
+  /// Mengambil data yang sudah ada di `members/matrix_member/$uid`
+  /// agar field yang masih kosong terisi otomatis.
   Future<void> _loadExistingProfileData() async {
     final String? uid = _targetUid;
     if (uid == null || uid.isEmpty) return;
 
-    final DataSnapshot snap =
-        await FirebaseDatabase.instance.ref('matrix_members/$uid').get();
+    final DataSnapshot snap = await FirebaseDatabase.instance
+        .ref('$kMatrixMemberBasePath/$uid')
+        .get();
     if (!snap.exists || snap.value is! Map || !mounted) return;
 
     final Map<dynamic, dynamic> data = snap.value as Map<dynamic, dynamic>;
@@ -205,37 +211,38 @@ class _EditProfileState extends State<EditProfileScreen> {
     });
   }
 
-  /// Mengompres bytes gambar agar ukuran file kecil sebelum diunggah ke ImgBB
-  Future<Uint8List> _compressImageBytes(
-    Uint8List originalBytes, {
+  /// Mengompres bytes gambar menjadi format JPEG yang lebih ringan
+  /// agar tidak cepat memenuhi penyimpanan ImgBB.
+  Future<Uint8List> _compressImage(
+    Uint8List sourceBytes, {
     required int maxWidth,
     required int maxHeight,
     required int quality,
   }) async {
     final Uint8List compressed = await FlutterImageCompress.compressWithList(
-      originalBytes,
+      sourceBytes,
       minWidth: maxWidth,
       minHeight: maxHeight,
       quality: quality,
       format: CompressFormat.jpeg,
     );
 
-    // Gunakan hasil kompresi jika ukurannya memang lebih kecil dari aslinya
-    return compressed.lengthInBytes < originalBytes.lengthInBytes
+    // Pakai hasil kompresi hanya jika ukurannya benar-benar lebih kecil.
+    return compressed.lengthInBytes < sourceBytes.lengthInBytes
         ? compressed
-        : originalBytes;
+        : sourceBytes;
   }
 
-  /// Memilih, mengompres, dan mengunggah gambar ke ImgBB
-  Future<void> _pickAndUploadImage({required bool isBanner}) async {
+  /// Memilih gambar dari galeri, mengompresnya, lalu mengunggahnya ke ImgBB.
+  /// Jika [isBanner] true maka diperlakukan sebagai background profil;
+  /// jika false maka diperlakukan sebagai foto profil.
+  Future<void> _pickAndUploadMedia({required bool isBanner}) async {
     if (_isUploadingPhoto || _isUploadingBanner || _isSaving) return;
 
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile == null) return;
+    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
 
-    final String uid = _targetUid ?? 'user';
+    final String uid = _targetUid ?? 'member';
 
     setState(() {
       if (isBanner) {
@@ -246,17 +253,15 @@ class _EditProfileState extends State<EditProfileScreen> {
     });
 
     try {
-      final Uint8List rawBytes = await pickedFile.readAsBytes();
-
-      // Foto profil cukup 800x800; background/banner maksimal 1280x720
-      final Uint8List compressedBytes = await _compressImageBytes(
+      final Uint8List rawBytes = await picked.readAsBytes();
+      final Uint8List compressedBytes = await _compressImage(
         rawBytes,
         maxWidth: isBanner ? 1280 : 800,
         maxHeight: isBanner ? 720 : 800,
         quality: isBanner ? 75 : 78,
       );
 
-      final String prefix = isBanner ? 'banner' : 'avatar';
+      final String prefix = isBanner ? 'banner' : 'profile';
       final String fileName =
           '${prefix}_${uid}_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
@@ -329,16 +334,15 @@ class _EditProfileState extends State<EditProfileScreen> {
     setState(() => _isSaving = true);
 
     try {
-      // 1. Simpan tanggal mulai bekerja ke matrix_members/$uid
       await setUserStartDate(
         uid: uid,
         startDate: _selectedStartDate,
       );
 
-      // 2. Simpan informasi profil, foto, banner & kepegawaian ke matrix_members/$uid
       await FirebaseDatabase.instance
-          .ref('matrix_members/$uid')
+          .ref('$kMatrixMemberBasePath/$uid')
           .update(<String, dynamic>{
+        'uid': uid,
         'name': _nameController.text.trim(),
         'employeeId': _employeeIdController.text.trim(),
         'email': _emailController.text.trim(),
@@ -349,7 +353,7 @@ class _EditProfileState extends State<EditProfileScreen> {
         'address': _addressController.text.trim(),
         'photoUrl': _photoUrl,
         'bannerUrl': _bannerUrl,
-        'updatedAt': ServerValue.timestamp,
+        'updatedAt': DateTime.now().toIso8601String(),
       });
 
       if (!mounted) return;
@@ -366,7 +370,8 @@ class _EditProfileState extends State<EditProfileScreen> {
     }
   }
 
-  Widget _buildMediaPreviewCard() {
+  /// Bagian pratinjau & tombol upload untuk background profil dan foto profil.
+  Widget _buildMediaSection() {
     final ColorScheme colors = Theme.of(context).colorScheme;
 
     return Card(
@@ -374,7 +379,6 @@ class _EditProfileState extends State<EditProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Area Background / Banner Profil
           Stack(
             children: [
               Container(
@@ -394,7 +398,7 @@ class _EditProfileState extends State<EditProfileScreen> {
                       )
                     : Center(
                         child: Text(
-                          'Belum ada background profil',
+                          'Background Profil',
                           style: TextStyle(color: colors.onSurfaceVariant),
                         ),
                       ),
@@ -405,7 +409,7 @@ class _EditProfileState extends State<EditProfileScreen> {
                 child: FilledButton.tonalIcon(
                   onPressed: _isUploadingBanner
                       ? null
-                      : () => _pickAndUploadImage(isBanner: true),
+                      : () => _pickAndUploadMedia(isBanner: true),
                   icon: _isUploadingBanner
                       ? const SizedBox(
                           width: 16,
@@ -420,7 +424,6 @@ class _EditProfileState extends State<EditProfileScreen> {
               ),
             ],
           ),
-          // Area Foto Profil + Tombol Upload
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -444,7 +447,7 @@ class _EditProfileState extends State<EditProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Foto & Background Profil',
+                        'Foto Profil & Background',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -452,7 +455,7 @@ class _EditProfileState extends State<EditProfileScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Gambar otomatis dikompres sebelum diunggah ke ImgBB.',
+                        'Gambar dikompres otomatis sebelum diunggah ke ImgBB.',
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.onSurfaceVariant,
@@ -462,7 +465,7 @@ class _EditProfileState extends State<EditProfileScreen> {
                       OutlinedButton.icon(
                         onPressed: _isUploadingPhoto
                             ? null
-                            : () => _pickAndUploadImage(isBanner: false),
+                            : () => _pickAndUploadMedia(isBanner: false),
                         icon: _isUploadingPhoto
                             ? const SizedBox(
                                 width: 16,
@@ -524,7 +527,7 @@ class _EditProfileState extends State<EditProfileScreen> {
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            _buildMediaPreviewCard(),
+            _buildMediaSection(),
             const SizedBox(height: 20),
             const Text(
               'Data Kepegawaian',
