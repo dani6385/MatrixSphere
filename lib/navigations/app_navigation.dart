@@ -2,16 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'app_routes.dart';
 
-extension AppNavigationContextX on BuildContext {
-  /// Berpindah langsung ke rute Home menggunakan GoRouter.
-  void goToHome() {
-    go(AppRoutes.home);
-  }
-  void goToUserProfile() {
-    push(AppRoutes.userProfile);
-  }
-}
-
 class AppNavigation {
   // Mencegah instansiasi kelas karena seluruh metode bersifat static
   //AppNavigation._();

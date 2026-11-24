@@ -35,8 +35,8 @@ class UserProfileBody extends StatelessWidget {
     required this.phone,
     required this.address,
   });
-//dari sini
-String _buildInitials(String name) {
+
+  String _buildInitials(String name) {
     final String trimmed = name.trim();
     if (trimmed.isEmpty) return 'U';
     final List<String> parts = trimmed.split(RegExp(r'\s+'));
@@ -45,6 +45,7 @@ String _buildInitials(String name) {
     }
     return trimmed[0].toUpperCase();
   }
+
   /// Membangun bagian banner / background profil di bagian paling atas
   Widget _buildBannerHeader(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
@@ -90,6 +91,7 @@ String _buildInitials(String name) {
       ),
     );
   }
+
   Widget _buildAvatar(BuildContext context) {
     final ColorScheme colors = Theme.of(context).colorScheme;
     final bool hasPhoto = photoUrl.trim().isNotEmpty;
@@ -117,30 +119,7 @@ String _buildInitials(String name) {
       ),
     );
   }
-  Widget _buildInfoTile({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String value,
-  }) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: ListTile(
-        leading: Icon(icon, color: colors.primary),
-        title: Text(
-          title,
-          style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
-        ),
-        subtitle: Text(
-          value,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
-//sampai sini
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -148,18 +127,16 @@ String _buildInitials(String name) {
     }
 
     final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
 
     return ListView(
-      padding: EdgeInsets.zero,
+      padding: const EdgeInsets.only(bottom: 24),
       children: [
         // Gabungan banner di atas dan avatar bertumpuk di bawahnya
         Stack(
-       //clipBehavior: CollectiveOverflowBehavior.none,
           alignment: Alignment.topCenter,
-            children: [
-              Column(
-                children: [
+          children: [
+            Column(
+              children: [
                 _buildBannerHeader(context),
                 const SizedBox(height: 48),
               ],
@@ -170,19 +147,19 @@ String _buildInitials(String name) {
             ),
           ],
         ),
-              const SizedBox(height: 12),
-              Text(
-                displayName,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
+        const SizedBox(height: 12),
+        Text(
+          displayName,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 4),
         Text(
           role,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, color: AppColors.darkAppBar),
+          style: const TextStyle(fontSize: 14, color: AppColors.darkAppBar),
         ),
         const SizedBox(height: 8),
         Center(
@@ -201,22 +178,19 @@ String _buildInitials(String name) {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              _buildInfoTile(
-                context: context,
+              ProfileInfoCard(
                 icon: Icons.event_available_outlined,
-                title: 'Tanggal Mulai Bekerja & Masa Kerja',
+                label: 'Tanggal Mulai Bekerja & Masa Kerja',
                 value: startDateDisplay,
               ),
-              _buildInfoTile(
-                context: context,
+              ProfileInfoCard(
                 icon: Icons.badge_outlined,
-                title: 'NIP / ID Karyawan',
+                label: 'NIP / ID Karyawan',
                 value: employeeId,
               ),
-              _buildInfoTile(
-                context: context,
+              ProfileInfoCard(
                 icon: Icons.apartment_outlined,
-                title: 'Departemen / Divisi',
+                label: 'Departemen / Divisi',
                 value: department,
               ),
               const SizedBox(height: 10),
@@ -225,92 +199,28 @@ String _buildInitials(String name) {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              _buildInfoTile(
-                context: context,
+              ProfileInfoCard(
                 icon: Icons.email_outlined,
-                title: 'Email',
+                label: 'Email',
                 value: email,
               ),
-              _buildInfoTile(
-                context: context,
+              ProfileInfoCard(
                 icon: Icons.phone_outlined,
-                title: 'Telepon / WhatsApp',
+                label: 'Telepon / WhatsApp',
                 value: phone,
               ),
-              _buildInfoTile(
-                context: context,
+              ProfileInfoCard(
                 icon: Icons.location_on_outlined,
-                title: 'Alamat Domisili',
+                label: 'Alamat Domisili',
                 value: address,
               ),
-              const SizedBox(height: 20),
-              const SizedBox(height: 4),
-              Text(
-                department != 'Belum diatur' ? '$role • $department' : role,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+              ProfileInfoCard(
+                icon: Icons.fingerprint_outlined,
+                label: 'User ID (UID)',
+                value: uid,
               ),
-              if (employmentStatus != 'Belum diatur') ...[
-                const SizedBox(height: 8),
-                Chip(
-                  label: Text(employmentStatus),
-                  visualDensity: VisualDensity.compact,
-                ),
-              ],
             ],
           ),
-        ),
-        const SizedBox(height: 24),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(
-            'Informasi Kepegawaian',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-        ),
-        ProfileInfoCard(
-          icon: Icons.event_available_outlined,
-          label: 'Tanggal Mulai Bekerja & Masa Kerja',
-          value: startDateDisplay,
-        ),
-        ProfileInfoCard(
-          icon: Icons.badge_outlined,
-          label: 'NIP / ID Karyawan',
-          value: employeeId,
-        ),
-        ProfileInfoCard(
-          icon: Icons.apartment_outlined,
-          label: 'Departemen / Divisi',
-          value: department,
-        ),
-        const SizedBox(height: 12),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(
-            'Kontak & Identitas Sistem',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-        ),
-        ProfileInfoCard(
-          icon: Icons.email_outlined,
-          label: 'Email',
-          value: email,
-        ),
-        ProfileInfoCard(
-          icon: Icons.phone_outlined,
-          label: 'Telepon / WhatsApp',
-          value: phone,
-        ),
-        ProfileInfoCard(
-          icon: Icons.location_on_outlined,
-          label: 'Alamat Domisili',
-          value: address,
-        ),
-        ProfileInfoCard(
-          icon: Icons.fingerprint_outlined,
-          label: 'User ID (UID)',
-          value: uid,
         ),
       ],
     );
