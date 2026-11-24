@@ -28,9 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _companyStream = FirebaseDatabase.instance
-        .ref('company_profile')
-        .onValue;
+    _companyStream = FirebaseDatabase.instance.ref('company_profile').onValue;
     _syncUserStream();
   }
 
@@ -91,9 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: HomeAppBar(
-        onOpenEndDrawer: _openEndDrawerSafe,
-      ),
+      appBar: HomeAppBar(onOpenEndDrawer: _openEndDrawerSafe),
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       drawer: StreamBuilder<DatabaseEvent>(
@@ -152,19 +148,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
                 }
 
-          // Ambil data dari RTDB dengan fallback ke FirebaseAuth
-          final String displayName =
+                // Ambil data dari RTDB dengan fallback ke FirebaseAuth
+                final String displayName =
                     userData['name']?.toString() ??
                     currentUser?.displayName ??
                     'Pengguna MatrixSphere';
                 final String? photoUrl =
                     userData['photoUrl']?.toString() ?? currentUser?.photoURL;
+                final String? bannerUrl = userData['bannerUrl']?.toString();
 
                 return _buildEndDrawer(
                   context: context,
                   displayName: displayName,
                   email: email,
                   photoUrl: photoUrl,
+                  bannerUrl: bannerUrl,
                 );
               },
             ),
@@ -217,15 +215,31 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildEndDrawer({
     required BuildContext context,
     required String displayName,
     required String email,
     required String? photoUrl,
+    String? bannerUrl,
   }) {
+    final bool hasBanner = bannerUrl != null && bannerUrl.isNotEmpty;
     return SharedProjectDrawer(
       header: UserAccountsDrawerHeader(
-        decoration: const BoxDecoration(color: Colors.blue),
+        decoration: BoxDecoration(
+        color: Colors.blue,
+        image: hasBanner
+            ? DecorationImage(
+                image: NetworkImage(bannerUrl),
+                fit: BoxFit.cover,
+                // Lapisan gelap tipis agar teks nama & email tetap kontras terbaca
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withValues(alpha: 0.35),
+                  BlendMode.darken,
+                ),
+              )
+            : null,
+      ),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Colors.white,
           backgroundImage: (photoUrl != null && photoUrl.isNotEmpty)
