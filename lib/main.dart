@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_services/shared_services.dart';
 import 'services/firebase_options.dart';
 import 'navigations/app_router.dart'; 
 
@@ -11,6 +12,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await crashlyticsService.initialize();
+  await crashlyticsService.setCustomKey('app_name', 'matrix_sphere');
 
   // 3. Menjalankan aplikasi utama
   runApp(const MatrixSphere());

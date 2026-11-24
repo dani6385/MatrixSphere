@@ -10,7 +10,9 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  firebase_analytics: ^13.1.0
   firebase_auth: ^7.1.0
+  firebase_crashlytics: ^6.1.0
   firebase_database: ^13.1.0
   flutter:
     sdk: flutter

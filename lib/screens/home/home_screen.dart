@@ -61,9 +61,32 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _openDrawerSafe() {
+    final ScaffoldState? state = _scaffoldKey.currentState;
+    if (state == null) return;
+
+    crashlyticsService.log('HomeScreen: _openDrawerSafe called');
+    analyticsService.logEvent(name: 'home_open_drawer');
+
+    if (state.isEndDrawerOpen) {
+      state.closeEndDrawer();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _scaffoldKey.currentState?.openDrawer();
+      });
+      return;
+    }
+
+    if (!state.isDrawerOpen) {
+      state.openDrawer();
+    }
+  }
+
   void _openEndDrawerSafe() {
     final ScaffoldState? state = _scaffoldKey.currentState;
     if (state == null) return;
+    crashlyticsService.log('HomeScreen: _openDrawerSafe called');
+    analyticsService.logEvent(name: 'home_open_drawer');
     if (state.isDrawerOpen) {
       state.closeDrawer();
       WidgetsBinding.instance.addPostFrameCallback((_) {

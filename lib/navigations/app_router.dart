@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_services/shared_services.dart';
 import 'app_branches.dart';
 import 'app_navigator.dart';
 import 'app_routes.dart';
@@ -30,6 +31,7 @@ final GoRouter appRouter = GoRouter(
   debugLogDiagnostics: true,
   navigatorKey: rootNavigatorKey,
   refreshListenable: _authChanges,
+  observers: [analyticsService.observer],
 
   // Pengecekan akses otomatis setiap kali rute berubah atau status auth berubah
   redirect: (BuildContext context, GoRouterState state) {
