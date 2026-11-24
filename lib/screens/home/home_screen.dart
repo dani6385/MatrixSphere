@@ -44,7 +44,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (uid != _boundUid) {
       _boundUid = uid;
-      _userStream = uid != null ? _rtdbService.ref('users/$uid').onValue : null;
+      _userStream = uid != null
+          ? _rtdbService.ref('members/matrix_member/$uid').onValue
+          : null;
     }
   }
 
@@ -158,7 +160,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Pengguna MatrixSphere';
                 final String? photoUrl =
                     userData['photoUrl']?.toString() ?? currentUser?.photoURL;
-                final String? bannerUrl = userData['bannerUrl']?.toString();
+                final String? bannerUrl =
+                    userData['bannerUrl']?.toString() ?? currentUser?.photoURL;
 
                 return _buildEndDrawer(
                   context: context,

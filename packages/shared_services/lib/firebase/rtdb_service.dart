@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:async' as async;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -86,7 +86,7 @@ class RtdbService {
   }
 
   /// Watches real-time changes on [path] as a typed value.
-  /*Stream<T?> watchValue<T>(
+  async.Stream<T?> watchValue<T>(
     String path, {
     T Function(Map<String, dynamic> json, String key)? fromMap,
   }) {
@@ -100,10 +100,10 @@ class RtdbService {
       }
       return snapshot.value as T?;
     });
-  }*/
+  }
 
   /// Watches real-time changes on [path] as a list of items.
-  /*Stream<List<T>> watchList<T>(
+  async.Stream<List<T>> watchList<T>(
     String path, {
     required T Function(Map<String, dynamic> json, String key) fromMap,
     String? orderByChild,
@@ -122,7 +122,14 @@ class RtdbService {
       if (!snapshot.exists || snapshot.value == null) return <T>[];
       return _mapSnapshotToList(snapshot, fromMap);
     });
-  }*/
+  }
+/// Watches raw real-time [DatabaseEvent] on `/members/matrix_member/$uid`.
+  /// Uses [uid] if provided, or falls back to [currentUid].
+  async.Stream<DatabaseEvent>? watchMatrixMemberEvent({String? uid}) {
+    final String? targetUid = uid ?? currentUid;
+    if (targetUid == null || targetUid.isEmpty) return null;
+    return _database.ref('members/matrix_member/$targetUid').onValue;
+  }
 
   /// Overwrites data at [path] using `set()`.
   Future<void> setData(String path, Object? value) async {
