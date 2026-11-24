@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: HomeAppBar(onOpenEndDrawer: _openEndDrawerSafe),
+      appBar: HomeAppBar(onOpenDrawer: _openDrawerSafe, onOpenEndDrawer: _openEndDrawerSafe),
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       drawer: StreamBuilder<DatabaseEvent>(

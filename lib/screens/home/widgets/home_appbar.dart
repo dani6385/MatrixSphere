@@ -6,11 +6,13 @@ import 'package:matrix_sphere/navigations/app_navigation.dart';
 /// properti `appBar: const HomeAppBar()` di dalam `Scaffold`.
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final VoidCallback? onOpenDrawer;
   final VoidCallback? onOpenEndDrawer;
 
   const HomeAppBar({
     super.key,
     this.title = 'Matrix Sphere',
+    this.onOpenDrawer,
     this.onOpenEndDrawer,
   });
 
@@ -32,6 +34,13 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         style: theme.textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
         ),
+      ),
+      leading: IconButton(
+        icon: const Icon(Icons.account_circle),
+        onPressed: () {
+          // Membuka laci secara paksa menggunakan GlobalKey milik HomeScreen
+          //HomeScreen.scaffoldKey.currentState?.openDrawer();
+        },
       ),
       actions: [
         // Tombol notifikasi -> mengarah ke halaman Notifications via AppNavigation
