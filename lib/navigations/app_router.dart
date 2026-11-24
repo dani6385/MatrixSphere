@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
+import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_services/shared_services.dart';
 import 'app_branches.dart';
 import 'app_navigator.dart';
@@ -78,7 +79,7 @@ final GoRouter appRouter = GoRouter(
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => context.go(AppRoutes.home),
+                onPressed: () => context.goToHome(),
                 child: const Text('Kembali ke Home'),
               ),
             ],
