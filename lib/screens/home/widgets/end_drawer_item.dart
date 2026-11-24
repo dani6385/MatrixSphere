@@ -44,7 +44,6 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
           logger.i('Berhasil logout dari akun.');
 
           if (!context.mounted) return;
-          AppNavigation.goToLogin(context);
         } catch (e) {
           logger.e('Gagal melakukan logout: $e');
           if (!context.mounted) return;

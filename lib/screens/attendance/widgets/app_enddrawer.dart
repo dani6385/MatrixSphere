@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:matrix_sphere/navigations/app_navigation.dart';
+//import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 final Logger logger = Logger();
@@ -44,7 +44,7 @@ List<MenuDrawer> getEndDrawerItems(BuildContext context, String currentRoute) {
           logger.i('Berhasil logout dari akun.');
 
           if (!context.mounted) return;
-          AppNavigation.goToLogin(context);
+          
         } catch (e) {
           logger.e('Gagal melakukan logout: $e');
           if (!context.mounted) return;

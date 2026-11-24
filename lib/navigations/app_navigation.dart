@@ -24,9 +24,9 @@ class AppNavigation {
   // 2. AUTENTIKASI (AUTH)
   // ===========================================================================
 
-  static void goToLogin(BuildContext context) {
+  /*static void goToLogin(BuildContext context) {
     context.go(AppRoutes.login);
-  }
+  }*/
 
   static void goToLoginOption(BuildContext context) {
     context.go(AppRoutes.loginOption);

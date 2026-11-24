@@ -5,8 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/features/company/models/company_profile_model.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
-import 'package:matrix_sphere/screens/home/widgets/app_drawer.dart';
-import 'package:matrix_sphere/screens/home/widgets/app_enddrawer.dart';
+import 'package:matrix_sphere/screens/home/widgets/drawer_item.dart';
+import 'package:matrix_sphere/screens/home/widgets/end_drawer_item.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_appbar.dart';
 import 'package:shared_ui/shared_ui.dart';
 
