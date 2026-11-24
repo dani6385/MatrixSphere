@@ -8,10 +8,13 @@ import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:matrix_sphere/screens/home/widgets/drawer_item.dart';
 import 'package:matrix_sphere/screens/home/widgets/end_drawer_item.dart';
 import 'package:matrix_sphere/screens/home/widgets/home_appbar.dart';
+import 'package:shared_services/shared_services.dart';
 import 'package:shared_ui/shared_ui.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final RtdbService? dbService;
+
+  const HomeScreen({super.key, this.dbService});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  late final RtdbService _rtdbService;
   late final Stream<DatabaseEvent> _companyStream;
   Stream<DatabaseEvent>? _userStream;
   String? _boundUid;
@@ -28,7 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _companyStream = FirebaseDatabase.instance.ref('company_profile').onValue;
+    _rtdbService = widget.dbService ?? rtdbService;
+    _companyStream = _rtdbService.ref('company_profile').onValue;
     _syncUserStream();
   }
 
@@ -39,9 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (uid != _boundUid) {
       _boundUid = uid;
-      _userStream = uid != null
-          ? FirebaseDatabase.instance.ref('users/$uid').onValue
-          : null;
+      _userStream = uid != null ? _rtdbService.ref('users/$uid').onValue : null;
     }
   }
 
@@ -227,19 +230,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return SharedProjectDrawer(
       header: UserAccountsDrawerHeader(
         decoration: BoxDecoration(
-        color: Colors.blue,
-        image: hasBanner
-            ? DecorationImage(
-                image: NetworkImage(bannerUrl),
-                fit: BoxFit.cover,
-                // Lapisan gelap tipis agar teks nama & email tetap kontras terbaca
-                colorFilter: ColorFilter.mode(
-                  Colors.black.withValues(alpha: 0.35),
-                  BlendMode.darken,
-                ),
-              )
-            : null,
-      ),
+          color: Colors.blue,
+          image: hasBanner
+              ? DecorationImage(
+                  image: NetworkImage(bannerUrl),
+                  fit: BoxFit.cover,
+                  // Lapisan gelap tipis agar teks nama & email tetap kontras terbaca
+                  colorFilter: ColorFilter.mode(
+                    Colors.black.withValues(alpha: 0.35),
+                    BlendMode.darken,
+                  ),
+                )
+              : null,
+        ),
         currentAccountPicture: CircleAvatar(
           backgroundColor: Colors.white,
           backgroundImage: (photoUrl != null && photoUrl.isNotEmpty)
