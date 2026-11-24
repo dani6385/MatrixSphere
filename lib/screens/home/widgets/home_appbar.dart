@@ -5,10 +5,14 @@ import 'package:matrix_sphere/navigations/app_navigation.dart';
 /// Mengimplementasikan `PreferredSizeWidget` agar dapat dipasang langsung pada
 /// properti `appBar: const HomeAppBar()` di dalam `Scaffold`.
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  /// Judul yang ditampilkan di bilah atas aplikasi.
   final String title;
+  final VoidCallback? onOpenEndDrawer;
 
-  const HomeAppBar({super.key, this.title = 'Matrix Sphere'});
+  const HomeAppBar({
+    super.key,
+    this.title = 'Matrix Sphere',
+    this.onOpenEndDrawer,
+  });
 
   /// Menentukan tinggi standar AppBar Material (56.0 px).
   @override
@@ -45,9 +49,9 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           tooltip: 'Profil & Akun',
           icon: const Icon(Icons.account_circle_outlined),
-          onPressed: () {
-            Scaffold.maybeOf(context)?.openEndDrawer();
-          },
+          onPressed:
+              onOpenEndDrawer ??
+              () => Scaffold.maybeOf(context)?.openEndDrawer(),
         ),
       ],
     );
