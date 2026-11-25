@@ -18,9 +18,9 @@ final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
   StatefulShellBranch(
     routes: <RouteBase>[
       GoRoute(
-        path: AppRoutes.approvals,
+        path: AppRoutes.system,
         name: 'approvals',
-        builder: (context, state) => const ApprovalScreen(),
+        builder: (context, state) => const SystemScreen(),
       ),
     ],
   ),
