@@ -62,33 +62,7 @@ class WorkAndOvertimeForm extends StatelessWidget {
             return null;
           },
         ),
-        const SizedBox(height: 24),
-        Text(
-          'Dekrit & Kebijakan Lembur Matrix Sphere',
-          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text('Wajibkan Lembur (Dekrit Matrix Sphere)'),
-          subtitle: Text(
-            formState.isOvertimeRequired
-                ? 'Status saat ini: Lembur Aktif'
-                : 'Status saat ini: Pulang',
-          ),
-          value: formState.isOvertimeRequired,
-          onChanged: isAdmin ? onOvertimeChanged : null,
-        ),
         if (formState.isOvertimeRequired) ...[
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: formState.decreeNumberController,
-            readOnly: !isAdmin,
-            decoration: const InputDecoration(
-              labelText: 'Nomor / Kode Dekrit Lembur',
-              hintText: 'Contoh: SK-MS/OT/2026/01',
-            ),
-          ),
           const SizedBox(height: 12),
           TextFormField(
             controller: formState.decreeNoteController,

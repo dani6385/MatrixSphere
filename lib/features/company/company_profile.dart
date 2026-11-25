@@ -279,7 +279,6 @@ class CompanyProfile extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Kartu Dekrit & Kebijakan Lembur Matrix Sphere
                   _MatrixOvertimeDecreeCard(
                     decreeEnabled: overtimeDecreeEnabled,
                     decreeNumber: overtimeDecreeNumber,
@@ -472,15 +471,6 @@ class _MatrixOvertimeDecreeCard extends StatelessWidget {
                       : colorScheme.onSurfaceVariant,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Dekrit & Jadwal Lembur Matrix Sphere',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -505,15 +495,6 @@ class _MatrixOvertimeDecreeCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (decreeNumber.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Text(
-                'Nomor / Kode Dekrit: $decreeNumber',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
             const SizedBox(height: 6),
             Text(
               decreeEnabled
