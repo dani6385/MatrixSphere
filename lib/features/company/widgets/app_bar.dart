@@ -18,7 +18,7 @@ class EditCompanyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('Edit Profil Perusahaan'),
+      title: const Text('MS Matrix Sphere'),
       actions: [
         if (isAdmin)
           IconButton(

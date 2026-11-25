@@ -317,7 +317,6 @@ class CompanyProfile extends StatelessWidget {
                         'Lokasi: ${requireLocation ? 'Wajib' : 'Opsional'} • '
                         'Kamera: ${requirePhoto ? 'Wajib ($photoTypeLabel)' : 'Opsional'} • '
                         'Luar Radius: ${allowOutsideRadius ? 'Diizinkan (Review)' : 'Ditolak'} • '
-                        'Toleransi: $graceMinutes mnt',
                   ),
                   _CompanyInfoTile(
                     icon: Icons.info_outline,

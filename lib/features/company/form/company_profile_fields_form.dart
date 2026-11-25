@@ -17,14 +17,6 @@ class CompanyProfileFieldsForm extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextFormField(
-          controller: formState.nameController,
-          readOnly: !isAdmin,
-          decoration: const InputDecoration(labelText: 'Nama Perusahaan'),
-          validator: (v) =>
-              (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
           controller: formState.emailController,
           readOnly: !isAdmin,
           decoration: const InputDecoration(labelText: 'Email'),

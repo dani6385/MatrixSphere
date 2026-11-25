@@ -45,23 +45,6 @@ class WorkAndOvertimeForm extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: formState.graceMinutesController,
-          readOnly: !isAdmin,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Toleransi Keterlambatan (menit)',
-            hintText: 'Contoh: 15',
-          ),
-          validator: (v) {
-            final int? val = int.tryParse(v?.trim() ?? '');
-            if (val == null || val < 0) {
-              return 'Masukkan angka >= 0';
-            }
-            return null;
-          },
-        ),
         if (formState.isOvertimeRequired) ...[
           const SizedBox(height: 12),
           TextFormField(
