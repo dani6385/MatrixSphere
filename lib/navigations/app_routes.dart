@@ -54,6 +54,7 @@ class AppRoutes {
   // ===========================================================================
   static const String analytics = '/analytics';
   static const String approvals = '/approvals';
+static const String system = '/system';
   static const String attendance = '/attendance';
   static const String transaction = '/transaction';
   static const String transactions = '/transactions';
