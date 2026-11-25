@@ -149,12 +149,12 @@ class AttendanceScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           ListTile(
-            leading: const Icon(Icons.approval, color: Colors.blue),
-            title: const Text('Persetujuan (Approval)'),
+            leading: const Icon(Icons.system_security_update, color: Colors.blue),
+            title: const Text('Persetujuan (System)'),
             subtitle: const Text('Kelola daftar persetujuan toko'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // Tambahkan navigasi ke halaman approval jika diperlukan
+              // Tambahkan navigasi ke halaman System jika diperlukan
             },
           ),
           ListTile(

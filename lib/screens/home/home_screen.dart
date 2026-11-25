@@ -112,21 +112,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     _syncUserStream();
 
+    final BuildContext screenContext = context;
     final User? currentUser = _currentUser;
     final String email = currentUser?.email ?? 'user@email.com';
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: HomeAppBar(onOpenDrawer: _openDrawerSafe, onOpenEndDrawer: _openEndDrawerSafe),
+      appBar: HomeAppBar(
+        onOpenDrawer: _openDrawerSafe,
+        onOpenEndDrawer: _openEndDrawerSafe,
+      ),
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       drawer: StreamBuilder<DatabaseEvent>(
         stream: _companyStream,
-        builder: (context, snapshot) {
+        builder: (drawerContext, snapshot) {
           Map<dynamic, dynamic>? rawCompanyData;
+          final Object? rawValue = snapshot.data?.snapshot.value;
           if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
-            rawCompanyData =
-                snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+            rawCompanyData = rawValue as Map<dynamic, dynamic>?;
           }
 
           // Gunakan CompanyProfileModel agar pemetaan data aman dan rapi
@@ -153,7 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
               // Navigasi langsung ke halaman Profil Perusahaan saat header diketuk
               onDetailsPressed: () {
                 _navigateAfterClosingDrawer(() {
-                  AppNavigation.openCompanyProfile(context);
+                  if (!screenContext.mounted) return;
+                  AppNavigation.openCompanyProfile(screenContext);
                 });
               },
             ),
@@ -232,12 +237,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 8),
           ListTile(
-            leading: const Icon(Icons.approval, color: Colors.blue),
-            title: const Text('Persetujuan (Approval)'),
+            leading: const Icon(
+              Icons.system_security_update,
+              color: Colors.blue,
+            ),
+            title: const Text('Persetujuan (System)'),
             subtitle: const Text('Kelola daftar persetujuan toko'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // Tambahkan navigasi ke halaman approval jika diperlukan
+              // Tambahkan navigasi ke halaman System jika diperlukan
             },
           ),
         ],

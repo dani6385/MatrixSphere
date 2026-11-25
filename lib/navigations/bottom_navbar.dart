@@ -42,8 +42,8 @@ class BottomNavBar extends StatelessWidget {
         backgroundColor: selectedBackgroundColor,
       ),
       GButton(
-        icon: Icons.approval,
-        text: 'Approvals',
+        icon: Icons.system_security_update,
+        text: 'Systems',
         iconColor: unselectedColor,
         iconActiveColor: selectedColor,
         backgroundColor: selectedBackgroundColor,

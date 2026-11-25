@@ -56,8 +56,8 @@ class AppNavigation {
     context.go(AppRoutes.home);
   }
 
-  static void goToApprovals(BuildContext context) {
-    context.go(AppRoutes.approvals);
+  static void goToSystems(BuildContext context) {
+    context.go(AppRoutes.system);
   }
 
   static void goToAnalytics(BuildContext context) {

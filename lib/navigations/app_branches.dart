@@ -14,12 +14,12 @@ final List<StatefulShellBranch> appBranches = <StatefulShellBranch>[
     ],
   ),
 
-  // Branch 1: Persetujuan / Approvals
+  // Branch 1: Persetujuan / Systems
   StatefulShellBranch(
     routes: <RouteBase>[
       GoRoute(
         path: AppRoutes.system,
-        name: 'approvals',
+        name: 'Systems',
         builder: (context, state) => const SystemScreen(),
       ),
     ],

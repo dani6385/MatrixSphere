@@ -110,14 +110,14 @@ class AnalyticsService {
         },
       );
 
-  /// Logs approval action (e.g. approving/rejecting a shop or employee).
-  Future<void> logApprovalAction({
+  /// Logs System action (e.g. approving/rejecting a shop or employee).
+  Future<void> logSystemAction({
     required String targetType,
     required String decision,
     required String targetId,
   }) =>
       logEvent(
-        name: 'matrix_approval_action',
+        name: 'matrix_system_action',
         parameters: {
           'target_type': targetType,
           'decision': decision,

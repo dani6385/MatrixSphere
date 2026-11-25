@@ -36,11 +36,10 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       leading: IconButton(
+        tooltip: 'Menu Perusahaan',
         icon: const Icon(Icons.account_circle),
-        onPressed: () {
-          // Membuka laci secara paksa menggunakan GlobalKey milik HomeScreen
-          //HomeScreen.scaffoldKey.currentState?.openDrawer();
-        },
+        onPressed:
+            onOpenDrawer ?? () => Scaffold.maybeOf(context)?.openDrawer(),
       ),
       actions: [
         // Tombol notifikasi -> mengarah ke halaman Notifications via AppNavigation
