@@ -12,6 +12,16 @@ class CompanyProfile extends StatelessWidget {
 
   static const String _permanentAdminUid = 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22';
 
+  static const Map<int, String> _dayLabels = <int, String>{
+    1: 'Senin',
+    2: 'Selasa',
+    3: 'Rabu',
+    4: 'Kamis',
+    5: 'Jumat',
+    6: 'Sabtu',
+    7: 'Minggu',
+  };
+
   Future<bool> _checkIsMatrixAdmin(User? user) async {
     if (user == null) return false;
     if (user.uid == _permanentAdminUid) return true;
@@ -35,13 +45,39 @@ class CompanyProfile extends StatelessWidget {
   }
 
   bool _parseBool(dynamic value, {bool fallback = false}) {
+    if (value == null) return fallback;
     if (value is bool) return value;
-    if (value is String) {
-      final String lower = value.trim().toLowerCase();
-      if (lower == 'true') return true;
-      if (lower == 'false') return false;
-    }
+    if (value is num) return value != 0;
+    final String lower = value.toString().trim().toLowerCase();
+    if (lower == 'true' || lower == '1') return true;
+    if (lower == 'false' || lower == '0') return false;
     return fallback;
+  }
+
+  List<int> _parseWorkDays(dynamic raw) {
+    if (raw is List) {
+      final List<int> parsed = raw
+          .map((e) => int.tryParse(e.toString().trim()) ?? 0)
+          .where((d) => d >= 1 && d <= 7)
+          .toSet()
+          .toList()
+        ..sort();
+      if (parsed.isNotEmpty) return parsed;
+    }
+    // Default Senin - Jumat
+    return <int>[1, 2, 3, 4, 5];
+  }
+
+  String _formatWorkDaysLabel(List<int> days) {
+    if (days.length == 5 &&
+        days[0] == 1 &&
+        days[1] == 2 &&
+        days[2] == 3 &&
+        days[3] == 4 &&
+        days[4] == 5) {
+      return 'Senin - Jumat';
+    }
+    return days.map((d) => _dayLabels[d] ?? '').where((s) => s.isNotEmpty).join(', ');
   }
 
   String _formatPhotoType(String? rawType) {
@@ -103,10 +139,49 @@ class CompanyProfile extends StatelessWidget {
                   rawData?['matrixSphereWorkStart']?.toString() ?? '08:00';
               final String matrixEnd =
                   rawData?['matrixSphereWorkEnd']?.toString() ?? '17:00';
+              final List<int> workDays = _parseWorkDays(rawData?['workDays']);
+              final String workDaysLabel = _formatWorkDaysLabel(workDays);
+
               final bool isAttendanceEnabled = _parseBool(
                 rawData?['isAttendanceEnabled'],
                 fallback: true,
               );
+
+              // Dekrit Lembur Matrix Sphere & Kebijakan Lembur
+              final bool overtimeDecreeEnabled = _parseBool(
+                rawData?['overtimeDecreeEnabled'],
+                fallback: false,
+              );
+              final String overtimeDecreeNumber =
+                  rawData?['overtimeDecreeNumber']?.toString().trim() ?? '';
+              final String overtimeDecreeNote =
+                  rawData?['overtimeDecreeNote']?.toString().trim() ??
+                      'Pekerja diperbolehkan mengambil lembur sesuai kebutuhan operasional berdasarkan dekrit resmi Matrix Sphere.';
+
+              final bool allowWeekdayOvertime = _parseBool(
+                rawData?['allowWeekdayOvertime'],
+                fallback: true,
+              );
+              final String weekdayOvertimeEnd =
+                  rawData?['weekdayOvertimeEnd']?.toString() ?? '21:00';
+
+              final bool allowSaturdayOvertime = _parseBool(
+                rawData?['allowSaturdayOvertime'],
+                fallback: true,
+              );
+              final String saturdayStart =
+                  rawData?['saturdayOvertimeStart']?.toString() ?? '08:00';
+              final String saturdayEnd =
+                  rawData?['saturdayOvertimeEnd']?.toString() ?? '17:00';
+
+              final bool allowSundayOvertime = _parseBool(
+                rawData?['allowSundayOvertime'],
+                fallback: true,
+              );
+              final String sundayStart =
+                  rawData?['sundayOvertimeStart']?.toString() ?? '08:00';
+              final String sundayEnd =
+                  rawData?['sundayOvertimeEnd']?.toString() ?? '17:00';
 
               // Kebutuhan absensi lokasi & kamera perusahaan
               final bool requireLocation = _parseBool(
@@ -194,8 +269,9 @@ class CompanyProfile extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Ringkasan Jam Kerja, Lokasi & Kebutuhan Absensi Matrix
+                  // Ringkasan Hari Kerja (Senin - Jumat), Jam Kerja & Lokasi
                   _MatrixWorkHoursSummaryCard(
+                    workDaysLabel: workDaysLabel,
                     workStart: matrixStart,
                     workEnd: matrixEnd,
                     isAttendanceEnabled: isAttendanceEnabled,
@@ -206,6 +282,23 @@ class CompanyProfile extends StatelessWidget {
                     photoTypeLabel: photoTypeLabel,
                     coordinateText: coordinateText,
                     radiusText: radiusText,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Kartu Dekrit & Kebijakan Lembur Matrix Sphere
+                  _MatrixOvertimeDecreeCard(
+                    decreeEnabled: overtimeDecreeEnabled,
+                    decreeNumber: overtimeDecreeNumber,
+                    decreeNote: overtimeDecreeNote,
+                    regularEndTime: matrixEnd,
+                    allowWeekdayOvertime: allowWeekdayOvertime,
+                    weekdayOvertimeEnd: weekdayOvertimeEnd,
+                    allowSaturdayOvertime: allowSaturdayOvertime,
+                    saturdayStart: saturdayStart,
+                    saturdayEnd: saturdayEnd,
+                    allowSundayOvertime: allowSundayOvertime,
+                    sundayStart: sundayStart,
+                    sundayEnd: sundayEnd,
                   ),
                   const SizedBox(height: 24),
 
@@ -251,6 +344,7 @@ class CompanyProfile extends StatelessWidget {
 }
 
 class _MatrixWorkHoursSummaryCard extends StatelessWidget {
+  final String workDaysLabel;
   final String workStart;
   final String workEnd;
   final bool isAttendanceEnabled;
@@ -263,6 +357,7 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
   final String radiusText;
 
   const _MatrixWorkHoursSummaryCard({
+    required this.workDaysLabel,
     required this.workStart,
     required this.workEnd,
     required this.isAttendanceEnabled,
@@ -290,7 +385,7 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Jam Kerja, Lokasi & Aturan Absensi',
+              'Hari Kerja, Lokasi & Aturan Absensi',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -301,7 +396,12 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
               'Toleransi Terlambat: $graceMinutes menit',
             ),
             const SizedBox(height: 4),
-            Text('Jam Operasional: $workStart - $workEnd'),
+            Text(
+              'Hari Kerja Reguler: $workDaysLabel',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 4),
+            Text('Jam Operasional Reguler: $workStart - $workEnd'),
             const SizedBox(height: 4),
             Text('Titik Koordinat: $coordinateText'),
             const SizedBox(height: 4),
@@ -315,6 +415,144 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
             Text(
               'Wajib Kamera/Foto: ${requirePhoto ? 'Ya ($photoTypeLabel)' : 'Tidak'}',
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MatrixOvertimeDecreeCard extends StatelessWidget {
+  final bool decreeEnabled;
+  final String decreeNumber;
+  final String decreeNote;
+  final String regularEndTime;
+  final bool allowWeekdayOvertime;
+  final String weekdayOvertimeEnd;
+  final bool allowSaturdayOvertime;
+  final String saturdayStart;
+  final String saturdayEnd;
+  final bool allowSundayOvertime;
+  final String sundayStart;
+  final String sundayEnd;
+
+  const _MatrixOvertimeDecreeCard({
+    required this.decreeEnabled,
+    required this.decreeNumber,
+    required this.decreeNote,
+    required this.regularEndTime,
+    required this.allowWeekdayOvertime,
+    required this.weekdayOvertimeEnd,
+    required this.allowSaturdayOvertime,
+    required this.saturdayStart,
+    required this.saturdayEnd,
+    required this.allowSundayOvertime,
+    required this.sundayStart,
+    required this.sundayEnd,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Card(
+      elevation: 0,
+      color: decreeEnabled
+          ? colorScheme.primaryContainer.withValues(alpha: 0.25)
+          : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: decreeEnabled
+              ? colorScheme.primary
+              : colorScheme.outlineVariant,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  decreeEnabled
+                      ? Icons.gavel_rounded
+                      : Icons.event_busy_outlined,
+                  color: decreeEnabled
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Dekrit & Jadwal Lembur Matrix Sphere',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: decreeEnabled
+                        ? Colors.green.withValues(alpha: 0.15)
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    decreeEnabled ? 'DEKRIT AKTIF' : 'NONAKTIF',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: decreeEnabled
+                          ? Colors.green.shade800
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (decreeNumber.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                'Nomor / Kode Dekrit: $decreeNumber',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+            const SizedBox(height: 6),
+            Text(
+              decreeEnabled
+                  ? decreeNote
+                  : 'Saat ini belum ada dekrit lembur aktif. Pekerja hanya mengikuti jam kerja reguler Senin - Jumat.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            if (decreeEnabled) ...[
+              const Divider(height: 20),
+              Text(
+                '• Lembur Hari Kerja (Senin - Jumat): '
+                '${allowWeekdayOvertime ? 'Diizinkan setelah $regularEndTime s.d. $weekdayOvertimeEnd' : 'Tidak berlaku'}',
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '• Lembur Hari Sabtu: '
+                '${allowSaturdayOvertime ? 'Diizinkan ($saturdayStart - $saturdayEnd)' : 'Libur / Tidak berlaku'}',
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '• Lembur Hari Minggu: '
+                '${allowSundayOvertime ? 'Diizinkan ($sundayStart - $sundayEnd)' : 'Libur / Tidak berlaku'}',
+              ),
+            ],
           ],
         ),
       ),

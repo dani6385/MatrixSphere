@@ -31,6 +31,15 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   late final TextEditingController _radiusMetersController;
   late final TextEditingController _graceMinutesController;
 
+  // Controller Dekrit & Jam Lembur
+  late final TextEditingController _decreeNumberController;
+  late final TextEditingController _decreeNoteController;
+  late final TextEditingController _weekdayOvertimeEndController;
+  late final TextEditingController _saturdayStartController;
+  late final TextEditingController _saturdayEndController;
+  late final TextEditingController _sundayStartController;
+  late final TextEditingController _sundayEndController;
+
   static const Map<String, String> _photoTypeOptions = <String, String>{
     'front_selfie': 'Kamera Depan (Selfie)',
     'rear_site': 'Kamera Belakang (Bukti Lokasi/Kerja)',
@@ -42,6 +51,12 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   bool _requirePhotoAttendance = true;
   bool _allowOutsideRadius = false;
   String _selectedPhotoType = 'front_selfie';
+
+  // Toggle Dekrit & Lembur
+  bool _overtimeDecreeEnabled = false;
+  bool _allowWeekdayOvertime = true;
+  bool _allowSaturdayOvertime = true;
+  bool _allowSundayOvertime = true;
 
   bool _isCheckingAdmin = true;
   bool _isAdmin = false;
@@ -63,6 +78,17 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     _radiusMetersController = TextEditingController(text: '100');
     _graceMinutesController = TextEditingController(text: '15');
 
+    _decreeNumberController = TextEditingController();
+    _decreeNoteController = TextEditingController(
+      text:
+          'Pekerja diperbolehkan melaksanakan lembur setelah jam kerja maupun pada hari Sabtu & Minggu sesuai dekrit resmi Matrix Sphere.',
+    );
+    _weekdayOvertimeEndController = TextEditingController(text: '21:00');
+    _saturdayStartController = TextEditingController(text: '08:00');
+    _saturdayEndController = TextEditingController(text: '17:00');
+    _sundayStartController = TextEditingController(text: '08:00');
+    _sundayEndController = TextEditingController(text: '17:00');
+
     _verifyAdminAndLoadData();
   }
 
@@ -81,12 +107,12 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
   }
 
   bool _parseBool(dynamic value, {required bool fallback}) {
+    if (value == null) return fallback;
     if (value is bool) return value;
-    if (value is String) {
-      final String lower = value.trim().toLowerCase();
-      if (lower == 'true') return true;
-      if (lower == 'false') return false;
-    }
+    if (value is num) return value != 0;
+    final String lower = value.toString().trim().toLowerCase();
+    if (lower == 'true' || lower == '1') return true;
+    if (lower == 'false' || lower == '0') return false;
     return fallback;
   }
 
@@ -158,6 +184,57 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
         fallback: false,
       );
 
+      // Muat data dekrit & jam lembur
+      _overtimeDecreeEnabled = _parseBool(
+        data['overtimeDecreeEnabled'],
+        fallback: false,
+      );
+      _decreeNumberController.text = _readTextOrDefault(data, [
+        'overtimeDecreeNumber',
+      ]);
+      _decreeNoteController.text = _readTextOrDefault(
+        data,
+        ['overtimeDecreeNote'],
+        fallback: _decreeNoteController.text,
+      );
+      _allowWeekdayOvertime = _parseBool(
+        data['allowWeekdayOvertime'],
+        fallback: true,
+      );
+      _weekdayOvertimeEndController.text = _readTextOrDefault(
+        data,
+        ['weekdayOvertimeEnd'],
+        fallback: '21:00',
+      );
+      _allowSaturdayOvertime = _parseBool(
+        data['allowSaturdayOvertime'],
+        fallback: true,
+      );
+      _saturdayStartController.text = _readTextOrDefault(
+        data,
+        ['saturdayOvertimeStart'],
+        fallback: '08:00',
+      );
+      _saturdayEndController.text = _readTextOrDefault(
+        data,
+        ['saturdayOvertimeEnd'],
+        fallback: '17:00',
+      );
+      _allowSundayOvertime = _parseBool(
+        data['allowSundayOvertime'],
+        fallback: true,
+      );
+      _sundayStartController.text = _readTextOrDefault(
+        data,
+        ['sundayOvertimeStart'],
+        fallback: '08:00',
+      );
+      _sundayEndController.text = _readTextOrDefault(
+        data,
+        ['sundayOvertimeEnd'],
+        fallback: '17:00',
+      );
+
       final String rawPhotoType =
           data['photoType']?.toString().trim() ?? 'front_selfie';
       if (_photoTypeOptions.containsKey(rawPhotoType)) {
@@ -193,6 +270,8 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
           'phone': _phoneController.text.trim(),
           'address': _addressController.text.trim(),
           'description': _descriptionController.text.trim(),
+          // Hari kerja reguler Senin - Jumat (1..5)
+          'workDays': <int>[1, 2, 3, 4, 5],
           'matrixSphereWorkStart': _matrixStartController.text.trim(),
           'matrixSphereWorkEnd': _matrixEndController.text.trim(),
           'latitude': lat,
@@ -204,6 +283,19 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
           'requirePhotoAttendance': _requirePhotoAttendance,
           'allowOutsideRadius': _allowOutsideRadius,
           'photoType': _selectedPhotoType,
+          // Dekrit & Jadwal Lembur Matrix Sphere
+          'overtimeDecreeEnabled': _overtimeDecreeEnabled,
+          'overtimeDecreeNumber': _decreeNumberController.text.trim(),
+          'overtimeDecreeNote': _decreeNoteController.text.trim(),
+          'allowWeekdayOvertime': _allowWeekdayOvertime,
+          'weekdayOvertimeEnd': _weekdayOvertimeEndController.text.trim(),
+          'allowSaturdayOvertime': _allowSaturdayOvertime,
+          'saturdayOvertimeStart': _saturdayStartController.text.trim(),
+          'saturdayOvertimeEnd': _saturdayEndController.text.trim(),
+          'allowSundayOvertime': _allowSundayOvertime,
+          'sundayOvertimeStart': _sundayStartController.text.trim(),
+          'sundayOvertimeEnd': _sundayEndController.text.trim(),
+          'overtimeUpdatedAt': ServerValue.timestamp,
         },
       );
 
@@ -211,7 +303,7 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Profil, jam kerja & kebutuhan absensi berhasil disimpan.',
+            'Profil, jadwal Senin-Jumat & dekrit lembur berhasil disimpan.',
           ),
         ),
       );
@@ -246,6 +338,13 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     _longitudeController.dispose();
     _radiusMetersController.dispose();
     _graceMinutesController.dispose();
+    _decreeNumberController.dispose();
+    _decreeNoteController.dispose();
+    _weekdayOvertimeEndController.dispose();
+    _saturdayStartController.dispose();
+    _saturdayEndController.dispose();
+    _sundayStartController.dispose();
+    _sundayEndController.dispose();
     super.dispose();
   }
 
@@ -318,6 +417,14 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
               decoration: const InputDecoration(labelText: 'Deskripsi'),
             ),
             const SizedBox(height: 24),
+            Text(
+              'Jam Kerja Reguler (Senin - Jumat)',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -360,10 +467,136 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
             ),
             const SizedBox(height: 24),
             Text(
+              'Dekrit & Kebijakan Lembur Matrix Sphere',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Aktifkan Dekrit Lembur Pekerja'),
+              subtitle: const Text(
+                'Mengizinkan pekerja lembur setelah jam kerja maupun akhir pekan',
+              ),
+              value: _overtimeDecreeEnabled,
+              onChanged: _isAdmin
+                  ? (val) => setState(() => _overtimeDecreeEnabled = val)
+                  : null,
+            ),
+            if (_overtimeDecreeEnabled) ...[
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _decreeNumberController,
+                readOnly: !_isAdmin,
+                decoration: const InputDecoration(
+                  labelText: 'Nomor / Kode Dekrit Lembur',
+                  hintText: 'Contoh: SK-MS/OT/2026/01',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _decreeNoteController,
+                readOnly: !_isAdmin,
+                maxLines: 2,
+                decoration: const InputDecoration(
+                  labelText: 'Keterangan Dekrit Lembur',
+                ),
+              ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Lembur Hari Kerja (Senin - Jumat)'),
+                subtitle: const Text('Berlaku setelah jam selesai kerja reguler'),
+                value: _allowWeekdayOvertime,
+                onChanged: _isAdmin
+                    ? (val) => setState(() => _allowWeekdayOvertime = val)
+                    : null,
+              ),
+              if (_allowWeekdayOvertime)
+                TextFormField(
+                  controller: _weekdayOvertimeEndController,
+                  readOnly: !_isAdmin,
+                  decoration: const InputDecoration(
+                    labelText: 'Batas Akhir Lembur Senin - Jumat (HH:mm)',
+                    hintText: 'Contoh: 21:00',
+                  ),
+                ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Lembur Hari Sabtu'),
+                value: _allowSaturdayOvertime,
+                onChanged: _isAdmin
+                    ? (val) => setState(() => _allowSaturdayOvertime = val)
+                    : null,
+              ),
+              if (_allowSaturdayOvertime)
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _saturdayStartController,
+                        readOnly: !_isAdmin,
+                        decoration: const InputDecoration(
+                          labelText: 'Mulai Sabtu (HH:mm)',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _saturdayEndController,
+                        readOnly: !_isAdmin,
+                        decoration: const InputDecoration(
+                          labelText: 'Selesai Sabtu (HH:mm)',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Lembur Hari Minggu'),
+                value: _allowSundayOvertime,
+                onChanged: _isAdmin
+                    ? (val) => setState(() => _allowSundayOvertime = val)
+                    : null,
+              ),
+              if (_allowSundayOvertime)
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _sundayStartController,
+                        readOnly: !_isAdmin,
+                        decoration: const InputDecoration(
+                          labelText: 'Mulai Minggu (HH:mm)',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _sundayEndController,
+                        readOnly: !_isAdmin,
+                        decoration: const InputDecoration(
+                          labelText: 'Selesai Minggu (HH:mm)',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+            const SizedBox(height: 24),
+            Text(
               'Lokasi & Radius Absensi',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Row(
@@ -439,9 +672,10 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
             const SizedBox(height: 24),
             Text(
               'Kebutuhan Lokasi & Kamera Absensi',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             SwitchListTile(
