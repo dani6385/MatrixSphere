@@ -187,7 +187,6 @@ class EditCompanyController extends ChangeNotifier {
         'longitude': lng,
         'radiusMeters': radius,
         'graceMinutes': graceMinutes,
-        // Wajib aktif / wajib GPS & kamera tanpa toggle tanya-jawab
         'isAttendanceEnabled': EditCompanyConstants.mandatoryAttendanceEnabled,
         'requireLocationAttendance':
             EditCompanyConstants.mandatoryLocationRequired,
