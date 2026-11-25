@@ -266,7 +266,7 @@ class _SystemScreenState extends State<SystemScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<String>(
-                      value: selectedSeverity,
+                      initialValue: selectedSeverity,
                       decoration: const InputDecoration(
                         labelText: 'Tingkat Pelanggaran',
                         border: OutlineInputBorder(),
@@ -284,7 +284,7 @@ class _SystemScreenState extends State<SystemScreen>
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: selectedPenalty,
+                      initialValue: selectedPenalty,
                       decoration: const InputDecoration(
                         labelText: 'Tindakan / Sanksi',
                         border: OutlineInputBorder(),
@@ -672,7 +672,7 @@ class _SystemScreenState extends State<SystemScreen>
               return const Center(child: CircularProgressIndicator());
             }
 
-            final List> violationItems = [];
+            /*final List> violationItems = [];
             final rawViolations = violSnapshot.data?.snapshot.value;
             if (rawViolations is Map) {
               for (final shopEntry in rawViolations.entries) {
@@ -684,7 +684,7 @@ class _SystemScreenState extends State<SystemScreen>
                   }
                 }
               }
-            }
+            }*/
 
             return ListView(
               padding: const EdgeInsets.all(16),
@@ -735,15 +735,15 @@ class _SystemScreenState extends State<SystemScreen>
                     );
                   }),
                   const SizedBox(height: 16),
-                ],
+                ],/*
                 Text(
                   'Riwayat Pelanggaran (${violationItems.length})',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
-                ),
+                ),*/
                 const SizedBox(height: 8),
-                if (violationItems.isEmpty)
+                /*if (violationItems.isEmpty)
                   Card(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -754,8 +754,8 @@ class _SystemScreenState extends State<SystemScreen>
                       padding: EdgeInsets.all(16),
                       child: Text('Tidak ada catatan pelanggaran seller.'),
                     ),
-                  )
-                else
+                  )*/
+                /*else
                   ...violationItems.map((item) {
                     final String shopName =
                         item['shopName']?.toString() ?? 'Toko';
@@ -782,7 +782,7 @@ class _SystemScreenState extends State<SystemScreen>
                         isThreeLine: true,
                       ),
                     );
-                  }),
+                  }),*/
               ],
             );
           },
