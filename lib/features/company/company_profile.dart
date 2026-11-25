@@ -142,11 +142,6 @@ class CompanyProfile extends StatelessWidget {
               final List<int> workDays = _parseWorkDays(rawData?['workDays']);
               final String workDaysLabel = _formatWorkDaysLabel(workDays);
 
-              final bool isAttendanceEnabled = _parseBool(
-                rawData?['isAttendanceEnabled'],
-                fallback: true,
-              );
-
               // Dekrit Lembur Matrix Sphere & Kebijakan Lembur
               final bool overtimeDecreeEnabled = _parseBool(
                 rawData?['overtimeDecreeEnabled'],
@@ -274,7 +269,6 @@ class CompanyProfile extends StatelessWidget {
                     workDaysLabel: workDaysLabel,
                     workStart: matrixStart,
                     workEnd: matrixEnd,
-                    isAttendanceEnabled: isAttendanceEnabled,
                     requireLocation: requireLocation,
                     requirePhoto: requirePhoto,
                     allowOutsideRadius: allowOutsideRadius,
@@ -347,7 +341,6 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
   final String workDaysLabel;
   final String workStart;
   final String workEnd;
-  final bool isAttendanceEnabled;
   final bool requireLocation;
   final bool requirePhoto;
   final bool allowOutsideRadius;
@@ -360,7 +353,6 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
     required this.workDaysLabel,
     required this.workStart,
     required this.workEnd,
-    required this.isAttendanceEnabled,
     required this.requireLocation,
     required this.requirePhoto,
     required this.allowOutsideRadius,
@@ -389,11 +381,6 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Status Absensi: ${isAttendanceEnabled ? 'Aktif' : 'Nonaktif'} • '
-              'Toleransi Terlambat: $graceMinutes menit',
             ),
             const SizedBox(height: 4),
             Text(
