@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class EditCompanyAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CompanyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isAdmin;
   final bool isSaving;
   final VoidCallback onSave;
 
-  const EditCompanyAppBar({
+  const CompanyAppBar({
     super.key,
     required this.isAdmin,
     required this.isSaving,

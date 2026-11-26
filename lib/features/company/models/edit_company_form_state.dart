@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../core/edit_company_constants.dart';
+import '../core/company_profile_constants.dart';
 import 'company_profile_model.dart';
 
-class EditCompanyFormState {
+class CompanyFormState {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final TextEditingController nameController;
@@ -28,7 +28,7 @@ class EditCompanyFormState {
   // true = Lembur Aktif, false = Pulang
   bool isOvertimeRequired;
 
-  EditCompanyFormState({
+  CompanyFormState({
     CompanyProfileModel? initialCompany,
     this.isOvertimeRequired = false,
   })  : nameController = TextEditingController(text: initialCompany?.name ?? ''),
@@ -41,38 +41,38 @@ class EditCompanyFormState {
         descriptionController =
             TextEditingController(text: initialCompany?.description ?? ''),
         matrixStartController =
-            TextEditingController(text: EditCompanyConstants.defaultWorkStart),
+            TextEditingController(text: CompanyProfileConstants.defaultWorkStart),
         matrixEndController =
-            TextEditingController(text: EditCompanyConstants.defaultWorkEnd),
+            TextEditingController(text: CompanyProfileConstants.defaultWorkEnd),
         latitudeController = TextEditingController(),
         longitudeController = TextEditingController(),
         radiusMetersController = TextEditingController(
-          text: EditCompanyConstants.defaultRadiusMeters,
+          text: CompanyProfileConstants.defaultRadiusMeters,
         ),
         graceMinutesController = TextEditingController(
-          text: EditCompanyConstants.defaultGraceMinutes,
+          text: CompanyProfileConstants.defaultGraceMinutesStr,
         ),
         overtimeScheduleTextController = TextEditingController(
-          text: EditCompanyConstants.defaultOvertimeScheduleText,
+          text: CompanyProfileConstants.defaultOvertimeScheduleText,
         ),
         decreeNumberController = TextEditingController(),
         decreeNoteController = TextEditingController(
-          text: EditCompanyConstants.defaultDecreeNote,
+          text: CompanyProfileConstants.defaultDecreeNote,
         ),
         weekdayOvertimeEndController = TextEditingController(
-          text: EditCompanyConstants.defaultWeekdayOvertimeEnd,
+          text: CompanyProfileConstants.defaultWeekdayOvertimeEnd,
         ),
         saturdayStartController = TextEditingController(
-          text: EditCompanyConstants.defaultWeekendStart,
+          text: CompanyProfileConstants.defaultWeekendStart,
         ),
         saturdayEndController = TextEditingController(
-          text: EditCompanyConstants.defaultWeekendEnd,
+          text: CompanyProfileConstants.defaultWeekendEnd,
         ),
         sundayStartController = TextEditingController(
-          text: EditCompanyConstants.defaultWeekendStart,
+          text: CompanyProfileConstants.defaultWeekendStart,
         ),
         sundayEndController = TextEditingController(
-          text: EditCompanyConstants.defaultWeekendEnd,
+          text: CompanyProfileConstants.defaultWeekendEnd,
         );
 
   void dispose() {

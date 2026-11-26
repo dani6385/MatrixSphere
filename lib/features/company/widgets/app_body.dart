@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../form/company_profile_fields_form.dart';
 import '../form/location_radius_form.dart';
-import '../form/work_and_overtime_form.dart';
-import '../logics/edit_company_controller.dart';
+import '../form/work_overtime_form_card.dart';
+import '../logics/company_profile_controller.dart';
 import '../widgets/admin_notice_banner.dart';
 import '../widgets/save_company_button.dart';
 
-class EditCompanyAppBody extends StatelessWidget {
-  final EditCompanyController controller;
+class CompanyAppBody extends StatelessWidget {
+  final CompanyController controller;
   final VoidCallback onSave;
 
-  const EditCompanyAppBody({
+  const CompanyAppBody({
     super.key,
     required this.controller,
     required this.onSave,
@@ -35,7 +35,7 @@ class EditCompanyAppBody extends StatelessWidget {
           WorkAndOvertimeForm(
             formState: controller.formState,
             isAdmin: controller.isAdmin,
-            onOvertimeChanged: controller.setOvertimeRequired,
+            onOvertimeChanged: controller.setOvertimeRequired, canEdit: null,
           ),
           const SizedBox(height: 24),
           LocationRadiusForm(

@@ -2,25 +2,25 @@ import 'package:flutter/material.dart';
 
 import 'widgets/app_bar.dart';
 import 'widgets/app_body.dart';
-import 'logics/edit_company_controller.dart';
+import 'logics/company_profile_controller.dart';
 import 'models/company_profile_model.dart';
 
-class EditCompanyPage extends StatefulWidget {
+class CompanyPage extends StatefulWidget {
   final CompanyProfileModel? initialCompany;
 
-  const EditCompanyPage({super.key, this.initialCompany});
+  const CompanyPage({super.key, this.initialCompany});
 
   @override
-  State<EditCompanyPage> createState() => _EditCompanyPageState();
+  State<CompanyPage> createState() => _CompanyPageState();
 }
 
-class _EditCompanyPageState extends State<EditCompanyPage> {
-  late final EditCompanyController _controller;
+class _CompanyPageState extends State<CompanyPage> {
+  late final CompanyController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = EditCompanyController(initialCompany: widget.initialCompany)
+    _controller = CompanyController(initialCompany: widget.initialCompany)
       ..addListener(_onControllerUpdated);
   }
 
@@ -58,12 +58,12 @@ class _EditCompanyPageState extends State<EditCompanyPage> {
     }
 
     return Scaffold(
-      appBar: EditCompanyAppBar(
+      appBar: CompanyAppBar(
         isAdmin: _controller.isAdmin,
         isSaving: _controller.isSaving,
         onSave: _handleSave,
       ),
-      body: EditCompanyAppBody(
+      body: CompanyAppBody(
         controller: _controller,
         onSave: _handleSave,
       ),

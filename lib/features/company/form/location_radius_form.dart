@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/edit_company_form_state.dart';
 
 class LocationRadiusForm extends StatelessWidget {
-  final EditCompanyFormState formState;
+  final CompanyFormState formState;
   final bool isAdmin;
 
   const LocationRadiusForm({
