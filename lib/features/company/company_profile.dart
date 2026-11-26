@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +8,18 @@ import 'package:shared_services/shared_services.dart';
 
 import 'models/company_profile_model.dart';
 
-/// Halaman Profil Perusahaan (`CompanyProfile`) khusus tampilan & navigasi edit.
-class CompanyProfile extends StatelessWidget {
+/// Halaman Profil Perusahaan (`CompanyProfile`) dengan kontrol field lembur
+/// eksklusif untuk Admin dan Manager Kepegawaian.
+class CompanyProfile extends StatefulWidget {
   const CompanyProfile({super.key});
 
+  @override
+  State<CompanyProfile> createState() => _CompanyProfileState();
+}
+
+class _CompanyProfileState extends State<CompanyProfile> {
   static const String _permanentAdminUid = 'mjS1Y9Ll3JRQCMGSTK2oIBVIHT22';
+  static const String _defaultCheckoutTime = '16:00';
 
   static const Map<int, String> _dayLabels = <int, String>{
     1: 'Senin',
@@ -22,13 +31,236 @@ class CompanyProfile extends StatelessWidget {
     7: 'Minggu',
   };
 
-  Future<bool> _checkIsMatrixAdmin(User? user) async {
-    if (user == null) return false;
-    if (user.uid == _permanentAdminUid) return true;
+  final TextEditingController _overtimeWorkController = TextEditingController();
+  final FocusNode _overtimeFocusNode = FocusNode();
 
-    final IdTokenResult tokenResult = await user.getIdTokenResult(true);
-    final Map<String, dynamic>? claims = tokenResult.claims;
-    return claims?['admin'] == true || claims?['isAdmin'] == true;
+  late final DatabaseReference _companyRef;
+  late final Stream<DatabaseEvent> _companyStream;
+  late final Future<_AccessRoleResult> _accessRoleFuture;
+
+  Timer? _clockTimer;
+  String _lastSyncedOvertimeText = '';
+  bool _isSavingOvertime = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _companyRef = rtdbService.ref('company_profile');
+    _companyStream = _companyRef.onValue;
+    _accessRoleFuture = _resolveAccessRole(FirebaseAuth.instance.currentUser);
+
+    // Evaluasi ulang status aktif/kedaluwarsa setiap 30 detik
+    _clockTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _clockTimer?.cancel();
+    _overtimeWorkController.dispose();
+    _overtimeFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<_AccessRoleResult> _resolveAccessRole(User? user) async {
+    if (user == null) {
+      return const _AccessRoleResult(isAdmin: false, isHrManager: false);
+    }
+
+    bool isAdmin = user.uid == _permanentAdminUid;
+    bool isHrManager = false;
+
+    try {
+      final IdTokenResult tokenResult = await user.getIdTokenResult(true);
+      final Map<String, dynamic>? claims = tokenResult.claims;
+      if (claims != null) {
+        if (claims['admin'] == true || claims['isAdmin'] == true) {
+          isAdmin = true;
+        }
+        final String claimRole =
+            claims['role']?.toString().trim().toLowerCase() ?? '';
+        if (claims['hrManager'] == true ||
+            claims['isHrManager'] == true ||
+            claims['managerKepegawaian'] == true ||
+            claimRole == 'hr_manager' ||
+            claimRole == 'manager_kepegawaian' ||
+            claimRole == 'manager kepegawaian') {
+          isHrManager = true;
+        }
+      }
+    } catch (_) {
+      // Lanjutkan pengecekan ke RTDB jika token claim gagal diambil
+    }
+
+    if (!isAdmin && !isHrManager) {
+      try {
+        final DataSnapshot memberSnap = await rtdbService.getSnapshot(
+          'members/matrix_member/${user.uid}',
+        );
+        if (memberSnap.exists && memberSnap.value is Map) {
+          final Map<dynamic, dynamic> memberData =
+              memberSnap.value as Map<dynamic, dynamic>;
+          final String role =
+              memberData['role']?.toString().trim().toLowerCase() ?? '';
+          final String position =
+              memberData['position']?.toString().trim().toLowerCase() ?? '';
+          final String department =
+              memberData['department']?.toString().trim().toLowerCase() ?? '';
+
+          if (role == 'admin' || memberData['isAdmin'] == true) {
+            isAdmin = true;
+          }
+          if (role == 'hr_manager' ||
+              role == 'manager_kepegawaian' ||
+              role.contains('manager kepegawaian') ||
+              position.contains('manager kepegawaian') ||
+              position.contains('manajer kepegawaian') ||
+              (department.contains('kepegawaian') &&
+                  (position.contains('manager') ||
+                      position.contains('manajer')))) {
+            isHrManager = true;
+          }
+        }
+      } catch (_) {
+        // Abaikan jika node member tidak terbaca
+      }
+    }
+
+    return _AccessRoleResult(isAdmin: isAdmin, isHrManager: isHrManager);
+  }
+
+  /// Mengekstrak batas waktu (jam & menit) dari teks lembur,
+  /// mendukung format seperti "19:00", "19.00", "jam 7 malam", atau "jam 19".
+  TimeOfDay? _extractDeadlineTime(String rawText) {
+    final String text = rawText.trim().toLowerCase();
+    if (text.isEmpty) return null;
+
+    // 1. Format eksplisit HH:mm atau HH.mm (contoh: 19:00 atau 19.30)
+    final RegExp hhmmRegex = RegExp(r'\b([01]?\d|2[0-3])[:.]([0-5]\d)\b');
+    final RegExpMatch? hhmmMatch = hhmmRegex.firstMatch(text);
+    if (hhmmMatch != null) {
+      int hour = int.parse(hhmmMatch.group(1)!);
+      final int minute = int.parse(hhmmMatch.group(2)!);
+      if (hour >= 1 &&
+          hour <= 11 &&
+          (text.contains('malam') || text.contains('sore'))) {
+        hour += 12;
+      }
+      return TimeOfDay(hour: hour, minute: minute);
+    }
+
+    // 2. Format "jam X" (contoh: "jam 7 malam", "jam 19", "sampai 8 malam")
+    final RegExp hourWordRegex = RegExp(
+      r'(?:jam|pukul|sampai|s\.d\.?)\s*([01]?\d|2[0-3])\b',
+    );
+    final RegExpMatch? hourMatch = hourWordRegex.firstMatch(text);
+    if (hourMatch != null) {
+      int hour = int.parse(hourMatch.group(1)!);
+      if (hour >= 1 &&
+          hour <= 11 &&
+          (text.contains('malam') || text.contains('sore'))) {
+        hour += 12;
+      }
+      return TimeOfDay(hour: hour, minute: 0);
+    }
+
+    return null;
+  }
+
+  bool _isOvertimeExpired(String rawText, int? savedAtMillis) {
+    final String trimmed = rawText.trim();
+    if (trimmed.isEmpty) return true;
+
+    final DateTime now = DateTime.now();
+
+    // Jika disimpan pada hari sebelumnya, lembur harian otomatis kedaluwarsa
+    if (savedAtMillis != null && savedAtMillis > 0) {
+      final DateTime savedDate =
+          DateTime.fromMillisecondsSinceEpoch(savedAtMillis);
+      final bool isDifferentDay = savedDate.year != now.year ||
+          savedDate.month != now.month ||
+          savedDate.day != now.day;
+      if (isDifferentDay) return true;
+    }
+
+    final TimeOfDay? deadline = _extractDeadlineTime(trimmed);
+    if (deadline == null) return false;
+
+    final DateTime deadlineToday = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      deadline.hour,
+      deadline.minute,
+    );
+    return now.isAfter(deadlineToday);
+  }
+
+  String _formatTimeOfDay(TimeOfDay time) {
+    final String h = time.hour.toString().padLeft(2, '0');
+    final String m = time.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+
+  Future<void> _saveOvertimeWork(bool canEdit) async {
+    if (!canEdit || _isSavingOvertime) return;
+
+    final String text = _overtimeWorkController.text.trim();
+    final TimeOfDay? parsedDeadline = _extractDeadlineTime(text);
+    final bool hasText = text.isNotEmpty;
+    final bool alreadyPassed = hasText && _isOvertimeExpired(text, null);
+    final bool isActiveNow = hasText && !alreadyPassed;
+
+    final String effectiveCheckout = isActiveNow && parsedDeadline != null
+        ? _formatTimeOfDay(parsedDeadline)
+        : _defaultCheckoutTime;
+
+    setState(() => _isSavingOvertime = true);
+
+    try {
+      await _companyRef.update(<String, Object?>{
+        'overtimeWork': isActiveNow ? text : '',
+        'overtimeWorkActive': isActiveNow,
+        'overtimeDeadline':
+            isActiveNow && parsedDeadline != null ? _formatTimeOfDay(parsedDeadline) : null,
+        'effectiveCheckoutTime': effectiveCheckout,
+        'overtimeUpdatedAt': ServerValue.timestamp,
+        'overtimeUpdatedBy': FirebaseAuth.instance.currentUser?.uid,
+      });
+
+      if (!mounted) return;
+      _overtimeFocusNode.unfocus();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            !hasText
+                ? 'Field lembur dikosongkan. Jam pulang ditetapkan pada $_defaultCheckoutTime.'
+                : alreadyPassed
+                    ? 'Jam lembur sudah terlewati. Status nonaktif & jam pulang ditetapkan $_defaultCheckoutTime.'
+                    : 'Jadwal lembur disimpan. Jam pulang efektif: $effectiveCheckout.',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (error, stack) {
+      await rtdbService.logAppError(
+        source: 'CompanyProfile._saveOvertimeWork',
+        error: error,
+        stackTrace: stack,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal menyimpan jadwal lembur: $error'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSavingOvertime = false);
+      }
+    }
   }
 
   double? _parseDouble(dynamic value) {
@@ -64,7 +296,6 @@ class CompanyProfile extends StatelessWidget {
         ..sort();
       if (parsed.isNotEmpty) return parsed;
     }
-    // Default Senin - Jumat
     return <int>[1, 2, 3, 4, 5];
   }
 
@@ -77,7 +308,10 @@ class CompanyProfile extends StatelessWidget {
         days[4] == 5) {
       return 'Senin - Jumat';
     }
-    return days.map((d) => _dayLabels[d] ?? '').where((s) => s.isNotEmpty).join(', ');
+    return days
+        .map((d) => _dayLabels[d] ?? '')
+        .where((s) => s.isNotEmpty)
+        .join(', ');
   }
 
   String _formatPhotoType(String? rawType) {
@@ -95,15 +329,16 @@ class CompanyProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DatabaseReference companyRef = rtdbService.ref('company_profile');
-    final User? currentUser = FirebaseAuth.instance.currentUser;
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
 
-    return FutureBuilder<bool>(
-      future: _checkIsMatrixAdmin(currentUser),
-      builder: (context, adminSnapshot) {
-        final bool isAdmin = adminSnapshot.data ?? false;
+    return FutureBuilder<_AccessRoleResult>(
+      future: _accessRoleFuture,
+      builder: (context, roleSnapshot) {
+        final _AccessRoleResult access =
+            roleSnapshot.data ?? const _AccessRoleResult(isAdmin: false, isHrManager: false);
+        final bool isAdmin = access.isAdmin;
+        final bool canManageOvertime = access.canManageOvertime;
 
         return Scaffold(
           appBar: AppBar(
@@ -119,9 +354,10 @@ class CompanyProfile extends StatelessWidget {
             ],
           ),
           body: StreamBuilder<DatabaseEvent>(
-            stream: companyRef.onValue,
+            stream: _companyStream,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (snapshot.connectionState == ConnectionState.waiting &&
+                  !snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
 
@@ -137,8 +373,36 @@ class CompanyProfile extends StatelessWidget {
 
               final String matrixStart =
                   rawData?['matrixSphereWorkStart']?.toString() ?? '08:00';
-              final String matrixEnd =
-                  rawData?['matrixSphereWorkEnd']?.toString() ?? '17:00';
+              final String rawOvertimeWork =
+                  rawData?['overtimeWork']?.toString().trim() ?? '';
+              final int? overtimeUpdatedAt =
+                  (rawData?['overtimeUpdatedAt'] as num?)?.toInt();
+
+              // Cek apakah field lembur terisi dan belum melewati batas jam lembur
+              final bool isExpired =
+                  _isOvertimeExpired(rawOvertimeWork, overtimeUpdatedAt);
+              final bool isOvertimeActive =
+                  rawOvertimeWork.isNotEmpty && !isExpired;
+              final TimeOfDay? overtimeDeadline =
+                  isOvertimeActive ? _extractDeadlineTime(rawOvertimeWork) : null;
+
+              // Jika field kosong atau sudah lewat jam lembur, jam pulang ditetapkan 16:00
+              final String effectiveWorkEnd = isOvertimeActive
+                  ? (overtimeDeadline != null
+                      ? _formatTimeOfDay(overtimeDeadline)
+                      : (rawData?['matrixSphereWorkEnd']?.toString() ??
+                          _defaultCheckoutTime))
+                  : _defaultCheckoutTime;
+
+              // Sinkronkan controller jika tidak sedang diketik oleh pengguna
+              final String displayFieldValue =
+                  isOvertimeActive ? rawOvertimeWork : '';
+              if (!_overtimeFocusNode.hasFocus &&
+                  _lastSyncedOvertimeText != displayFieldValue) {
+                _lastSyncedOvertimeText = displayFieldValue;
+                _overtimeWorkController.text = displayFieldValue;
+              }
+
               final List<int> workDays = _parseWorkDays(rawData?['workDays']);
               final String workDaysLabel = _formatWorkDaysLabel(workDays);
 
@@ -220,8 +484,8 @@ class CompanyProfile extends StatelessWidget {
                   : 'Belum diatur';
               final String radiusText =
                   (radiusMeters != null && radiusMeters > 0)
-                  ? '${radiusMeters.round()} meter'
-                  : 'Belum diatur (default 100 meter)';
+                      ? '${radiusMeters.round()} meter'
+                      : 'Belum diatur (default 100 meter)';
 
               return ListView(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
@@ -264,11 +528,29 @@ class CompanyProfile extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
+                  // Field Khusus Overtime Work (Hanya Admin & Manager Kepegawaian)
+                  _OvertimeWorkControlCard(
+                    controller: _overtimeWorkController,
+                    focusNode: _overtimeFocusNode,
+                    canEdit: canManageOvertime,
+                    isSaving: _isSavingOvertime,
+                    isOvertimeActive: isOvertimeActive,
+                    isExpired: rawOvertimeWork.isNotEmpty && isExpired,
+                    effectiveCheckoutTime: effectiveWorkEnd,
+                    onSave: () => _saveOvertimeWork(canManageOvertime),
+                    onClear: () {
+                      _overtimeWorkController.clear();
+                      _saveOvertimeWork(canManageOvertime);
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
                   // Ringkasan Hari Kerja (Senin - Jumat), Jam Kerja & Lokasi
                   _MatrixWorkHoursSummaryCard(
                     workDaysLabel: workDaysLabel,
                     workStart: matrixStart,
-                    workEnd: matrixEnd,
+                    workEnd: effectiveWorkEnd,
+                    isOvertimeActive: isOvertimeActive,
                     requireLocation: requireLocation,
                     requirePhoto: requirePhoto,
                     allowOutsideRadius: allowOutsideRadius,
@@ -280,10 +562,12 @@ class CompanyProfile extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   _MatrixOvertimeDecreeCard(
-                    decreeEnabled: overtimeDecreeEnabled,
+                    decreeEnabled: overtimeDecreeEnabled || isOvertimeActive,
                     decreeNumber: overtimeDecreeNumber,
-                    decreeNote: overtimeDecreeNote,
-                    regularEndTime: matrixEnd,
+                    decreeNote: isOvertimeActive
+                        ? 'Lembur aktif: $rawOvertimeWork (Jam pulang efektif: $effectiveWorkEnd)'
+                        : overtimeDecreeNote,
+                    regularEndTime: effectiveWorkEnd,
                     allowWeekdayOvertime: allowWeekdayOvertime,
                     weekdayOvertimeEnd: weekdayOvertimeEnd,
                     allowSaturdayOvertime: allowSaturdayOvertime,
@@ -316,7 +600,7 @@ class CompanyProfile extends StatelessWidget {
                     value:
                         'Lokasi: ${requireLocation ? 'Wajib' : 'Opsional'} • '
                         'Kamera: ${requirePhoto ? 'Wajib ($photoTypeLabel)' : 'Opsional'} • '
-                        'Luar Radius: ${allowOutsideRadius ? 'Diizinkan (Review)' : 'Ditolak'} • '
+                        'Luar Radius: ${allowOutsideRadius ? 'Diizinkan (Review)' : 'Ditolak'}',
                   ),
                   _CompanyInfoTile(
                     icon: Icons.info_outline,
@@ -335,10 +619,175 @@ class CompanyProfile extends StatelessWidget {
   }
 }
 
+class _AccessRoleResult {
+  final bool isAdmin;
+  final bool isHrManager;
+
+  const _AccessRoleResult({
+    required this.isAdmin,
+    required this.isHrManager,
+  });
+
+  bool get canManageOvertime => isAdmin || isHrManager;
+}
+
+class _OvertimeWorkControlCard extends StatelessWidget {
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final bool canEdit;
+  final bool isSaving;
+  final bool isOvertimeActive;
+  final bool isExpired;
+  final String effectiveCheckoutTime;
+  final VoidCallback onSave;
+  final VoidCallback onClear;
+
+  const _OvertimeWorkControlCard({
+    required this.controller,
+    required this.focusNode,
+    required this.canEdit,
+    required this.isSaving,
+    required this.isOvertimeActive,
+    required this.isExpired,
+    required this.effectiveCheckoutTime,
+    required this.onSave,
+    required this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+
+    return Card(
+      elevation: 0,
+      color: isOvertimeActive
+          ? colorScheme.primaryContainer.withValues(alpha: 0.25)
+          : null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color:
+              isOvertimeActive ? colorScheme.primary : colorScheme.outlineVariant,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.access_time_filled_rounded,
+                  size: 20,
+                  color: isOvertimeActive
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Overtime Work (Lembur)',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isOvertimeActive
+                        ? Colors.green.withValues(alpha: 0.15)
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    isOvertimeActive ? 'LEMBUR AKTIF' : 'NONAKTIF (PULANG 16:00)',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: isOvertimeActive
+                          ? Colors.green.shade800
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Jam Pulang Efektif: $effectiveCheckoutTime'
+              '${isExpired ? ' (Batas jam lembur sebelumnya sudah terlewati)' : ''}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isOvertimeActive
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              focusNode: focusNode,
+              enabled: canEdit && !isSaving,
+              readOnly: !canEdit,
+              decoration: InputDecoration(
+                labelText: 'Jadwal / Batas Lembur (Overtime Work)',
+                hintText: 'Contoh: Lembur sampai jam 19:00',
+                helperText: canEdit
+                    ? 'Hanya Admin & Manager Kepegawaian. Kosongkan atau lewat jam lembur -> pulang 16:00.'
+                    : 'Hanya dapat diisi oleh Manager Kepegawaian dan Admin.',
+                helperMaxLines: 2,
+                border: const OutlineInputBorder(),
+                suffixIcon: (canEdit && controller.text.isNotEmpty)
+                    ? IconButton(
+                        tooltip: 'Kosongkan (Pulang 16:00)',
+                        icon: const Icon(Icons.clear),
+                        onPressed: isSaving ? null : onClear,
+                      )
+                    : null,
+              ),
+            ),
+            if (canEdit) ...[
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  OutlinedButton(
+                    onPressed: isSaving ? null : onClear,
+                    child: const Text('Reset Pulang 16:00'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.icon(
+                    onPressed: isSaving ? null : onSave,
+                    icon: isSaving
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.save_outlined, size: 18),
+                    label: Text(isSaving ? 'Menyimpan...' : 'Simpan Lembur'),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _MatrixWorkHoursSummaryCard extends StatelessWidget {
   final String workDaysLabel;
   final String workStart;
   final String workEnd;
+  final bool isOvertimeActive;
   final bool requireLocation;
   final bool requirePhoto;
   final bool allowOutsideRadius;
@@ -351,6 +800,7 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
     required this.workDaysLabel,
     required this.workStart,
     required this.workEnd,
+    required this.isOvertimeActive,
     required this.requireLocation,
     required this.requirePhoto,
     required this.allowOutsideRadius,
@@ -386,7 +836,10 @@ class _MatrixWorkHoursSummaryCard extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
-            Text('Jam Operasional Reguler: $workStart - $workEnd'),
+            Text(
+              'Jam Operasional: $workStart - $workEnd '
+              '(${isOvertimeActive ? 'Termasuk Lembur' : 'Default Pulang 16:00'})',
+            ),
             const SizedBox(height: 4),
             Text('Titik Koordinat: $coordinateText'),
             const SizedBox(height: 4),
@@ -461,6 +914,7 @@ class _MatrixOvertimeDecreeCard extends StatelessWidget {
                       : colorScheme.onSurfaceVariant,
                   size: 20,
                 ),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -489,7 +943,7 @@ class _MatrixOvertimeDecreeCard extends StatelessWidget {
             Text(
               decreeEnabled
                   ? decreeNote
-                  : 'Saat ini belum ada dekrit lembur aktif. Pekerja hanya mengikuti jam kerja reguler Senin - Jumat.',
+                  : 'Saat ini belum ada dekrit lembur aktif. Pekerja pulang pukul 16:00 sesuai jadwal Senin - Jumat.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -498,7 +952,7 @@ class _MatrixOvertimeDecreeCard extends StatelessWidget {
               const Divider(height: 20),
               Text(
                 '• Lembur Hari Kerja (Senin - Jumat): '
-                '${allowWeekdayOvertime ? 'Diizinkan setelah $regularEndTime s.d. $weekdayOvertimeEnd' : 'Tidak berlaku'}',
+                '${allowWeekdayOvertime ? 'Diizinkan s.d. $weekdayOvertimeEnd' : 'Tidak berlaku'}',
               ),
               const SizedBox(height: 4),
               Text(
