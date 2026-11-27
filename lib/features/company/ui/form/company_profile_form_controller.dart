@@ -41,6 +41,7 @@ class CompanyProfileFormController {
     addressController.text = company.address ?? '';
     descriptionController.text = company.description ?? '';
     logoUrlController.text = company.logoUrl ?? '';
+    bannerUrlController.text = company.bannerUrl ?? '';
 
     workStartController.text = rule.workStart;
     workEndController.text = rule.workEnd;
@@ -94,6 +95,9 @@ class CompanyProfileFormController {
       'logoUrl': logoUrlController.text.trim().isEmpty
           ? null
           : logoUrlController.text.trim(),
+      'bannerUrl': bannerUrlController.text.trim().isEmpty
+          ? null
+          : bannerUrlController.text.trim(),
       'matrixSphereWorkStart': workStartController.text.trim(),
       'matrixSphereWorkEnd': workEndController.text.trim(),
       'isAttendanceEnabled': true,
@@ -115,6 +119,7 @@ class CompanyProfileFormController {
     addressController.dispose();
     descriptionController.dispose();
     logoUrlController.dispose();
+    bannerUrlController.dispose();
     workStartController.dispose();
     workEndController.dispose();
     graceMinutesController.dispose();
