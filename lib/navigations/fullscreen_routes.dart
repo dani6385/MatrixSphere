@@ -38,7 +38,7 @@ List<RouteBase> fullScreen({
       path: AppRoutes.editCompanyProfile,
       name: 'Edit Company Profile',
       parentNavigatorKey: rootNavigatorKey,
-      builder: (context, state) => const CompanyPage(),
+      builder: (context, state) => const CompanyProfile(),
     ),
     /*GoRoute(
       path: AppRoutes.attendanceHistory,
