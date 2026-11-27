@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:matrix_sphere/navigations/app_navigation.dart';
 import 'package:shared_services/shared_services.dart';
@@ -26,4 +28,19 @@ class CompanyProfileLogic {
 
   Future<void> saveProfile(Map<String, Object?> payload) =>
       _service.saveCompanyProfile(payload);
+  Future<String> uploadImage({
+  required File file,
+  required String prefix,
+  int maxWidth = 1080,
+  int maxHeight = 1080,
+  int quality = 75,
+}) {
+  return _service.uploadCompanyImage(
+    file: file,
+    prefix: prefix,
+    maxWidth: maxWidth,
+    maxHeight: maxHeight,
+    quality: quality,
+  );
+}
 }

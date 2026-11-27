@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shared_services/shared_services.dart';
-
+//import 'utils/company_image_helper.dart';
 import 'logic/company_profile_logic.dart';
 import 'services/company_service.dart';
 import 'ui/form/company_profile_form_controller.dart';
@@ -32,6 +34,44 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   void dispose() {
     _form.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickAndUploadImage({required bool isBanner}) async {
+    // Contoh jika memakai XFile dari image_picker:
+    // final XFile? picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    // if (picked == null) return;
+    // final File file = File(picked.path);
+
+    setState(() => _isSaving = true);
+    try {
+      // Ganti baris `file` di bawah dengan file hasil ImagePicker Anda
+      final File file = File('');
+      final String url = await _logic.uploadImage(
+        file: file,
+        prefix: isBanner ? 'company_banner' : 'company_logo',
+        maxWidth: isBanner ? 1280 : 512,
+        maxHeight: isBanner ? 720 : 512,
+        quality: isBanner ? 75 : 80,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        if (isBanner) {
+          _form.bannerUrlController.text = url;
+        } else {
+          _form.logoUrlController.text = url;
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal upload gambar: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
   }
 
   Future<void> _onSave() async {
@@ -125,6 +165,13 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
                   children: [
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.panorama_outlined),
+                      label: const Text('Pilih Banner'),
+                      onPressed: _isSaving
+                          ? null
+                          : () => _pickAndUploadImage(isBanner: true),
+                    ),
                     Text(
                       'Informasi Perusahaan',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -169,14 +216,6 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                       maxLines: 2,
                       decoration: const InputDecoration(
                         labelText: 'Alamat',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _form.logoUrlController,
-                      decoration: const InputDecoration(
-                        labelText: 'URL Logo',
                         border: OutlineInputBorder(),
                       ),
                     ),

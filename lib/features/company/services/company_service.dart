@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:matrix_sphere/features/company/utils/company_image_helper.dart';
 import 'package:shared_services/shared_services.dart';
 
 import '../core/company_constants.dart';
@@ -20,7 +24,7 @@ class CompanyService {
   final CompanyRemoteDataSource _dataSource;
 
   CompanyService({CompanyRemoteDataSource? dataSource})
-      : _dataSource = dataSource ?? CompanyRemoteDataSource();
+    : _dataSource = dataSource ?? CompanyRemoteDataSource();
 
   Future<bool> checkIsMatrixAdmin() async {
     final User? user = _dataSource.currentUser;
@@ -38,6 +42,70 @@ class CompanyService {
         reason: 'checkIsMatrixAdmin failed',
       );
       return false;
+    }
+  }
+
+  Future<String> uploadCompanyImage({
+    required File file,
+    required String prefix,
+    int maxWidth = 1080,
+    int maxHeight = 1080,
+    int quality = 75,
+  }) async {
+    try {
+      final Uint8List? bytes = await CompanyImageHelper.compressToBytes(
+        file: file,
+        minWidth: maxWidth,
+        minHeight: maxHeight,
+        quality: quality,
+      );
+      final String fileName =
+          '${prefix}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      final ImgbbUploadResult result = await imgbbService.uploadBytes(
+        bytes!,
+        fileName: fileName,
+      );
+      return result.displayUrl.isNotEmpty ? result.displayUrl : result.url;
+    } catch (e, stack) {
+      await crashlyticsService.recordError(
+        e,
+        stack,
+        reason: 'CompanyService.uploadCompanyImage($prefix)',
+      );
+      rethrow;
+    }
+  }
+
+  Future<String> uploadCompanyBanner({
+    required File file,
+    required String prefix,
+    int maxWidth = 1080,
+    int maxHeight = 1080,
+    int quality = 75,
+  }) async {
+    try {
+      final Uint8List? bytes = await CompanyImageHelper.compressToBytes(
+        file: file,
+        minWidth: maxWidth,
+        minHeight: maxHeight,
+        quality: quality,
+      );
+      final String fileName =
+          '${prefix}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      final ImgbbUploadResult result = await imgbbService.uploadBytes(
+        bytes!,
+        fileName: fileName,
+      );
+      return result.displayUrl.isNotEmpty ? result.displayUrl : result.url;
+    } catch (e, stack) {
+      await crashlyticsService.recordError(
+        e,
+        stack,
+        reason: 'CompanyService.uploadCompanyImage($prefix)',
+      );
+      rethrow;
     }
   }
 

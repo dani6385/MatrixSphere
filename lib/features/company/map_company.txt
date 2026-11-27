@@ -4,6 +4,7 @@ lib/features/company_profile/
 ├── config/
 │   └── company_config.dart
 ├── utils/
+│   ├── company_image_helper.dart
 │   └── company_parser_utils.dart
 ├── models/
 │   ├── company_profile_model.dart

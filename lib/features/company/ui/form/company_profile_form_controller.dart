@@ -12,6 +12,7 @@ class CompanyProfileFormController {
   final TextEditingController addressController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController logoUrlController = TextEditingController();
+  final TextEditingController bannerUrlController = TextEditingController();
 
   final TextEditingController workStartController = TextEditingController();
   final TextEditingController workEndController = TextEditingController();
