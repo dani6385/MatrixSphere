@@ -21,6 +21,7 @@ class _CompanyProfileState extends State<CompanyProfile> {
     super.initState();
     _logic = CompanyProfileLogic();
     _adminFuture = _logic.isAdmin();
+    _logic.logScreenOpen('company_profile');
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_services/shared_services.dart';
 
 import 'logic/company_profile_logic.dart';
 import 'services/company_service.dart';
@@ -24,6 +25,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
     _logic = CompanyProfileLogic();
     _adminFuture = _logic.isAdmin();
     _form = CompanyProfileFormController();
+    _logic.logScreenOpen('edit_company_profile');
   }
 
   @override
@@ -43,11 +45,16 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
         const SnackBar(content: Text('Profil perusahaan berhasil disimpan.')),
       );
       Navigator.of(context).pop(true);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal menyimpan profil: $e')),
+    } catch (e, stack) {
+      await crashlyticsService.recordError(
+        e,
+        stack,
+        reason: 'EditCompanyScreen._onSave',
       );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal menyimpan profil: $e')));
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);
@@ -131,8 +138,9 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                         labelText: 'Nama Perusahaan',
                         border: OutlineInputBorder(),
                       ),
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? 'Wajib diisi'
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -142,8 +150,9 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                         labelText: 'Email',
                         border: OutlineInputBorder(),
                       ),
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? 'Wajib diisi'
+                          : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(

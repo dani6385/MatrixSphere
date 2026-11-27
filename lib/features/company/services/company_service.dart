@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_services/shared_services.dart';
 
 import '../core/company_constants.dart';
 import '../data/company_remote_datasource.dart';
@@ -19,21 +20,25 @@ class CompanyService {
   final CompanyRemoteDataSource _dataSource;
 
   CompanyService({CompanyRemoteDataSource? dataSource})
-    : _dataSource = dataSource ?? CompanyRemoteDataSource();
+      : _dataSource = dataSource ?? CompanyRemoteDataSource();
 
   Future<bool> checkIsMatrixAdmin() async {
     final User? user = _dataSource.currentUser;
     if (user == null) return false;
     if (user.uid == CompanyConstants.permanentAdminUid) return true;
 
-    final IdTokenResult tokenResult = await user.getIdTokenResult(true);
-    final Map<String, dynamic>? claims = tokenResult.claims;
-    return claims?['admin'] == true || claims?['isAdmin'] == true;
-  }
-
-  // services/company_service.dart (tambahkan method ini)
-  Future<void> saveCompanyProfile(Map<String, dynamic> payload) {
-    return _dataSource.updateCompanyProfile(payload);
+    try {
+      final IdTokenResult tokenResult = await user.getIdTokenResult(true);
+      final Map<String, dynamic>? claims = tokenResult.claims;
+      return claims?['admin'] == true || claims?['isAdmin'] == true;
+    } catch (e, stack) {
+      await crashlyticsService.recordError(
+        e,
+        stack,
+        reason: 'checkIsMatrixAdmin failed',
+      );
+      return false;
+    }
   }
 
   Stream<CompanyProfileBundle> watchCompanyBundle() {
@@ -48,5 +53,14 @@ class CompanyService {
         attendanceRule: AttendanceRuleModel.fromMap(rawData),
       );
     });
+  }
+
+  Future<void> saveCompanyProfile(Map<String, Object?> payload) async {
+    await _dataSource.updateCompanyProfile(payload);
+    await analyticsService.logSystemAction(
+      targetType: 'company_profile',
+      decision: 'updated',
+      targetId: CompanyConstants.dbNodeCompanyProfile,
+    );
   }
 }
