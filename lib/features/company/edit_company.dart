@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_services/shared_services.dart';
-
+import 'package:geolocator/geolocator.dart';
 import 'logic/company_profile_logic.dart';
 import 'services/company_service.dart';
 import 'ui/form/company_profile_form_controller.dart';
@@ -22,6 +22,74 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   final ImagePicker _picker = ImagePicker();
 
   bool _isSaving = false;
+  bool _isLocating = false;
+
+  Future<void> _fillCurrentLocation() async {
+    if (_isLocating || _isSaving) return;
+
+    setState(() => _isLocating = true);
+    try {
+      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw Exception(
+          'Layanan GPS tidak aktif. Harap aktifkan lokasi perangkat.',
+        );
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        throw Exception('Izin akses lokasi ditolak.');
+      }
+
+      final Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _form.latitudeController.text = position.latitude.toStringAsFixed(6);
+        _form.longitudeController.text = position.longitude.toStringAsFixed(6);
+      });
+
+      // Opsional: otomatis isi alamat jika kolom alamat masih kosong
+      if (_form.addressController.text.trim().isEmpty) {
+        final String? address = await sharedApiClient.reverseGeocode(
+          lat: position.latitude,
+          lng: position.longitude,
+        );
+        if (mounted && address != null && address.isNotEmpty) {
+          setState(() => _form.addressController.text = address);
+        }
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Koordinat GPS saat ini berhasil diambil.'),
+        ),
+      );
+    } catch (e, stack) {
+      await crashlyticsService.recordError(
+        e,
+        stack,
+        reason: 'EditCompanyScreen._fillCurrentLocation',
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal mengambil lokasi: $e')));
+    } finally {
+      if (mounted) {
+        setState(() => _isLocating = false);
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -39,9 +107,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   }
 
   Future<void> _pickAndUploadImage({required bool isBanner}) async {
-    final XFile? picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
+    final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
     if (picked == null) return;
 
     setState(() => _isSaving = true);
@@ -172,8 +238,9 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                 CircleAvatar(
                   radius: 36,
                   backgroundColor: colorScheme.primaryContainer,
-                  backgroundImage:
-                      logoUrl.isNotEmpty ? NetworkImage(logoUrl) : null,
+                  backgroundImage: logoUrl.isNotEmpty
+                      ? NetworkImage(logoUrl)
+                      : null,
                   child: logoUrl.isEmpty
                       ? Icon(
                           Icons.apartment,
@@ -411,6 +478,29 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: (_isLocating || _isSaving)
+                            ? null
+                            : _fillCurrentLocation,
+                        icon: _isLocating
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.my_location_outlined, size: 18),
+                        label: Text(
+                          _isLocating
+                              ? 'Mengambil Koordinat...'
+                              : 'Gunakan Lokasi GPS Saat Ini',
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
