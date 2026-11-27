@@ -187,14 +187,6 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Status Absensi Aktif'),
-                      value: _form.isAttendanceEnabled,
-                      onChanged: (val) =>
-                          setState(() => _form.isAttendanceEnabled = val),
-                    ),
                     Row(
                       children: [
                         Expanded(
@@ -294,29 +286,6 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                           setState(() => _form.photoType = val);
                         }
                       },
-                    ),
-                    const SizedBox(height: 8),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Wajib GPS / Lokasi'),
-                      value: _form.requireLocationAttendance,
-                      onChanged: (val) => setState(
-                        () => _form.requireLocationAttendance = val,
-                      ),
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Wajib Kamera / Foto'),
-                      value: _form.requirePhotoAttendance,
-                      onChanged: (val) =>
-                          setState(() => _form.requirePhotoAttendance = val),
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Izinkan Absen di Luar Radius'),
-                      value: _form.allowOutsideRadius,
-                      onChanged: (val) =>
-                          setState(() => _form.allowOutsideRadius = val),
                     ),
                   ],
                 ),
