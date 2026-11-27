@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'app_extractor.dart';
 import 'app_routes.dart';
 
 class AppNavigation {
@@ -91,6 +92,7 @@ class AppNavigation {
   static void openManagementUser(BuildContext context) {
     context.push(AppRoutes.userManagement);
   }
+
   static void openShopProfile(BuildContext context) {
     context.push(AppRoutes.shopProfile);
   }
@@ -103,14 +105,15 @@ class AppNavigation {
     context.push(AppRoutes.editUserProfile);
   }
 
-  static void openEditCompanyProfile(BuildContext context) {
-    context.push(AppRoutes.editCompanyProfile);
-  }
-
   static void openEditShopProfile(BuildContext context) {
     context.push(AppRoutes.editShopProfile);
   }
 
+  static Future<bool?> openEditCompanyProfile(BuildContext context) {
+    return Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(builder: (_) => const EditCompanyScreen()),
+    );
+  }
   // ===========================================================================
   // 5. PENGATURAN & FITUR UMUM
   // ===========================================================================

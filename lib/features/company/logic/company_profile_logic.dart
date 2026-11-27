@@ -15,7 +15,7 @@ class CompanyProfileLogic {
   Stream<CompanyProfileBundle> get companyStream =>
       _service.watchCompanyBundle();
 
-  void navigateToEdit(BuildContext context) {
-    AppNavigation.openEditCompanyProfile(context);
+  Future<void> navigateToEdit(BuildContext context) async {
+    await AppNavigation.openEditCompanyProfile(context);
   }
 }

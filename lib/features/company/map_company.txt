@@ -1,0 +1,31 @@
+lib/features/company_profile/
+├── core/
+│   └── company_constants.dart
+├── config/
+│   └── company_config.dart
+├── utils/
+│   └── company_parser_utils.dart
+├── models/
+│   ├── company_profile_model.dart
+│   └── attendance_rule_model.dart
+├── data/
+│   └── company_remote_datasource.dart
+├── services/
+│   └── company_service.dart
+├── logic/
+│   └── company_profile_logic.dart
+├── src/
+│   └── company_profile_exports.dart
+├── ui/
+│   ├── form/
+│   │   └── company_profile_form_controller.dart
+│   ├── widgets/
+│   │   ├── company_header_widget.dart
+│   │   ├── company_info_tile.dart
+│   │   └── matrix_work_hours_summary_card.dart
+│   ├── appbar/
+│   │   └── company_profile_appbar.dart
+│   └── appbody/
+│       └── company_profile_body.dart
+├── company_screen.dart
+└── edit_company_screen.dart
