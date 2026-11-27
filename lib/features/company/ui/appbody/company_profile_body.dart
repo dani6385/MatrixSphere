@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:matrix_sphere/features/company/config/company_config.dart';
+import '../../config/company_config.dart';
 import '../../logic/company_profile_logic.dart';
 import '../../models/attendance_rule_model.dart';
 import '../../models/company_profile_model.dart';
@@ -34,12 +34,14 @@ class CompanyProfileBody extends StatelessWidget {
         final AttendanceRuleModel rule = bundle.attendanceRule;
 
         return ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 96),
           children: [
-            CompanyHeaderWidget(company: company),
+            CompanyHeaderWidget(company: company, rule: rule),
             const SizedBox(height: 24),
+            const CompanySectionTitle(title: 'Aturan & Operasional'),
             MatrixWorkHoursSummaryCard(rule: rule),
-            const SizedBox(height: 24),
+            const SizedBox(height: 22),
+            const CompanySectionTitle(title: 'Informasi Perusahaan & Kontak'),
             CompanyInfoTile(
               icon: Icons.phone_outlined,
               label: 'Telepon',

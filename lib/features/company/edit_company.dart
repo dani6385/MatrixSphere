@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_services/shared_services.dart';
-//import 'utils/company_image_helper.dart';
+
 import 'logic/company_profile_logic.dart';
 import 'services/company_service.dart';
 import 'ui/form/company_profile_form_controller.dart';
@@ -18,6 +19,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   late final CompanyProfileLogic _logic;
   late final Future<bool> _adminFuture;
   late final CompanyProfileFormController _form;
+  final ImagePicker _picker = ImagePicker();
 
   bool _isSaving = false;
 
@@ -37,15 +39,14 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
   }
 
   Future<void> _pickAndUploadImage({required bool isBanner}) async {
-    // Contoh jika memakai XFile dari image_picker:
-    // final XFile? picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    // if (picked == null) return;
-    // final File file = File(picked.path);
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (picked == null) return;
 
     setState(() => _isSaving = true);
     try {
-      // Ganti baris `file` di bawah dengan file hasil ImagePicker Anda
-      final File file = File('');
+      final File file = File(picked.path);
       final String url = await _logic.uploadImage(
         file: file,
         prefix: isBanner ? 'company_banner' : 'company_logo',
@@ -62,7 +63,12 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
           _form.logoUrlController.text = url;
         }
       });
-    } catch (e) {
+    } catch (e, stack) {
+      await crashlyticsService.recordError(
+        e,
+        stack,
+        reason: 'EditCompanyScreen._pickAndUploadImage',
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -100,6 +106,117 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
         setState(() => _isSaving = false);
       }
     }
+  }
+
+  Widget _buildMediaSection(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final String bannerUrl = _form.bannerUrlController.text.trim();
+    final String logoUrl = _form.logoUrlController.text.trim();
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 170,
+            width: double.infinity,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                bannerUrl.isNotEmpty
+                    ? Image.network(
+                        bannerUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Container(
+                          color: colorScheme.surfaceContainerHighest,
+                          child: const Icon(
+                            Icons.broken_image_outlined,
+                            size: 36,
+                          ),
+                        ),
+                      )
+                    : Container(
+                        color: colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.panorama_outlined,
+                          size: 40,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                Positioned(
+                  right: 10,
+                  bottom: 10,
+                  child: FilledButton.tonalIcon(
+                    onPressed: _isSaving
+                        ? null
+                        : () => _pickAndUploadImage(isBanner: true),
+                    icon: const Icon(Icons.photo_library_outlined, size: 18),
+                    label: const Text('Ubah Banner'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 36,
+                  backgroundColor: colorScheme.primaryContainer,
+                  backgroundImage:
+                      logoUrl.isNotEmpty ? NetworkImage(logoUrl) : null,
+                  child: logoUrl.isEmpty
+                      ? Icon(
+                          Icons.apartment,
+                          size: 32,
+                          color: colorScheme.primary,
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Logo & Banner Perusahaan',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Gambar dikompres otomatis sebelum diunggah ke ImgBB.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      OutlinedButton.icon(
+                        onPressed: _isSaving
+                            ? null
+                            : () => _pickAndUploadImage(isBanner: false),
+                        icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                        label: const Text('Pilih Logo'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -165,13 +282,8 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 96),
                   children: [
-                    OutlinedButton.icon(
-                      icon: const Icon(Icons.panorama_outlined),
-                      label: const Text('Pilih Banner'),
-                      onPressed: _isSaving
-                          ? null
-                          : () => _pickAndUploadImage(isBanner: true),
-                    ),
+                    _buildMediaSection(context),
+                    const SizedBox(height: 24),
                     Text(
                       'Informasi Perusahaan',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -235,6 +347,7 @@ class _EditCompanyScreenState extends State<EditCompanyScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    const SizedBox(height: 12),
                     Row(
                       children: [
                         Expanded(
