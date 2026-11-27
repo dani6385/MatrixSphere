@@ -39,15 +39,6 @@ class MatrixWorkHoursSummaryCard extends StatelessWidget {
             Text('Titik Koordinat: ${rule.coordinateText}'),
             const SizedBox(height: 4),
             Text('Batas Radius: ${rule.radiusText}'),
-            const SizedBox(height: 4),
-            Text(
-              'Wajib GPS/Lokasi: ${rule.requireLocation ? 'Ya' : 'Tidak'} • '
-              'Luar Radius: ${rule.allowOutsideRadius ? 'Diizinkan' : 'Ditolak'}',
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Wajib Kamera/Foto: ${rule.requirePhoto ? 'Ya (${rule.photoTypeLabel})' : 'Tidak'}',
-            ),
           ],
         ),
       ),

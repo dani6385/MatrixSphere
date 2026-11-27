@@ -7,10 +7,11 @@ class CompanyProfileLogic {
   final CompanyService _service;
 
   CompanyProfileLogic({CompanyService? service})
-      : _service = service ?? CompanyService();
+    : _service = service ?? CompanyService();
 
   Future<bool> isAdmin() => _service.checkIsMatrixAdmin();
-
+  Future<void> saveProfile(Map<String, dynamic> payload) =>
+      _service.saveCompanyProfile(payload);
   Stream<CompanyProfileBundle> get companyStream =>
       _service.watchCompanyBundle();
 

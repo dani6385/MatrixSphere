@@ -19,7 +19,7 @@ class CompanyService {
   final CompanyRemoteDataSource _dataSource;
 
   CompanyService({CompanyRemoteDataSource? dataSource})
-      : _dataSource = dataSource ?? CompanyRemoteDataSource();
+    : _dataSource = dataSource ?? CompanyRemoteDataSource();
 
   Future<bool> checkIsMatrixAdmin() async {
     final User? user = _dataSource.currentUser;
@@ -29,6 +29,11 @@ class CompanyService {
     final IdTokenResult tokenResult = await user.getIdTokenResult(true);
     final Map<String, dynamic>? claims = tokenResult.claims;
     return claims?['admin'] == true || claims?['isAdmin'] == true;
+  }
+
+  // services/company_service.dart (tambahkan method ini)
+  Future<void> saveCompanyProfile(Map<String, dynamic> payload) {
+    return _dataSource.updateCompanyProfile(payload);
   }
 
   Stream<CompanyProfileBundle> watchCompanyBundle() {
